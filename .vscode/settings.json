@@ -1,0 +1,3 @@
+{
+    "C_Cpp.default.defines": ["STM32F303xE"],
+}

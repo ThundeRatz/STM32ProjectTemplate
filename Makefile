@@ -4,8 +4,8 @@
 
 DEVICE_FAMILY := STM32F3xx
 DEVICE_TYPE   := STM32F303xx
-DEVICE        := STM32F303CCTx
-DEVICE_DEF    := STM32F303xC
+DEVICE        := STM32F303RETx
+DEVICE_DEF    := STM32F303xE
 
 TARGET = main
 
@@ -119,15 +119,14 @@ $(BUILD_DIR):
 	@echo "Creating build directory"
 	@mkdir -p $@
 
+ifndef CUBE_PATH
+$(error 'CUBE_PATH not defined')
+endif
+
 prepare:
+	@java -jar $(CUBE_PATH)/STM32CubeMX -q cube_script
 	@-rm -f cube/Src/main.c cube/Makefile
 
-# TODO ver se dá pra fazer genericamente no Windows também
-prepare_linux:
-	@java -jar /opt/STM32CubeMX/STM32CubeMX -q cube_script
-	@-rm -f cube/Src/main.c cube/Makefile
-
-# TODO testar algo que funcione no Windows e Linux
 flash load:
 	@echo "Flashing $(TARGET).bin"
 	@st-link_cli -c SWD -P $(BUILD_DIR)/$(TARGET).bin 0x08000000 -V
@@ -139,6 +138,10 @@ reload: all load
 reset:
 	@echo "Reseting device"
 	@st-link_cli -Rst
+
+clean_cube:
+	@echo "Cleaning cube files"
+	@-rm -rf cube/Src cube/Inc cube/Drivers cube/.mxproject cube/Makefile cube/*.s cube/*.ld
 
 clean:
 	@echo "Cleaning build files"
