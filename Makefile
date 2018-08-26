@@ -1,6 +1,7 @@
 # Name: Makefile_STM
 # Author: Daniel Nery Silva de Oliveira
 # ThundeRatz Robotics Team
+# 08/2018
 
 DEVICE_FAMILY := STM32F3xx
 DEVICE_TYPE   := STM32F303xx
@@ -16,7 +17,11 @@ DEBUG = 1
 # Tune the lines below only if you know what you are doing:
 
 # Optmization
+ifeq ($(DEBUG), 1)
 OPT := -Og
+else
+OPT := -Os
+endif
 
 # Build Directory
 BUILD_DIR := build
@@ -65,7 +70,7 @@ endif
 
 ASFLAGS := $(FLAGS) $(AS_DEFS) $(AS_INCLUDES) -Wall -Wextra -fdata-sections -ffunction-sections $(OPT)
 CFLAGS  := $(FLAGS) $(C_DEFS) $(C_INCLUDES) -Wall -Wextra -fdata-sections -ffunction-sections -fmessage-length=0 $(OPT) \
-	-std=c99 -MMD -MP
+	-std=c11 -MMD -MP
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
@@ -87,11 +92,14 @@ vpath %.c $(sort $(dir $(CUBE_SOURCES)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
+###################
+# Build Targets
+###################
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "Compiling $<"
-	$(COMPILE) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:%.o=%.d)" $< -o $@
+	$(COMPILE) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 	@echo
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
@@ -119,12 +127,18 @@ $(BUILD_DIR):
 	@echo "Creating build directory"
 	@mkdir -p $@
 
+######################
+# Auxilirary Targets
+######################
 ifndef CUBE_PATH
 $(error 'CUBE_PATH not defined')
 endif
 
+cube:
+	@java -jar $(CUBE_PATH)/STM32CubeMX -q .cube
+
 prepare:
-	@java -jar $(CUBE_PATH)/STM32CubeMX -q cube_script
+	@echo "Preparing cube files"
 	@-rm -f cube/Src/main.c cube/Makefile
 
 flash load:
@@ -158,17 +172,19 @@ format:
 
 help:
 	@echo "----------------------- ThunderMakefile ------------------------------"
-	@echo "   Bem-vindo(a) ao Makefile da ThundeRatz, cheque as configuracoes"
-	@echo "                atuais e mude o arquivo se necessario             "
+	@echo "   Bem-vindo(a) ao Makefile da ThundeRatz, cheque as configuracoes    "
+	@echo "                atuais e mude o arquivo se necessario                 "
 	@echo
 	@echo "Opcoes:"
 	@echo "	help:         mostra essa ajuda;"
 	@echo "	all:          compila todos os arquivos;"
 	@echo "	flash | load: carrega os arquivos compilados no microcontrolador"
+	@echo "	cube:         generate cube files;"
 	@echo "	prepare:      erases useless cube generated files;"
 	@echo "	reload:       make all && make flash;"
-	@echo "	clean:        limpa o espaço de trabalho"
-	@echo "	clean_all:    limpa o espaço de trabalho incluindo objetos do Cube"
+	@echo "	clean:        limpa os arquivos compilados;"
+	@echo "	clean_all:    limpa os arquivos compilados, inclusive bibliotecas da ST;"
+	@echo "	clean_cube:   limpa os arquivos gerados pelo Cube."
 	@echo
 	@echo "Configuracoes atuais:"
 	@echo "	DEVICE_FAMILY := $(DEVICE_FAMILY)"
@@ -180,4 +196,4 @@ help:
 
 -include $(wildcard $(BUILD_DIR)/*.d)
 
-.PHONY: clean all flash load help reset format clean_all prepare prepare_linux
+.PHONY: clean all flash load help reset format clean_all prepare prepare_linux cube
