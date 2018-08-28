@@ -24,9 +24,9 @@ alguns arquivos de configuração.
 
 * [Visual Studio Code](https://code.visualstudio.com/)
   * [EditorConfig](https://github.com/editorconfig/editorconfig-vscode)
-  <!-- Colocar a de debug aqui quando funcionar -->
 
-<!-- Colocar as coisas de gravar e debugar quando tiver -->
+* [ST-Util](https://github.com/texane/stlink)
+  > É necessário que o executável também esteja no `PATH`
 
 ## Preparando
 ### Projeto
@@ -64,11 +64,26 @@ Para compilar os arquivos rode
 $ make
 ```
 
-> Em breve
+~~só isso mesmo~~
 
 ## Gravando
 
-> Em breve
+Para gravar os arquivos na placa, rode
+```bash
+$ make flash
+```
+
+~~só isso mesmo também~~
+
+## Tasks
+
+No Visual Studio Code, pode pressionar `CTRL`+`SHIFT`+`B` e escolher uma das opções da lista para executar os comandos de compilação e gravação mais rapidamente.
+
+* Clean Project
+* Build Project
+* Rebuild Project
+* Flash Program
+* Build and Flash
 
 ## Debug
 

@@ -1,23 +1,32 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "gnu-debugger",
+            "name": "Debug uC",
+            "type": "cppdbg",
             "request": "launch",
-            "name": "GNU debugger",
-            "program": "${workspaceFolder}/build/main.elf",
-            "toolchain": "/usr/bin",
-            "client": "arm-none-eabi-gdb",
-            "clientArgs": [],
-            "server": "JLinkGDBServer",
-            "serverArgs": [
-                "-device", "STM32F303RE",
-                "-if", "SWD"
+
+            // Change this as needed
+            "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
+
+            "targetArchitecture": "arm",
+            "program": "${workspaceRoot}/build/main.elf",
+            "setupCommands": [
+                {
+                    "text": "file '${workspaceRoot}/build/main.elf'"
+                },
+                {
+                    "text": "target extended-remote localhost:4242"
+                },
+                {
+                    "text": "load ${workspaceRoot}/build/main.elf"
+                }
             ],
-            "serverPort": 2331
+
+            // "preLaunchTask": "Start st-util GDB Server",
+            "launchCompleteCommand": "None",
+            "externalConsole": false,
+            "cwd": "${workspaceRoot}"
         }
     ]
 }

@@ -135,7 +135,11 @@ $(error 'CUBE_PATH not defined')
 endif
 
 cube:
-	@java -jar $(CUBE_PATH)/STM32CubeMX -q .cube
+ifeq ($(OS),Windows_NT)
+	@java -jar "$(CUBE_PATH)\STM32CubeMX.exe" -q .cube
+else
+	@java -jar "$(CUBE_PATH)/STM32CubeMX" -q .cube
+endif
 
 prepare:
 	@echo "Preparing cube files"
@@ -143,15 +147,14 @@ prepare:
 
 flash load:
 	@echo "Flashing $(TARGET).bin"
-	@st-link_cli -c SWD -P $(BUILD_DIR)/$(TARGET).bin 0x08000000 -V
-	@echo "Reseting device"
-	@st-link_cli -Rst
+	@st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
 
-reload: all load
+info:
+	@st-info --probe
 
 reset:
 	@echo "Reseting device"
-	@st-link_cli -Rst
+	@st-flash reset
 
 clean_cube:
 	@echo "Cleaning cube files"
@@ -177,11 +180,12 @@ help:
 	@echo
 	@echo "Opcoes:"
 	@echo "	help:         mostra essa ajuda;"
+	@echo "	cube:         gera arquivos do cube;"
+	@echo "	prepare:      prepara para compilação inicial apagando arquivos do cube;"
 	@echo "	all:          compila todos os arquivos;"
+	@echo "	info:         mostra informações sobre o uC conectado;"
 	@echo "	flash | load: carrega os arquivos compilados no microcontrolador"
-	@echo "	cube:         generate cube files;"
-	@echo "	prepare:      erases useless cube generated files;"
-	@echo "	reload:       make all && make flash;"
+	@echo "	format:       formata os arquivos .c/.h;"
 	@echo "	clean:        limpa os arquivos compilados;"
 	@echo "	clean_all:    limpa os arquivos compilados, inclusive bibliotecas da ST;"
 	@echo "	clean_cube:   limpa os arquivos gerados pelo Cube."
@@ -196,4 +200,4 @@ help:
 
 -include $(wildcard $(BUILD_DIR)/*.d)
 
-.PHONY: clean all flash load help reset format clean_all prepare prepare_linux cube
+.PHONY: clean all flash load help reset format clean_all prepare prepare_linux cube info
