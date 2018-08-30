@@ -16,6 +16,7 @@ alguns arquivos de configuração.
 
 * [GNU Arm Embedded Toolchain](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
   > É necessário que a pasta `bin` dessa instalação esteja no `PATH`
+  > e numa variável de ambiente `ARM_GCC_PATH`
 
 * clang-format
   > Linux: `sudo apt install clang-format`
@@ -23,7 +24,9 @@ alguns arquivos de configuração.
   > Windows: `msys2> pacman -S clang`
 
 * [Visual Studio Code](https://code.visualstudio.com/)
-  * [EditorConfig](https://github.com/editorconfig/editorconfig-vscode)
+  * [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
+  * [gnu-debugger](https://marketplace.visualstudio.com/items?itemName=atomclip.gnu-debugger)
+  * [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
 
 * [ST-Util](https://github.com/texane/stlink)
   > É necessário que o executável também esteja no `PATH`

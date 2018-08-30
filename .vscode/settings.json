@@ -1,4 +1,4 @@
 {
-    "C_Cpp.default.defines": ["STM32F303xE"],
-    "editor.renderWhitespace": "all",
+    "st_device": "STM32F303xE",
+    "C_Cpp.default.defines": ["${config:st_device}"],
 }

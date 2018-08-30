@@ -73,7 +73,7 @@ CFLAGS  := $(FLAGS) $(C_DEFS) $(C_INCLUDES) -Wall -Wextra -fdata-sections -ffunc
 	-std=c11 -MMD -MP
 
 ifeq ($(DEBUG), 1)
-CFLAGS += -g -gdwarf-2
+CFLAGS += -g3
 endif
 
 # Linker Flags

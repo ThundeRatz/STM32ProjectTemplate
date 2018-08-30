@@ -4,8 +4,11 @@
 
 	// List of extensions which should be recommended for users of this workspace.
 	"recommendations": [
-		"EditorConfig.EditorConfig"
-	],
+        "EditorConfig.EditorConfig",
+        "atomclip.gnu-debugger",
+        "ms-vscode.cpptools"
+    ],
+
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": [
 

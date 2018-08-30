@@ -1,0 +1,10 @@
+device STM32F303RE
+si SWD
+speed 4000
+connect
+r
+h
+loadfile build/main.hex
+r
+g
+exit

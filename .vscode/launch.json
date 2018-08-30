@@ -1,22 +1,23 @@
 {
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Debug uC",
             "type": "cppdbg",
             "request": "launch",
 
-            // Change this as needed
-            "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
-
+            "miDebuggerPath": "${env:ARM_GCC_PATH}/arm-none-eabi-gdb",
+            "windows": {
+                "miDebuggerPath": "${env:ARM_GCC_PATH}/arm-none-eabi-gdb.exe",
+            },
             "targetArchitecture": "arm",
             "program": "${workspaceRoot}/build/main.elf",
-            "setupCommands": [
-                {
+            "setupCommands": [{
                     "text": "file '${workspaceRoot}/build/main.elf'"
                 },
                 {
-                    "text": "target extended-remote localhost:4242"
+                    "text": "target extended-remote localhost:2331"
                 },
                 {
                     "text": "load ${workspaceRoot}/build/main.elf"
@@ -27,6 +28,25 @@
             "launchCompleteCommand": "None",
             "externalConsole": false,
             "cwd": "${workspaceRoot}"
+        },
+        {
+            "type": "gnu-debugger",
+            "request": "launch",
+            "name": "GNU debugger",
+            "program": "${workspaceFolder}/build/main.elf",
+            "toolchain": "${env:ARM_GCC_PATH}",
+            "client": "arm-none-eabi-gdb",
+            "server": "JLinkGDBServer",
+            "windows":{
+                "server": "${env:JLINK_PATH}/JLinkGDBServerCL.exe",
+                "client": "arm-none-eabi-gdb.exe",
+            },
+            "serverArgs": [
+                "-device", "${config:st_device}",
+                "-if", "SWD",
+                "-speed", "4000"
+            ],
+            "serverPort": 2331,
         }
     ]
 }
