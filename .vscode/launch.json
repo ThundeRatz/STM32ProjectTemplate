@@ -41,8 +41,10 @@
                 "server": "${env:JLINK_PATH}/JLinkGDBServerCL.exe",
                 "client": "arm-none-eabi-gdb.exe",
             },
+
+            // Change device as needed
             "serverArgs": [
-                "-device", "${config:st_device}",
+                "-device", "STM32F303xE",
                 "-if", "SWD",
                 "-speed", "4000"
             ],

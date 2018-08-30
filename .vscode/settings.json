@@ -1,4 +1,26 @@
 {
-    "st_device": "STM32F303xE",
-    "C_Cpp.default.defines": ["${config:st_device}"],
+    "st_device": "",
+
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.eol": "\n",
+    "files.encoding": "utf8",
+
+    "[c]": {
+        "editor.formatOnSave": true
+    },
+
+    "[makefile]": {
+        "editor.insertSpaces": false,
+    },
+
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false,
+        "files.trimFinalNewlines": false,
+    }
 }

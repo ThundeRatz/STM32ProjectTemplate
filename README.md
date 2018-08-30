@@ -24,7 +24,6 @@ alguns arquivos de configuração.
   > Windows: `msys2> pacman -S clang`
 
 * [Visual Studio Code](https://code.visualstudio.com/)
-  * [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
   * [gnu-debugger](https://marketplace.visualstudio.com/items?itemName=atomclip.gnu-debugger)
   * [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
 

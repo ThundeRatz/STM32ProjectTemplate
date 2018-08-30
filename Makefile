@@ -31,7 +31,7 @@ BUILD_DIR := build
 CUBE_SOURCES := $(wildcard cube/*/*.c) $(wildcard cube/*/*/*/*.c)
 ASM_SOURCES  := $(wildcard cube/*.s)
 
-C_SOURCES    := $(wildcard */*.c)
+C_SOURCES    := $(wildcard src/*.c)
 
 # Executables
 COMPILE := arm-none-eabi-gcc
@@ -47,13 +47,13 @@ C_DEFS  := -DUSE_HAL_DRIVER -D$(DEVICE_DEF)
 
 # Include Paths
 AS_INCLUDES :=
-C_INCLUDES  := \
+C_INCLUDES  :=                                              \
 	-Icube/Drivers/CMSIS/Device/ST/$(DEVICE_FAMILY)/Include \
-	-Icube/Drivers/CMSIS/Include \
-	-Icube/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc \
-	-Icube/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc/Legacy \
-	-Icube/Inc \
-	-Iinc
+	-Icube/Drivers/CMSIS/Include                            \
+	-Icube/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc          \
+	-Icube/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc/Legacy   \
+	-Icube/Inc                                              \
+	-Iinc                                                   \
 
 # Compile Flags
 FLAGS := -mthumb
@@ -70,8 +70,11 @@ $(error Unknown Device Family $(DEVICE_FAMILY))
 endif
 
 ASFLAGS := $(FLAGS) $(AS_DEFS) $(AS_INCLUDES) -Wall -Wextra -fdata-sections -ffunction-sections $(OPT)
-CFLAGS  := $(FLAGS) $(C_DEFS) $(C_INCLUDES) -Wall -Wextra -fdata-sections -ffunction-sections -fmessage-length=0 $(OPT) \
-	-std=c11 -MMD -MP
+CFLAGS  :=                                 \
+	$(FLAGS) $(C_DEFS) $(C_INCLUDES)       \
+	-Wall -Wextra -fdata-sections          \
+	-ffunction-sections -fmessage-length=0 \
+	$(OPT) -std=c11 -MMD -MP               \
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g3
@@ -82,7 +85,10 @@ LDSCRIPT := cube/$(DEVICE_LD)_FLASH.ld
 
 LIBS     := -lc -lm -lnosys
 LIBDIR   :=
-LDFLAGS  := $(FLAGS) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+LDFLAGS  :=                                            \
+	$(FLAGS) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) \
+	$(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref \
+	-Wl,--gc-sections                                  \
 
 # Object Files
 CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
