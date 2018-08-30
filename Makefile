@@ -5,7 +5,8 @@
 
 DEVICE_FAMILY := STM32F3xx
 DEVICE_TYPE   := STM32F303xx
-DEVICE        := STM32F303RETx
+DEVICE        := STM32F303RE
+DEVICE_LD     := STM32F303RETx
 DEVICE_DEF    := STM32F303xE
 
 TARGET = main
@@ -65,7 +66,7 @@ FLAGS += -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 else ifeq ($(DEVICE_FAMILY), $(filter $(DEVICE_FAMILY),STM32F7xx STM32L7xx))
 FLAGS += -mcpu=cortex-m7 -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 else
-$(error Unknown Device $(DEVICE))
+$(error Unknown Device Family $(DEVICE_FAMILY))
 endif
 
 ASFLAGS := $(FLAGS) $(AS_DEFS) $(AS_INCLUDES) -Wall -Wextra -fdata-sections -ffunction-sections $(OPT)
@@ -77,7 +78,7 @@ CFLAGS += -g3
 endif
 
 # Linker Flags
-LDSCRIPT := cube/$(DEVICE)_FLASH.ld
+LDSCRIPT := cube/$(DEVICE_LD)_FLASH.ld
 
 LIBS     := -lc -lm -lnosys
 LIBDIR   :=
@@ -149,6 +150,11 @@ flash load:
 	@echo "Flashing $(TARGET).bin"
 	@st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
 
+jflash:
+	@echo "Flashing $(TARGET).hex with J-Link"
+	@echo "device $(DEVICE)\nsi SWD\nspeed 4000\nconnect\nr\nh\nloadfile $(BUILD_DIR)/$(TARGET).hex\nr\ng\nexit" > .jlink-flash
+	@JLinkExe .jlink-flash
+
 info:
 	@st-info --probe
 
@@ -194,6 +200,7 @@ help:
 	@echo "	DEVICE_FAMILY := $(DEVICE_FAMILY)"
 	@echo "	DEVICE_TYPE   := $(DEVICE_TYPE)"
 	@echo "	DEVICE        := $(DEVICE)"
+	@echo "	DEVICE_LD     := $(DEVICE_LD)"
 	@echo "	DEVICE_DEF    := $(DEVICE_DEF)"
 	@echo "	TARGET = $(TARGET)"
 	@echo "	DEBUG = $(DEBUG)"
