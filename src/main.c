@@ -1,5 +1,5 @@
 /**
- * @file main.h
+ * @file main.c
  *
  * @brief Main function
  */
