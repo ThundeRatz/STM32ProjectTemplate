@@ -4,18 +4,6 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Start st-util GDB Server",
-            "type": "shell",
-            "command": "st-util",
-            "group": "none",
-            "presentation": {
-                "reveal": "always",
-                "panel": "new"
-            },
-            "isBackground": true,
-            "problemMatcher": []
-        },
-        {
             "label": "Build Project",
             "type": "shell",
             "command": "make",

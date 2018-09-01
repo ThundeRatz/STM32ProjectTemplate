@@ -1,7 +1,48 @@
+/**
+ * @file mcu.c
+ *
+ * @brief MCU related
+ */
+
+#include <stdint.h>
+
 #include "mcu.h"
 
+#include "gpio.h"
 #include "main.h"
 #include "stm32f3xx_hal.h"
+
+/*****************************************
+ * Private Function Prototypes
+ *****************************************/
+
+/**
+ * @brief Initializes System Clock.
+ */
+static void SystemClock_Config(void);
+
+/*****************************************
+ * Public Function Body Definitions
+ *****************************************/
+void mcu_init(void) {
+    HAL_Init();
+
+    SystemClock_Config();
+
+    MX_GPIO_Init();
+}
+
+void mcu_sleep(uint32_t ms) {
+    HAL_Delay(ms);
+}
+
+void led_toggle(void) {
+    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+}
+
+/*****************************************
+ * Private Function Body Definitions
+ *****************************************/
 
 // Clock config should be copied from Cube generated
 // main.c before "make prepare" is called

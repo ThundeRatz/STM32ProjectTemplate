@@ -24,16 +24,17 @@ alguns arquivos de configuração.
   > Windows: `msys2> pacman -S clang`
 
 * [Visual Studio Code](https://code.visualstudio.com/)
-  * [gnu-debugger](https://marketplace.visualstudio.com/items?itemName=atomclip.gnu-debugger)
+  * [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
   * [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
 
-* [ST-Util](https://github.com/texane/stlink)
+* [ST-Link](https://github.com/texane/stlink) ou [J-Link](https://www.segger.com/downloads/jlink/)
   > É necessário que o executável também esteja no `PATH`
 
 ## Preparando
 ### Projeto
 
-Primeiro é necessário criar um projeto `board` do Cube na pasta `cube/`, ele deve ter as seguintes opções de projeto:
+Primeiro é necessário criar um projeto `board` do Cube na pasta `cube/`,
+ele deve ter as seguintes opções de projeto:
 
 Project:
 * Project Name: *board*
@@ -48,15 +49,47 @@ Code Generator:
 
 Um arquivo de exemplo se encontra em `cube/board.ioc` com todas as configurações necessárias.
 
-Para projetos existentes, basta mover o arquivo `.ioc` para a pasta `cube/`, mudar o nome para `board.ioc` e conferir se as configurações estão como acima.
+Para projetos existentes, basta mover o arquivo `.ioc` para a pasta `cube/`,
+mudar o nome para `board.ioc` e conferir se as configurações estão como acima.
 
 ### Gerando arquivos
 
-Com o arquivo do projeto na pasta correta, os seguintes comandos devem ser executados (necessário apenas após dar checkout no repositório ou mudar o cube):
-
+Com o arquivo do projeto na pasta correta, os seguintes comandos devem ser 
+executados (necessário apenas após dar checkout no repositório ou mudar o cube):
 ```bash
 $ make cube     # Gera os arquivos do cube
 $ make prepare  # Apaga os arquivos do cube desnecessários
+```
+
+Se, após modificar os arquivos do cube, ocorrer algum erro nos comandos acima,
+pode rodar `make clean_cube` para apagar os arquivos gerados e então tentar 
+novamente para que eles sejam gerados do zero.
+
+### Makefile
+
+As primeiras linhas do Makefile devem ser alteradas de acordo com o projeto:
+
+```Makefile
+DEVICE_FAMILY := STM32F3xx
+DEVICE_TYPE   := STM32F303xx
+DEVICE        := STM32F303RE
+DEVICE_LD     := STM32F303RETx
+DEVICE_DEF    := STM32F303xE
+```
+
+Basta pegar o nome completo do processador e colocar nessas configurações, seguindo o padrão.
+
+> Em caso de dúvida, basta ver o nome do arquivo `.ld` gerado na pasta `cube`,
+> ele contém o nome completo, que deve ir na variável `DEVICE_LD`,
+> para as outras basta substituir por `x`)
+
+Também é necessário mudar o arquivo `.vscode/c_cpp_properties.json` e colocar o
+`DEVICE_DEF` nele, para que o IntelliSense possa encontrar as configurações corretas:
+```json
+"defines": [
+    "STM32F303xE",
+    "USE_HAL_DRIVER"
+],
 ```
 
 ## Compilando
@@ -66,7 +99,19 @@ Para compilar os arquivos rode
 $ make
 ```
 
-~~só isso mesmo~~
+Às vezes, é necessário limpar os arquivos já compilados, se algum erro estiver 
+acontecendo, para isso faça:
+```bash
+make clean
+```
+
+Isso apaga todos os arquivos de compilação gerados, exceto aqueles gerados a partir 
+das bibliotecas da ST geradas pelo Cube, isso ocorre para agilizar um novo build,
+já que raramente será necessário recompilar esses arquivos, mas caso seja necessário,
+é possível limpar todos os arquivos de compilação com
+```bash
+make clean_all
+```
 
 ## Gravando
 
@@ -75,17 +120,21 @@ Para gravar os arquivos na placa, rode
 $ make flash
 ```
 
-~~só isso mesmo também~~
+Ou, caso use um gravador com J-Link:
+```bash
+$ make jflash
+```
 
 ## Tasks
 
-No Visual Studio Code, pode pressionar `CTRL`+`SHIFT`+`B` e escolher uma das opções da lista para executar os comandos de compilação e gravação mais rapidamente.
+No Visual Studio Code, pode pressionar `CTRL`+`SHIFT`+`B` e escolher uma das 
+opções da lista para executar os comandos de compilação e gravação mais rapidamente.
 
-* Clean Project
-* Build Project
-* Rebuild Project
-* Flash Program
-* Build and Flash
+* Clean Project (_make clean_)
+* Build Project (_make_)
+* Rebuild Project (_make clean && make_)
+* Flash Program (_make flash_)
+* Build and Flash (_make && make flash_)
 
 ## Debug
 

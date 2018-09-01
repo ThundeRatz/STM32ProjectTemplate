@@ -23,8 +23,6 @@
                     "text": "load ${workspaceRoot}/build/main.elf"
                 }
             ],
-
-            // "preLaunchTask": "Start st-util GDB Server",
             "launchCompleteCommand": "None",
             "externalConsole": false,
             "cwd": "${workspaceRoot}"
@@ -38,7 +36,7 @@
             "client": "arm-none-eabi-gdb",
             "server": "JLinkGDBServer",
             "windows":{
-                "server": "${env:JLINK_PATH}/JLinkGDBServerCL.exe",
+                "server": "JLinkGDBServerCL.exe",
                 "client": "arm-none-eabi-gdb.exe",
             },
 

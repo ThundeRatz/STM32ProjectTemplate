@@ -99,9 +99,9 @@ vpath %.c $(sort $(dir $(CUBE_SOURCES)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
-###################
-# Build Targets
-###################
+######################################################################
+## Build Targets
+######################################################################
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
@@ -134,13 +134,14 @@ $(BUILD_DIR):
 	@echo "Creating build directory"
 	@mkdir -p $@
 
-######################
-# Auxilirary Targets
-######################
+######################################################################
+## Auxilirary Targets
+######################################################################
 ifndef CUBE_PATH
 $(error 'CUBE_PATH not defined')
 endif
 
+# Generate Cube Files
 cube:
 ifeq ($(OS),Windows_NT)
 	@java -jar "$(CUBE_PATH)\STM32CubeMX.exe" -q .cube
@@ -148,18 +149,26 @@ else
 	@java -jar "$(CUBE_PATH)/STM32CubeMX" -q .cube
 endif
 
+# Prepare for compilation
+# - Erases useless Makefile and duplicate main.c
 prepare:
 	@echo "Preparing cube files"
 	@-rm -f cube/Src/main.c cube/Makefile
 
+# Flashes Built files with st-flash
 flash load:
 	@echo "Flashing $(TARGET).bin"
 	@st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
 
+# Flashes Built files with j-link
 jflash:
 	@echo "Flashing $(TARGET).hex with J-Link"
 	@echo "device $(DEVICE)\nsi SWD\nspeed 4000\nconnect\nr\nh\nloadfile $(BUILD_DIR)/$(TARGET).hex\nr\ng\nexit" > .jlink-flash
+ifeq ($(OS),Windows_NT)
+	@JLink.exe .jlink-flash
+else
 	@JLinkExe .jlink-flash
+endif
 
 info:
 	@st-info --probe
@@ -168,39 +177,46 @@ reset:
 	@echo "Reseting device"
 	@st-flash reset
 
+# Clean cube generated files
 clean_cube:
 	@echo "Cleaning cube files"
 	@-rm -rf cube/Src cube/Inc cube/Drivers cube/.mxproject cube/Makefile cube/*.s cube/*.ld
 
+# Clean build files
+# - Ignores cube-related build files
 clean:
 	@echo "Cleaning build files"
 	@-rm -rf $(OBJECTS) $(OBJECTS:.o=.d) $(OBJECTS:.o=.lst)
 
+# Clean all build files
 clean_all:
 	@echo "Cleaning all build files"
 	@-rm -rf $(BUILD_DIR)
 
+# Format source code
 format:
 	@echo "Formatting files"
 	@clang-format -i $(C_SOURCES) $(wildcard */*.h)
 	@echo "Done"
 
+# Display help
 help:
 	@echo "----------------------- ThunderMakefile ------------------------------"
 	@echo "   Bem-vindo(a) ao Makefile da ThundeRatz, cheque as configuracoes    "
 	@echo "                atuais e mude o arquivo se necessario                 "
 	@echo
 	@echo "Opcoes:"
-	@echo "	help:         mostra essa ajuda;"
-	@echo "	cube:         gera arquivos do cube;"
-	@echo "	prepare:      prepara para compilação inicial apagando arquivos do cube;"
-	@echo "	all:          compila todos os arquivos;"
-	@echo "	info:         mostra informações sobre o uC conectado;"
-	@echo "	flash | load: carrega os arquivos compilados no microcontrolador"
-	@echo "	format:       formata os arquivos .c/.h;"
-	@echo "	clean:        limpa os arquivos compilados;"
-	@echo "	clean_all:    limpa os arquivos compilados, inclusive bibliotecas da ST;"
-	@echo "	clean_cube:   limpa os arquivos gerados pelo Cube."
+	@echo "	help:       mostra essa ajuda;"
+	@echo "	cube:       gera arquivos do cube;"
+	@echo "	prepare:    prepara para compilação inicial apagando arquivos do cube;"
+	@echo "	all:        compila todos os arquivos;"
+	@echo "	info:       mostra informações sobre o uC conectado;"
+	@echo "	flash:      carrega os arquivos compilados no microcontrolador via st-link"
+	@echo "	jflash:     carrega os arquivos compilados no microcontrolador via j-link"
+	@echo "	format:     formata os arquivos .c/.h;"
+	@echo "	clean:      limpa os arquivos compilados;"
+	@echo "	clean_all:  limpa os arquivos compilados, inclusive bibliotecas da ST;"
+	@echo "	clean_cube: limpa os arquivos gerados pelo Cube."
 	@echo
 	@echo "Configuracoes atuais:"
 	@echo "	DEVICE_FAMILY := $(DEVICE_FAMILY)"
@@ -211,6 +227,8 @@ help:
 	@echo "	TARGET = $(TARGET)"
 	@echo "	DEBUG = $(DEBUG)"
 
+# Include dependecy files for .h dependency detection
 -include $(wildcard $(BUILD_DIR)/*.d)
 
-.PHONY: clean all flash load help reset format clean_all prepare prepare_linux cube info
+.PHONY: clean all flash jflash help reset \
+		format clean_all prepare cube info

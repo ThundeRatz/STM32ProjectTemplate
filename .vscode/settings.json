@@ -1,9 +1,7 @@
 {
-    "st_device": "",
-
     "editor.tabSize": 4,
-    "editor.insertSpaces": true,
     "editor.detectIndentation": false,
+    "editor.insertSpaces": true,
 
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
@@ -12,7 +10,7 @@
     "files.encoding": "utf8",
 
     "[c]": {
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
     },
 
     "[makefile]": {

@@ -1,18 +1,24 @@
-#include <stdint.h>
+/**
+ * @file main.h
+ *
+ * @brief Main function
+ */
 
-#include "gpio.h"
-#include "main.h"
 #include "mcu.h"
 
+/*****************************************
+ * Private Constant Definitions
+ *****************************************/
+#define LED_TOGGLE_DELAY_MS 1500
+
+/*****************************************
+ * Main Function
+ *****************************************/
 int main(void) {
-    HAL_Init();
-
-    SystemClock_Config();
-
-    MX_GPIO_Init();
+    mcu_init();
 
     for (;;) {
-        HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-        HAL_Delay(1500);
+        led_toggle();
+        mcu_sleep(LED_TOGGLE_DELAY_MS);
     }
 }
