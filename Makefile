@@ -135,7 +135,7 @@ $(BUILD_DIR):
 	@mkdir -p $@
 
 ######################################################################
-## Auxilirary Targets
+## Auxiliary Targets
 ######################################################################
 ifndef CUBE_PATH
 $(error 'CUBE_PATH not defined')
