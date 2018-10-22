@@ -4,6 +4,6 @@ AccessModifierOffset: '0'
 IndentWidth: '4'
 TabWidth: '4'
 UseTab: Never
-SpaceAfterCStyleCast: true
-ColumnLimit: 100
+SpaceAfterCStyleCast: 'true'
+ColumnLimit: '120'
 ...

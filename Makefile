@@ -11,11 +11,19 @@ DEVICE_DEF    := STM32F303xE
 
 TARGET = main
 
-DEBUG = 1
+DEBUG   ?= 1
+VERBOSE ?= 0
 
 ######################################################################
 
 # Tune the lines below only if you know what you are doing:
+
+# Verbosity
+ifeq ($(VERBOSE), 0)
+AT := @
+else
+AT :=
+endif
 
 # Optmization
 ifeq ($(DEBUG), 1)
@@ -34,7 +42,7 @@ ASM_SOURCES  := $(wildcard cube/*.s)
 C_SOURCES    := $(wildcard src/*.c)
 
 # Executables
-COMPILE := arm-none-eabi-gcc
+CC      := arm-none-eabi-gcc
 OBJCOPY := arm-none-eabi-objcopy
 SIZE    := arm-none-eabi-size
 GDB     := arm-none-eabi-gdb
@@ -102,33 +110,29 @@ vpath %.s $(sort $(dir $(ASM_SOURCES)))
 ######################################################################
 ## Build Targets
 ######################################################################
+
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
-	@echo "Compiling $<"
-	$(COMPILE) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
-	@echo
+	@echo "CC $<"
+	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
-	@echo "Compiling $<"
-	@$(COMPILE) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
-	@echo
+	@echo "CC $<"
+	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) $(CUBE_OBJECTS) Makefile
-	@echo "Compiling $@"
-	@$(COMPILE) $(OBJECTS) $(CUBE_OBJECTS) $(LDFLAGS) -o $@
+	@echo "CC $@"
+	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(LDFLAGS) -o $@
 	@$(SIZE) $@
-	@echo
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	@echo "Creating $@"
-	@$(HEX) $< $@
-	@echo
+	$(AT)$(HEX) $< $@
 
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	@echo "Creating $@"
-	@$(BIN) $< $@
-	@echo
+	$(AT)$(BIN) $< $@
 
 $(BUILD_DIR):
 	@echo "Creating build directory"
@@ -137,6 +141,7 @@ $(BUILD_DIR):
 ######################################################################
 ## Auxiliary Targets
 ######################################################################
+
 ifndef CUBE_PATH
 $(error 'CUBE_PATH not defined')
 endif
@@ -183,7 +188,7 @@ clean_cube:
 	@-rm -rf cube/Src cube/Inc cube/Drivers cube/.mxproject cube/Makefile cube/*.s cube/*.ld
 
 # Clean build files
-# - Ignores cube-related build files
+# - Ignores cube-related build files (ST and CMSIS libraries)
 clean:
 	@echo "Cleaning build files"
 	@-rm -rf $(OBJECTS) $(OBJECTS:.o=.d) $(OBJECTS:.o=.lst)
