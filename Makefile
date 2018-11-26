@@ -155,9 +155,10 @@ else
 endif
 
 # Prepare for compilation
-# - Erases useless Makefile and duplicate main.c
+# - Erases useless Makefile and renames cube's main.c
 prepare:
 	@echo "Preparing cube files"
+	@-mv -f cube/Src/main.c cube/Src/cube_main.c
 	@-rm -f cube/Src/main.c cube/Makefile
 
 # Flashes Built files with st-flash
