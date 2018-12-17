@@ -157,6 +157,8 @@ endif
 # Prepare for compilation
 # - Erases useless Makefile and renames cube's main.c
 prepare:
+	@echo "Linking githooks"
+	@git config core.hooksPath .githooks
 	@echo "Preparing cube files"
 	@-mv -f cube/Src/main.c cube/Src/cube_main.c
 	@-rm -f cube/Src/main.c cube/Makefile
