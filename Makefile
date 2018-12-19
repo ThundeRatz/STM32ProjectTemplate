@@ -154,8 +154,8 @@ else
 	@java -jar "$(CUBE_PATH)/STM32CubeMX" -q .cube
 endif
 
-# Prepare for compilation
-# - Erases useless Makefile and renames cube's main.c
+# Prepare workspace
+# - Erases useless Makefile, renames cube's main.c and links githooks
 prepare:
 	@echo "Linking githooks"
 	@git config core.hooksPath .githooks
@@ -163,12 +163,12 @@ prepare:
 	@-mv -f cube/Src/main.c cube/Src/cube_main.c
 	@-rm -f cube/Src/main.c cube/Makefile
 
-# Flashes Built files with st-flash
+# Flash Built files with st-flash
 flash load:
 	@echo "Flashing $(TARGET).bin"
 	@st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
 
-# Flashes Built files with j-link
+# Flash Built files with j-link
 jflash:
 	@echo "Flashing $(TARGET).hex with J-Link"
 	@echo "device $(DEVICE)\nsi SWD\nspeed 4000\nconnect\nr\nh\nloadfile $(BUILD_DIR)/$(TARGET).hex\nr\ng\nexit" > .jlink-flash
