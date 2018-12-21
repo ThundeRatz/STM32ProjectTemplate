@@ -171,7 +171,16 @@ flash load:
 # Flash Built files with j-link
 jflash:
 	@echo "Flashing $(TARGET).hex with J-Link"
-	@echo "device $(DEVICE)\nsi SWD\nspeed 4000\nconnect\nr\nh\nloadfile $(BUILD_DIR)/$(TARGET).hex\nr\ng\nexit" > .jlink-flash
+	@echo device $(DEVICE) > .jlink-flash
+	@echo si SWD >> .jlink-flash
+	@echo speed 4000 >> .jlink-flash
+	@echo connect >> .jlink-flash
+	@echo r >> .jlink-flash
+	@echo h >> .jlink-flash
+	@echo loadfile $(BUILD_DIR)/$(TARGET).hex >> .jlink-flash
+	@echo r >> .jlink-flash
+	@echo g >> .jlink-flash
+	@echo exit >> .jlink-flash
 ifeq ($(OS),Windows_NT)
 	@JLink.exe .jlink-flash
 else
