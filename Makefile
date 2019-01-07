@@ -168,24 +168,29 @@ flash load:
 	@echo "Flashing $(TARGET).bin"
 	@st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
 
+# Create J-Link flash script
+.jlink-flash: Makefile
+	@echo "Creating J-Link flash script"
+	@echo device $(DEVICE) > $@
+	@echo si SWD >> $@
+	@echo speed 4000 >> $@
+	@echo connect >> $@
+	@echo r >> $@
+	@echo h >> $@
+	@echo loadfile $(BUILD_DIR)/$(TARGET).hex >> $@
+	@echo r >> $@
+	@echo g >> $@
+	@echo exit >> $@
+
 # Flash Built files with j-link
-jflash:
+jflash: .jlink-flash
 	@echo "Flashing $(TARGET).hex with J-Link"
-	@echo device $(DEVICE) > .jlink-flash
-	@echo si SWD >> .jlink-flash
-	@echo speed 4000 >> .jlink-flash
-	@echo connect >> .jlink-flash
-	@echo r >> .jlink-flash
-	@echo h >> .jlink-flash
-	@echo loadfile $(BUILD_DIR)/$(TARGET).hex >> .jlink-flash
-	@echo r >> .jlink-flash
-	@echo g >> .jlink-flash
-	@echo exit >> .jlink-flash
 ifeq ($(OS),Windows_NT)
-	@JLink.exe .jlink-flash
+	@JLink.exe $<
 else
-	@JLinkExe .jlink-flash
+	@JLinkExe $<
 endif
+
 
 info:
 	@st-info --probe
