@@ -161,7 +161,7 @@ prepare:
 	@git config core.hooksPath .githooks
 	@echo "Preparing cube files"
 	@-mv -f cube/Src/main.c cube/Src/cube_main.c
-	@-rm -f cube/Src/main.c cube/Makefile
+	@-rm -f cube/Makefile
 
 # Flash Built files with st-flash
 flash load:
