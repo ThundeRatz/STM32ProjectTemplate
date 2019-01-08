@@ -161,22 +161,36 @@ prepare:
 	@git config core.hooksPath .githooks
 	@echo "Preparing cube files"
 	@-mv -f cube/Src/main.c cube/Src/cube_main.c
-	@-rm -f cube/Src/main.c cube/Makefile
+	@-rm -f cube/Makefile
 
 # Flash Built files with st-flash
 flash load:
 	@echo "Flashing $(TARGET).bin"
 	@st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
 
+# Create J-Link flash script
+.jlink-flash: Makefile
+	@echo "Creating J-Link flash script"
+	@echo device $(DEVICE) > $@
+	@echo si SWD >> $@
+	@echo speed 4000 >> $@
+	@echo connect >> $@
+	@echo r >> $@
+	@echo h >> $@
+	@echo loadfile $(BUILD_DIR)/$(TARGET).hex >> $@
+	@echo r >> $@
+	@echo g >> $@
+	@echo exit >> $@
+
 # Flash Built files with j-link
-jflash:
+jflash: .jlink-flash
 	@echo "Flashing $(TARGET).hex with J-Link"
-	@echo "device $(DEVICE)\nsi SWD\nspeed 4000\nconnect\nr\nh\nloadfile $(BUILD_DIR)/$(TARGET).hex\nr\ng\nexit" > .jlink-flash
 ifeq ($(OS),Windows_NT)
-	@JLink.exe .jlink-flash
+	@JLink.exe $<
 else
-	@JLinkExe .jlink-flash
+	@JLinkExe $<
 endif
+
 
 info:
 	@st-info --probe
