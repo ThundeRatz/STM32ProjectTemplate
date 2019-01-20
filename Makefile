@@ -9,8 +9,12 @@ DEVICE        := STM32F303RE
 DEVICE_LD     := STM32F303RETx
 DEVICE_DEF    := STM32F303xE
 
+SUBMODULE_DIR := lib
+SUBMODULES    := STMSensors/LSM6DS3 STMSensors/VL53L0X
+
 TARGET = main
 
+# Default values, can be set on the command line or here
 DEBUG   ?= 1
 VERBOSE ?= 0
 
@@ -32,14 +36,19 @@ else
 OPT := -Os
 endif
 
+# Cube Directory
+CUBE_DIR := cube
+
 # Build Directory
 BUILD_DIR := build
 
 # Source Files
-CUBE_SOURCES := $(wildcard cube/*/*.c) $(wildcard cube/*/*/*/*.c)
-ASM_SOURCES  := $(wildcard cube/*.s)
+CUBE_SOURCES := $(wildcard $(CUBE_DIR)/*/*.c) $(wildcard $(CUBE_DIR)/*/*/*/*.c)
+ASM_SOURCES  := $(wildcard $(CUBE_DIR)/*.s)
 
 C_SOURCES    := $(wildcard src/*.c)
+
+SUBM_SOURCES := $(foreach sm,$(SUBMODULES),$(wildcard $(SUBMODULE_DIR)/$(sm)/*.c))
 
 # Executables
 CC      := arm-none-eabi-gcc
@@ -51,17 +60,20 @@ BIN     := $(OBJCOPY) -O binary -S
 
 # Defines
 AS_DEFS :=
-C_DEFS  := -DUSE_HAL_DRIVER -D$(DEVICE_DEF)
+C_DEFS  :=            \
+	-DUSE_HAL_DRIVER  \
+	-D$(DEVICE_DEF)   \
 
 # Include Paths
 AS_INCLUDES :=
-C_INCLUDES  :=                                              \
-	-Icube/Drivers/CMSIS/Device/ST/$(DEVICE_FAMILY)/Include \
-	-Icube/Drivers/CMSIS/Include                            \
-	-Icube/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc          \
-	-Icube/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc/Legacy   \
-	-Icube/Inc                                              \
-	-Iinc                                                   \
+C_INCLUDES  :=                                                      \
+	-I$(CUBE_DIR)/Drivers/CMSIS/Device/ST/$(DEVICE_FAMILY)/Include  \
+	-I$(CUBE_DIR)/Drivers/CMSIS/Include                             \
+	-I$(CUBE_DIR)/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc           \
+	-I$(CUBE_DIR)/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc/Legacy    \
+	-I$(CUBE_DIR)/Inc                                               \
+	-Iinc                                                           \
+	$(foreach sm,$(SUBMODULES),-I$(SUBMODULE_DIR)/$(sm))            \
 
 # Compile Flags
 FLAGS := -mthumb
@@ -78,32 +90,34 @@ $(error Unknown Device Family $(DEVICE_FAMILY))
 endif
 
 ASFLAGS := $(FLAGS) $(AS_DEFS) $(AS_INCLUDES) -Wall -Wextra -fdata-sections -ffunction-sections $(OPT)
-CFLAGS  :=                                 \
-	$(FLAGS) $(C_DEFS) $(C_INCLUDES)       \
-	-Wall -Wextra -fdata-sections          \
-	-ffunction-sections -fmessage-length=0 \
-	$(OPT) -std=c11 -MMD -MP               \
+CFLAGS  :=                                  \
+	$(FLAGS) $(C_DEFS) $(C_INCLUDES)        \
+	-Wall -Wextra -fdata-sections           \
+	-ffunction-sections -fmessage-length=0  \
+	$(OPT) -std=c11 -MMD -MP                \
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g3
 endif
 
 # Linker Flags
-LDSCRIPT := cube/$(DEVICE_LD)_FLASH.ld
+LDSCRIPT := $(CUBE_DIR)/$(DEVICE_LD)_FLASH.ld
 
 LIBS     := -lc -lm -lnosys
 LIBDIR   :=
-LDFLAGS  :=                                            \
-	$(FLAGS) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) \
-	$(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref \
-	-Wl,--gc-sections                                  \
+LDFLAGS  :=                                             \
+	$(FLAGS) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR)  \
+	$(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref  \
+	-Wl,--gc-sections                                   \
 
 # Object Files
 CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
 CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
+SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(SUBM_SOURCES:.c=.o)))
 OBJECTS      := $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 
 vpath %.c $(sort $(dir $(CUBE_SOURCES)))
+vpath %.c $(sort $(dir $(SUBM_SOURCES)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
@@ -121,9 +135,9 @@ $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
 
-$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) $(CUBE_OBJECTS) Makefile
+$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) Makefile
 	@echo "CC $@"
-	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(LDFLAGS) -o $@
+	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) $(LDFLAGS) -o $@
 	@$(SIZE) $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
@@ -158,15 +172,15 @@ endif
 # - Erases useless Makefile, renames cube's main.c and links githooks
 prepare:
 	@echo "Linking githooks"
-	@git config core.hooksPath .githooks
+	$(AT)git config core.hooksPath .githooks
 	@echo "Preparing cube files"
-	@-mv -f cube/Src/main.c cube/Src/cube_main.c
-	@-rm -f cube/Makefile
+	$(AT)-mv -f $(CUBE_DIR)/Src/main.c $(CUBE_DIR)/Src/cube_main.c
+	$(AT)-rm -f $(CUBE_DIR)/Makefile
 
 # Flash Built files with st-flash
 flash load:
 	@echo "Flashing $(TARGET).bin"
-	@st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
+	$(AT)st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
 
 # Create J-Link flash script
 .jlink-flash: Makefile
@@ -186,39 +200,38 @@ flash load:
 jflash: .jlink-flash
 	@echo "Flashing $(TARGET).hex with J-Link"
 ifeq ($(OS),Windows_NT)
-	@JLink.exe $<
+	$(AT)JLink.exe $<
 else
-	@JLinkExe $<
+	$(AT)JLinkExe $<
 endif
-
 
 info:
 	@st-info --probe
 
 reset:
 	@echo "Reseting device"
-	@st-flash reset
+	$(AT)st-flash reset
 
 # Clean cube generated files
 clean_cube:
 	@echo "Cleaning cube files"
-	@-rm -rf cube/Src cube/Inc cube/Drivers cube/.mxproject cube/Makefile cube/*.s cube/*.ld
+	$(AT)-rm -rf $(CUBE_DIR)/Src $(CUBE_DIR)/Inc $(CUBE_DIR)/Drivers $(CUBE_DIR)/.mxproject $(CUBE_DIR)/Makefile $(CUBE_DIR)/*.s $(CUBE_DIR)/*.ld
 
 # Clean build files
 # - Ignores cube-related build files (ST and CMSIS libraries)
 clean:
 	@echo "Cleaning build files"
-	@-rm -rf $(OBJECTS) $(OBJECTS:.o=.d) $(OBJECTS:.o=.lst)
+	$(AT)-rm -rf $(OBJECTS) $(OBJECTS:.o=.d) $(OBJECTS:.o=.lst)
 
 # Clean all build files
 clean_all:
 	@echo "Cleaning all build files"
-	@-rm -rf $(BUILD_DIR)
+	$(AT)-rm -rf $(BUILD_DIR)
 
 # Format source code
 format:
 	@echo "Formatting files"
-	@clang-format -i $(C_SOURCES) $(wildcard */*.h)
+	$(AT)clang-format -i $(C_SOURCES) $(wildcard */*.h)
 	@echo "Done"
 
 # Display help
@@ -241,13 +254,11 @@ help:
 	@echo "	clean_cube: limpa os arquivos gerados pelo Cube."
 	@echo
 	@echo "Configuracoes atuais:"
-	@echo "	DEVICE_FAMILY := $(DEVICE_FAMILY)"
-	@echo "	DEVICE_TYPE   := $(DEVICE_TYPE)"
-	@echo "	DEVICE        := $(DEVICE)"
-	@echo "	DEVICE_LD     := $(DEVICE_LD)"
-	@echo "	DEVICE_DEF    := $(DEVICE_DEF)"
-	@echo "	TARGET = $(TARGET)"
-	@echo "	DEBUG = $(DEBUG)"
+	@echo "	DEVICE_FAMILY := "$(DEVICE_FAMILY)
+	@echo "	DEVICE_TYPE   := "$(DEVICE_TYPE)
+	@echo "	DEVICE        := "$(DEVICE)
+	@echo "	DEVICE_LD     := "$(DEVICE_LD)
+	@echo "	DEVICE_DEF    := "$(DEVICE_DEF)
 
 # Include dependecy files for .h dependency detection
 -include $(wildcard $(BUILD_DIR)/*.d)
