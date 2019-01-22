@@ -180,11 +180,7 @@ prepare:
 # Flash Built files with STM32_Programmer
 flash load:
 	@echo "Flashing $(TARGET).bin with STM32_Programmer_CLI"
-ifeq ($(OS), Windows_NT)
 	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(TARGET).bin 0x08000000 -v -rst
-else
-	$(AT)STM32_Programmer.sh -c port=SWD -w $(BUILD_DIR)/$(TARGET).bin 0x08000000 -v -rst
-endif
 
 # Create J-Link flash script
 .jlink-flash: Makefile
@@ -211,20 +207,12 @@ endif
 
 # Show MCU info
 info:
-ifeq ($(OS), Windows_NT)
 	$(AT)STM32_Programmer_CLI -c port=SWD
-else
-	$(AT)STM32_Programmer.sh -c port=SWD
-endif
 
 # Reset MCU
 reset:
 	@echo "Reseting device"
-ifeq ($(OS), Windows_NT)
 	$(AT)STM32_Programmer_CLI -c port=SWD -rst
-else
-	$(AT)STM32_Programmer.sh -c port=SWD -rst
-endif
 
 # Clean cube generated files
 clean_cube:
