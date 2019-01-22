@@ -27,7 +27,7 @@ alguns arquivos de configuração.
   * [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
   * [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
 
-* [ST-Link](https://github.com/texane/stlink) ou [J-Link](https://www.segger.com/downloads/jlink/)
+* [STM32 Cube Programmer](https://www.st.com/en/development-tools/stm32cubeprog.html) ou [J-Link](https://www.segger.com/downloads/jlink/)
   > É necessário que o executável também esteja no `PATH`
 
 ## Preparando
