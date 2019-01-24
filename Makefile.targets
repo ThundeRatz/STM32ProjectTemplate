@@ -13,13 +13,13 @@ all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET
 
 # All .o file depend on the .c file with same name
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
-    @echo "CC $<"
+	@echo "CC $<"
 	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) \
-        -MF"$(@:.o=.d)" $< -o $@
+		-MF"$(@:.o=.d)" $< -o $@
 
 # All .o file depend on the .o file with same name
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
-    @echo "CC $<"
+	@echo "CC $<"
 	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
 
 # The final .elf file depends on all objects files of the project
@@ -68,7 +68,7 @@ prepare:
 flash load:
 	@echo "Flashing $(TARGET).bin with STM32_Programmer_CLI"
 	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(TARGET).bin \
-        0x08000000 -v -rst
+		0x08000000 -v -rst
 
 # Create J-Link flash script
 .jlink-flash: Makefile
@@ -102,8 +102,8 @@ reset:
 clean_cube:
 	@echo "Cleaning cube files"
 	$(AT)-rm -rf $(CUBE_DIR)/Src $(CUBE_DIR)/Inc $(CUBE_DIR)/Drivers \
-        $(CUBE_DIR)/.mxproject $(CUBE_DIR)/Makefile $(CUBE_DIR)/*.s \
-        $(CUBE_DIR)/*.ld
+		$(CUBE_DIR)/.mxproject $(CUBE_DIR)/Makefile $(CUBE_DIR)/*.s \
+		$(CUBE_DIR)/*.ld
 
 # Clean build files
 # - Ignores cube-related build files (ST and CMSIS libraries)

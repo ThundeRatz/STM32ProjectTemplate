@@ -13,16 +13,16 @@
 
 # Verbosity
 ifeq ($(VERBOSE), 0)
-    AT := @
+	AT := @
 else
-    AT :=
+	AT :=
 endif
 
 # Optmization
 ifeq ($(DEBUG), 1)
-    OPT := -Og
+	OPT := -Og
 else
-    OPT := -Os
+	OPT := -Os
 endif
 
 ######################################################################
@@ -31,10 +31,10 @@ endif
 
 ifeq ($(OS),Windows_NT)
 	CUBE_JAR  := "$(CUBE_PATH)\STM32CubeMX.exe"
-    JLINK_EXE := JLink.exe
+	JLINK_EXE := JLink.exe
 else
 	CUBE_JAR := "$(CUBE_PATH)/STM32CubeMX"
-    JLINK_EXE := JLinkExe
+	JLINK_EXE := JLinkExe
 endif
 
 ######################################################################
@@ -112,8 +112,8 @@ endif
 
 # General flags
 ASFLAGS := $(FLAGS) $(AS_DEFS) $(AS_INCLUDES) \
-    -Wall -Wextra -fdata-sections             \
-    -ffunction-sections $(OPT)                \
+	-Wall -Wextra -fdata-sections             \
+	-ffunction-sections $(OPT)                \
 
 CFLAGS  :=                                    \
 	$(FLAGS) $(C_DEFS) $(C_INCLUDES)          \
