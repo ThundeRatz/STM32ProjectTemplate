@@ -3,6 +3,11 @@
 # ThundeRatz Robotics Team
 # 08/2018
 
+# Modify this values according to the project
+
+# This variables tell the compiler which settings use according to
+# the respective device
+
 DEVICE_FAMILY := STM32F3xx
 DEVICE_TYPE   := STM32F303xx
 DEVICE        := STM32F303RE
@@ -18,6 +23,12 @@ TARGET = main
 DEBUG   ?= 1
 VERBOSE ?= 0
 
+# 	If DEBUG=0 ...
+# 	If VERBOSE=1 all comands shall be displayed along the
+# Makefile messages. Otherwise, command calls will be hidden
+
+######################################################################
+## Output configuration
 ######################################################################
 
 # Tune the lines below only if you know what you are doing:
@@ -47,6 +58,11 @@ else
 	CUBE_JAR := "$(CUBE_PATH)/STM32CubeMX"
     JLINK_EXE := JLinkExe
 endif
+
+######################################################################
+## Input files
+######################################################################
+
 # Cube Directory
 CUBE_DIR := cube
 
@@ -138,28 +154,34 @@ vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
+# All .o file depend on the .c file with same name
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) \
 		-MF"$(@:.o=.d)" $< -o $@
 
+# All .o file depend on the .o file with same name
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
 
+# The final .elf file depends on all objects files of the project
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) Makefile
 	@echo "CC $@"
 	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) $(LDFLAGS) -o $@
 	@$(SIZE) $@
 
+# The final .hex file depends on the .elf file
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	@echo "Creating $@"
 	$(AT)$(HEX) $< $@
 
+# The final .bin file depends on the .elf file
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	@echo "Creating $@"
 	$(AT)$(BIN) $< $@
 
+# To keep things organized, all
 $(BUILD_DIR):
 	@echo "Creating build directory"
 	@mkdir -p $@
