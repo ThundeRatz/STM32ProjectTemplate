@@ -36,6 +36,17 @@ else
 OPT := -Os
 endif
 
+######################################################################
+## OS dependent commands
+######################################################################
+
+ifeq ($(OS),Windows_NT)
+	CUBE_JAR  := "$(CUBE_PATH)\STM32CubeMX.exe"
+    JLINK_EXE := JLink.exe
+else
+	CUBE_JAR := "$(CUBE_PATH)/STM32CubeMX"
+    JLINK_EXE := JLinkExe
+endif
 # Cube Directory
 CUBE_DIR := cube
 
@@ -129,7 +140,8 @@ all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
-	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
+	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) \
+		-MF"$(@:.o=.d)" $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "CC $<"
@@ -162,11 +174,7 @@ endif
 
 # Generate Cube Files
 cube:
-ifeq ($(OS),Windows_NT)
-	@java -jar "$(CUBE_PATH)\STM32CubeMX.exe" -q .cube
-else
-	@java -jar "$(CUBE_PATH)/STM32CubeMX" -q .cube
-endif
+	$(AT)java -jar $(CUBE_JAR) -q .cube
 
 # Prepare workspace
 # - Erases useless Makefile, renames cube's main.c and links githooks
@@ -180,7 +188,8 @@ prepare:
 # Flash Built files with STM32_Programmer
 flash load:
 	@echo "Flashing $(TARGET).bin with STM32_Programmer_CLI"
-	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(TARGET).bin 0x08000000 -v -rst
+	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(TARGET).bin \
+		0x08000000 -v -rst
 
 # Create J-Link flash script
 .jlink-flash: Makefile
@@ -199,11 +208,7 @@ flash load:
 # Flash Built files with j-link
 jflash: .jlink-flash
 	@echo "Flashing $(TARGET).hex with J-Link"
-ifeq ($(OS),Windows_NT)
-	$(AT)JLink.exe $<
-else
-	$(AT)JLinkExe $<
-endif
+	$(AT)$(JLINK_EXE) $<
 
 # Show MCU info
 info:
@@ -217,7 +222,9 @@ reset:
 # Clean cube generated files
 clean_cube:
 	@echo "Cleaning cube files"
-	$(AT)-rm -rf $(CUBE_DIR)/Src $(CUBE_DIR)/Inc $(CUBE_DIR)/Drivers $(CUBE_DIR)/.mxproject $(CUBE_DIR)/Makefile $(CUBE_DIR)/*.s $(CUBE_DIR)/*.ld
+	$(AT)-rm -rf $(CUBE_DIR)/Src $(CUBE_DIR)/Inc $(CUBE_DIR)/Drivers \
+		$(CUBE_DIR)/.mxproject $(CUBE_DIR)/Makefile $(CUBE_DIR)/*.s \
+		$(CUBE_DIR)/*.ld
 
 # Clean build files
 # - Ignores cube-related build files (ST and CMSIS libraries)
@@ -243,17 +250,17 @@ help:
 	@echo "                atuais e mude o arquivo se necessario                 "
 	@echo
 	@echo "Opcoes:"
-	@echo "	help:       mostra essa ajuda;"
-	@echo "	cube:       gera arquivos do cube;"
-	@echo "	prepare:    prepara para compilação inicial apagando arquivos do cube;"
-	@echo "	all:        compila todos os arquivos;"
-	@echo "	info:       mostra informações sobre o uC conectado;"
+	@echo "	help:       mostra essa ajuda"
+	@echo "	cube:       gera arquivos do cube"
+	@echo "	prepare:    prepara para compilação inicial apagando arquivos do cube"
+	@echo "	all:        compila todos os arquivos"
+	@echo "	info:       mostra informações sobre o uC conectado"
 	@echo "	flash:      carrega os arquivos compilados no microcontrolador via st-link"
 	@echo "	jflash:     carrega os arquivos compilados no microcontrolador via j-link"
-	@echo "	format:     formata os arquivos .c/.h;"
-	@echo "	clean:      limpa os arquivos compilados;"
-	@echo "	clean_all:  limpa os arquivos compilados, inclusive bibliotecas da ST;"
-	@echo "	clean_cube: limpa os arquivos gerados pelo Cube."
+	@echo "	format:     formata os arquivos .c/.h"
+	@echo "	clean:      limpa os arquivos compilados"
+	@echo "	clean_all:  limpa os arquivos compilados, inclusive bibliotecas da ST"
+	@echo "	clean_cube: limpa os arquivos gerados pelo Cube"
 	@echo
 	@echo "Configuracoes atuais:"
 	@echo "	DEVICE_FAMILY := "$(DEVICE_FAMILY)
