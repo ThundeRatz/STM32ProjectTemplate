@@ -31,20 +31,18 @@ VERBOSE ?= 0
 ## Output configuration
 ######################################################################
 
-# Tune the lines below only if you know what you are doing:
-
 # Verbosity
 ifeq ($(VERBOSE), 0)
-AT := @
+    AT := @
 else
-AT :=
+    AT :=
 endif
 
 # Optmization
 ifeq ($(DEBUG), 1)
-OPT := -Og
+    OPT := -Og
 else
-OPT := -Os
+    OPT := -Os
 endif
 
 ######################################################################
@@ -77,6 +75,32 @@ C_SOURCES    := $(wildcard src/*.c)
 
 SUBM_SOURCES := $(foreach sm,$(SUBMODULES),$(wildcard $(SUBMODULE_DIR)/$(sm)/*.c))
 
+# Include Paths
+AS_INCLUDES :=
+C_INCLUDES  :=                                                      \
+	-I$(CUBE_DIR)/Drivers/CMSIS/Device/ST/$(DEVICE_FAMILY)/Include  \
+	-I$(CUBE_DIR)/Drivers/CMSIS/Include                             \
+	-I$(CUBE_DIR)/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc           \
+	-I$(CUBE_DIR)/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc/Legacy    \
+	-I$(CUBE_DIR)/Inc                                               \
+	-Iinc                                                           \
+	$(foreach sm,$(SUBMODULES),-I$(SUBMODULE_DIR)/$(sm))            \
+
+# Object Files
+CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
+CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
+SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(SUBM_SOURCES:.c=.o)))
+OBJECTS      := $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
+
+vpath %.c $(sort $(dir $(CUBE_SOURCES)))
+vpath %.c $(sort $(dir $(SUBM_SOURCES)))
+vpath %.c $(sort $(dir $(C_SOURCES)))
+vpath %.s $(sort $(dir $(ASM_SOURCES)))
+
+######################################################################
+## Compiler settings
+######################################################################
+
 # Executables
 CC      := arm-none-eabi-gcc
 OBJCOPY := arm-none-eabi-objcopy
@@ -91,18 +115,7 @@ C_DEFS  :=            \
 	-DUSE_HAL_DRIVER  \
 	-D$(DEVICE_DEF)   \
 
-# Include Paths
-AS_INCLUDES :=
-C_INCLUDES  :=                                                      \
-	-I$(CUBE_DIR)/Drivers/CMSIS/Device/ST/$(DEVICE_FAMILY)/Include  \
-	-I$(CUBE_DIR)/Drivers/CMSIS/Include                             \
-	-I$(CUBE_DIR)/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc           \
-	-I$(CUBE_DIR)/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc/Legacy    \
-	-I$(CUBE_DIR)/Inc                                               \
-	-Iinc                                                           \
-	$(foreach sm,$(SUBMODULES),-I$(SUBMODULE_DIR)/$(sm))            \
-
-# Compile Flags
+# Device specific flags
 FLAGS := -mthumb
 ifeq ($(DEVICE_FAMILY), $(filter $(DEVICE_FAMILY),STM32F0xx STM32L0xx))
 FLAGS += -mcpu=cortex-m0
@@ -116,12 +129,16 @@ else
 $(error Unknown Device Family $(DEVICE_FAMILY))
 endif
 
-ASFLAGS := $(FLAGS) $(AS_DEFS) $(AS_INCLUDES) -Wall -Wextra -fdata-sections -ffunction-sections $(OPT)
-CFLAGS  :=                                  \
-	$(FLAGS) $(C_DEFS) $(C_INCLUDES)        \
-	-Wall -Wextra -fdata-sections           \
-	-ffunction-sections -fmessage-length=0  \
-	$(OPT) -std=c11 -MMD -MP                \
+# General flags
+ASFLAGS := $(FLAGS) $(AS_DEFS) $(AS_INCLUDES) \
+    -Wall -Wextra -fdata-sections             \
+    -ffunction-sections $(OPT)                \
+
+CFLAGS  :=                                    \
+	$(FLAGS) $(C_DEFS) $(C_INCLUDES)          \
+	-Wall -Wextra -fdata-sections             \
+	-ffunction-sections -fmessage-length=0    \
+	$(OPT) -std=c11 -MMD -MP                  \
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g3
@@ -136,17 +153,6 @@ LDFLAGS  :=                                             \
 	$(FLAGS) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR)  \
 	$(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref  \
 	-Wl,--gc-sections                                   \
-
-# Object Files
-CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
-CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
-SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(SUBM_SOURCES:.c=.o)))
-OBJECTS      := $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
-
-vpath %.c $(sort $(dir $(CUBE_SOURCES)))
-vpath %.c $(sort $(dir $(SUBM_SOURCES)))
-vpath %.c $(sort $(dir $(C_SOURCES)))
-vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
 ######################################################################
 ## Build Targets
