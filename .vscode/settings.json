@@ -20,5 +20,9 @@
     "[markdown]": {
         "files.trimTrailingWhitespace": false,
         "files.trimFinalNewlines": false,
+    },
+    "files.associations": {
+        "*.targets": "makefile",
+        "*.include": "makefile"
     }
 }

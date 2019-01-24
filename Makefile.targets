@@ -1,0 +1,155 @@
+# Name: Makefile_target_STM
+# Author: Daniel Nery Silva de Oliveira
+# ThundeRatz Robotics Team
+# 01/2019
+
+#   In this file, the make targets are defined
+
+######################################################################
+## Build Targets
+######################################################################
+
+all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+
+# All .o file depend on the .c file with same name
+$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
+    @echo "CC $<"
+	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) \
+        -MF"$(@:.o=.d)" $< -o $@
+
+# All .o file depend on the .o file with same name
+$(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
+    @echo "CC $<"
+	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
+
+# The final .elf file depends on all objects files of the project
+$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) Makefile
+	@echo "CC $@"
+	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) $(LDFLAGS) -o $@
+	@$(SIZE) $@
+
+# The final .hex file depends on the .elf file
+$(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+	@echo "Creating $@"
+	$(AT)$(HEX) $< $@
+
+# The final .bin file depends on the .elf file
+$(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+	@echo "Creating $@"
+	$(AT)$(BIN) $< $@
+
+# To keep things organized, all
+$(BUILD_DIR):
+	@echo "Creating build directory"
+	@mkdir -p $@
+
+######################################################################
+## Auxiliary Targets
+######################################################################
+
+ifndef CUBE_PATH
+$(error 'CUBE_PATH not defined')
+endif
+
+# Generate Cube Files
+cube:
+	$(AT)java -jar $(CUBE_JAR) -q .cube
+
+# Prepare workspace
+# - Erases useless Makefile, renames cube's main.c and links githooks
+prepare:
+	@echo "Linking githooks"
+	$(AT)git config core.hooksPath .githooks
+	@echo "Preparing cube files"
+	$(AT)-mv -f $(CUBE_DIR)/Src/main.c $(CUBE_DIR)/Src/cube_main.c
+	$(AT)-rm -f $(CUBE_DIR)/Makefile
+
+# Flash Built files with STM32_Programmer
+flash load:
+	@echo "Flashing $(TARGET).bin with STM32_Programmer_CLI"
+	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(TARGET).bin \
+        0x08000000 -v -rst
+
+# Create J-Link flash script
+.jlink-flash: Makefile
+	@echo "Creating J-Link flash script"
+	@echo device $(DEVICE) > $@
+	@echo si SWD >> $@
+	@echo speed 4000 >> $@
+	@echo connect >> $@
+	@echo r >> $@
+	@echo h >> $@
+	@echo loadfile $(BUILD_DIR)/$(TARGET).hex >> $@
+	@echo r >> $@
+	@echo g >> $@
+	@echo exit >> $@
+
+# Flash Built files with j-link
+jflash: .jlink-flash
+	@echo "Flashing $(TARGET).hex with J-Link"
+	$(AT)$(JLINK_EXE) $<
+
+# Show MCU info
+info:
+	$(AT)STM32_Programmer_CLI -c port=SWD
+
+# Reset MCU
+reset:
+	@echo "Reseting device"
+	$(AT)STM32_Programmer_CLI -c port=SWD -rst
+
+# Clean cube generated files
+clean_cube:
+	@echo "Cleaning cube files"
+	$(AT)-rm -rf $(CUBE_DIR)/Src $(CUBE_DIR)/Inc $(CUBE_DIR)/Drivers \
+        $(CUBE_DIR)/.mxproject $(CUBE_DIR)/Makefile $(CUBE_DIR)/*.s \
+        $(CUBE_DIR)/*.ld
+
+# Clean build files
+# - Ignores cube-related build files (ST and CMSIS libraries)
+clean:
+	@echo "Cleaning build files"
+	$(AT)-rm -rf $(OBJECTS) $(OBJECTS:.o=.d) $(OBJECTS:.o=.lst)
+
+# Clean all build files
+clean_all:
+	@echo "Cleaning all build files"
+	$(AT)-rm -rf $(BUILD_DIR)
+
+# Format source code
+format:
+	@echo "Formatting files"
+	$(AT)clang-format -i $(C_SOURCES) $(wildcard */*.h)
+	@echo "Done"
+
+# Display help
+help:
+	@echo "----------------------- ThunderMakefile ------------------------------"
+	@echo "   Bem-vindo(a) ao Makefile da ThundeRatz, cheque as configuracoes    "
+	@echo "                atuais e mude o arquivo se necessario                 "
+	@echo
+	@echo "Opcoes:"
+	@echo "	help:       mostra essa ajuda"
+	@echo "	cube:       gera arquivos do cube"
+	@echo "	prepare:    prepara para compilação inicial apagando arquivos do cube"
+	@echo "	all:        compila todos os arquivos"
+	@echo "	info:       mostra informações sobre o uC conectado"
+	@echo "	flash:      carrega os arquivos compilados no microcontrolador via st-link"
+	@echo "	jflash:     carrega os arquivos compilados no microcontrolador via j-link"
+	@echo "	format:     formata os arquivos .c/.h"
+	@echo "	clean:      limpa os arquivos compilados"
+	@echo "	clean_all:  limpa os arquivos compilados, inclusive bibliotecas da ST"
+	@echo "	clean_cube: limpa os arquivos gerados pelo Cube"
+	@echo
+	@echo "Configuracoes atuais:"
+	@echo "	DEVICE_FAMILY := "$(DEVICE_FAMILY)
+	@echo "	DEVICE_TYPE   := "$(DEVICE_TYPE)
+	@echo "	DEVICE        := "$(DEVICE)
+	@echo "	DEVICE_LD     := "$(DEVICE_LD)
+	@echo "	DEVICE_DEF    := "$(DEVICE_DEF)
+
+# Include dependecy files for .h dependency detection
+-include $(wildcard $(BUILD_DIR)/*.d)
+
+.PHONY: clean all flash jflash help reset \
+		format clean_all prepare cube info
