@@ -22,19 +22,27 @@ VERBOSE ?= 0
 
 # Tune the lines below only if you know what you are doing:
 
+###############################################################################
+## Output configuration
+###############################################################################
+
 # Verbosity
 ifeq ($(VERBOSE), 0)
-AT := @
+	AT := @
 else
-AT :=
+	AT :=
 endif
 
 # Optmization
 ifeq ($(DEBUG), 1)
-OPT := -Og
+	OPT := -Og
 else
-OPT := -Os
+	OPT := -Os
 endif
+
+###############################################################################
+## Input files
+###############################################################################
 
 # Cube Directory
 CUBE_DIR := cube
@@ -49,6 +57,21 @@ ASM_SOURCES  := $(wildcard $(CUBE_DIR)/*.s)
 C_SOURCES    := $(wildcard src/*.c)
 
 SUBM_SOURCES := $(foreach sm,$(SUBMODULES),$(wildcard $(SUBMODULE_DIR)/$(sm)/*.c))
+
+# Object Files
+CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
+CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
+SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(SUBM_SOURCES:.c=.o)))
+OBJECTS      := $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
+
+vpath %.c $(sort $(dir $(CUBE_SOURCES)))
+vpath %.c $(sort $(dir $(SUBM_SOURCES)))
+vpath %.c $(sort $(dir $(C_SOURCES)))
+vpath %.s $(sort $(dir $(ASM_SOURCES)))
+
+###############################################################################
+## Compiler settings
+###############################################################################
 
 # Executables
 CC      := arm-none-eabi-gcc
@@ -114,17 +137,6 @@ LDFLAGS  :=                                             \
 	$(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref  \
 	-Wl,--gc-sections                                   \
 
-# Object Files
-CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
-CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
-SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(SUBM_SOURCES:.c=.o)))
-OBJECTS      := $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
-
-vpath %.c $(sort $(dir $(CUBE_SOURCES)))
-vpath %.c $(sort $(dir $(SUBM_SOURCES)))
-vpath %.c $(sort $(dir $(C_SOURCES)))
-vpath %.s $(sort $(dir $(ASM_SOURCES)))
-
 ###############################################################################
 ## Build Targets
 ###############################################################################
@@ -157,9 +169,9 @@ $(BUILD_DIR):
 	@echo "Creating build directory"
 	@mkdir -p $@
 
-######################################################################
+###############################################################################
 ## Auxiliary Targets
-######################################################################
+###############################################################################
 
 ifndef CUBE_PATH
 $(error 'CUBE_PATH not defined')
