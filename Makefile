@@ -170,20 +170,28 @@ $(BUILD_DIR):
 	@mkdir -p $@
 
 ###############################################################################
-## Auxiliary Targets
+## OS dependent commands
 ###############################################################################
+
+ifeq ($(OS),Windows_NT)
+	CUBE_JAR  := "$(CUBE_PATH)\STM32CubeMX.exe"
+	JLINK_EXE := JLink.exe
+else
+	CUBE_JAR := "$(CUBE_PATH)/STM32CubeMX"
+	JLINK_EXE := JLinkExe
+endif
 
 ifndef CUBE_PATH
 $(error 'CUBE_PATH not defined')
 endif
 
+###############################################################################
+## Auxiliary Targets
+###############################################################################
+
 # Generate Cube Files
 cube:
-ifeq ($(OS),Windows_NT)
-	@java -jar "$(CUBE_PATH)\STM32CubeMX.exe" -q .cube
-else
-	@java -jar "$(CUBE_PATH)/STM32CubeMX" -q .cube
-endif
+	$(AT)java -jar $(CUBE_JAR) -q .cube
 
 # Prepare workspace
 # - Erases useless Makefile, renames cube's main.c and links githooks
@@ -217,11 +225,7 @@ flash load:
 # Flash Built files with j-link
 jflash: .jlink-flash
 	@echo "Flashing $(TARGET).hex with J-Link"
-ifeq ($(OS),Windows_NT)
-	$(AT)JLink.exe $<
-else
-	$(AT)JLinkExe $<
-endif
+	$(AT)$(JLINK_EXE) $<
 
 # Show MCU info
 info:
