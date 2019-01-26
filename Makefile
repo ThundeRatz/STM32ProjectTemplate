@@ -144,13 +144,13 @@ LDFLAGS  :=                                             \
 
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
-# All .o file depend on the respective .c file, the Makefile and build_dir existence
+# All .o file depend on respective .c file, the Makefile and build_dir existence
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) \
 		-MF"$(@:.o=.d)" $< -o $@
 
-# All .o file depend on the respective .s file, the Makefile and build_dir existence
+# All .o file depend on respective .s file, the Makefile and build_dir existence
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
