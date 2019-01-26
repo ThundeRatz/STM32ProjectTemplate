@@ -18,7 +18,7 @@ TARGET = main
 DEBUG   ?= 1
 VERBOSE ?= 0
 
-######################################################################
+###############################################################################
 
 # Tune the lines below only if you know what you are doing:
 
@@ -89,12 +89,16 @@ else
 $(error Unknown Device Family $(DEVICE_FAMILY))
 endif
 
-ASFLAGS := $(FLAGS) $(AS_DEFS) $(AS_INCLUDES) -Wall -Wextra -fdata-sections -ffunction-sections $(OPT)
-CFLAGS  :=                                  \
-	$(FLAGS) $(C_DEFS) $(C_INCLUDES)        \
-	-Wall -Wextra -fdata-sections           \
-	-ffunction-sections -fmessage-length=0  \
-	$(OPT) -std=c11 -MMD -MP                \
+ASFLAGS :=                                    \
+	$(FLAGS) $(AS_DEFS) $(AS_INCLUDES)        \
+	-Wall -Wextra -fdata-sections             \
+	-ffunction-sections $(OPT)                \
+
+CFLAGS  :=                                    \
+	$(FLAGS) $(C_DEFS) $(C_INCLUDES)          \
+	-Wall -Wextra -fdata-sections             \
+	-ffunction-sections -fmessage-length=0    \
+	$(OPT) -std=c11 -MMD -MP                  \
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g3
@@ -121,15 +125,16 @@ vpath %.c $(sort $(dir $(SUBM_SOURCES)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
-######################################################################
+###############################################################################
 ## Build Targets
-######################################################################
+###############################################################################
 
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
-	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
+	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) \
+		-MF"$(@:.o=.d)" $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "CC $<"
@@ -180,7 +185,8 @@ prepare:
 # Flash Built files with STM32_Programmer
 flash load:
 	@echo "Flashing $(TARGET).bin with STM32_Programmer_CLI"
-	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(TARGET).bin 0x08000000 -v -rst
+	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(TARGET).bin \
+		0x08000000 -v -rst
 
 # Create J-Link flash script
 .jlink-flash: Makefile
@@ -217,7 +223,9 @@ reset:
 # Clean cube generated files
 clean_cube:
 	@echo "Cleaning cube files"
-	$(AT)-rm -rf $(CUBE_DIR)/Src $(CUBE_DIR)/Inc $(CUBE_DIR)/Drivers $(CUBE_DIR)/.mxproject $(CUBE_DIR)/Makefile $(CUBE_DIR)/*.s $(CUBE_DIR)/*.ld
+	$(AT)-rm -rf $(CUBE_DIR)/Src $(CUBE_DIR)/Inc $(CUBE_DIR)/Drivers \
+		$(CUBE_DIR)/.mxproject $(CUBE_DIR)/Makefile $(CUBE_DIR)/*.s  \
+		$(CUBE_DIR)/*.ld
 
 # Clean build files
 # - Ignores cube-related build files (ST and CMSIS libraries)
