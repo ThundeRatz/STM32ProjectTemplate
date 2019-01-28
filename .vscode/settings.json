@@ -20,5 +20,5 @@
     "[markdown]": {
         "files.trimTrailingWhitespace": false,
         "files.trimFinalNewlines": false,
-    }
+    },
 }
