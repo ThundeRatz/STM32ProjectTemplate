@@ -12,15 +12,19 @@ DEVICE_LD     := STM32F303RETx
 DEVICE_DEF    := STM32F303xE
 
 SUBMODULE_DIR := lib
-SUBMODULES    := RobonitorClient STMSensors/VL53L0X
+SUBMODULES    := STMSensors/VL53L0X STMSensors/LSM6DS3
 
 # Default values, can be set on the command line or here
 DEBUG   ?= 1
 VERBOSE ?= 0
 
-######################################################################
+###############################################################################
 
 # Tune the lines below only if you know what you are doing:
+
+###############################################################################
+## Output configuration
+###############################################################################
 
 # Verbosity
 ifeq ($(VERBOSE),0)
@@ -36,6 +40,10 @@ else
 OPT := -Os
 endif
 
+###############################################################################
+## Input files
+###############################################################################
+
 # Cube Directory
 CUBE_DIR := cube
 
@@ -47,6 +55,25 @@ CUBE_SOURCES := $(shell find $(CUBE_DIR) -name "*.c")
 ASM_SOURCES  := $(shell find $(CUBE_DIR) -name "*.s")
 C_SOURCES    := $(shell find src -name "*.c")
 SUBM_SOURCES :=
+
+# Object Files
+CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/cube/,$(notdir $(CUBE_SOURCES:.c=.o)))
+CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/cube/,$(notdir $(ASM_SOURCES:.s=.o)))
+SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/submodules/,$(notdir $(SUBM_SOURCES:.c=.o)))
+OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
+
+vpath %.c $(sort $(dir $(CUBE_SOURCES)))
+
+ifneq ($(strip $(SUBM_SOURCES)),)
+vpath %.c $(sort $(dir $(SUBM_SOURCES)))
+endif
+
+vpath %.c $(sort $(dir $(C_SOURCES)))
+vpath %.s $(sort $(dir $(ASM_SOURCES)))
+
+###############################################################################
+## Compiler settings
+###############################################################################
 
 # Executables
 CC      := arm-none-eabi-gcc
@@ -89,7 +116,12 @@ else
 $(error Unknown Device Family $(DEVICE_FAMILY))
 endif
 
-ASFLAGS := $(MCUFLAGS) $(AS_DEFS) $(AS_INCLUDES) -Wall -Wextra -fdata-sections -ffunction-sections $(OPT)
+# Generic flags
+ASFLAGS :=                                 \
+	$(MCUFLAGS) $(AS_DEFS) $(AS_INCLUDES)  \
+	-Wall -Wextra -fdata-sections          \
+	-ffunction-sections $(OPT)             \
+
 CFLAGS  :=                                  \
 	$(MCUFLAGS) $(C_DEFS) $(C_INCLUDES)     \
 	-Wall -Wextra -fdata-sections           \
@@ -97,7 +129,8 @@ CFLAGS  :=                                  \
 	$(OPT) -std=c11 -MMD -MP                \
 
 ifeq ($(DEBUG),1)
-CFLAGS += -g3
+ASFLAGS += -g
+CFLAGS  += -g3
 endif
 
 # Linker Flags
@@ -110,27 +143,14 @@ LDFLAGS  :=                                                   \
 	$(LIBS) -Wl,-Map=$(BUILD_DIR)/$(PROJECT_NAME).map,--cref  \
 	-Wl,--gc-sections                                         \
 
-# Object Files
-CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/cube/,$(notdir $(CUBE_SOURCES:.c=.o)))
-CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/cube/,$(notdir $(ASM_SOURCES:.s=.o)))
-SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/submodules/,$(notdir $(SUBM_SOURCES:.c=.o)))
-OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
-
-vpath %.c $(sort $(dir $(CUBE_SOURCES)))
-
-ifneq ($(strip $(SUBM_SOURCES)),)
-vpath %.c $(sort $(dir $(SUBM_SOURCES)))
-endif
-
-vpath %.c $(sort $(dir $(C_SOURCES)))
-vpath %.s $(sort $(dir $(ASM_SOURCES)))
-
-######################################################################
+###############################################################################
 ## Build Targets
-######################################################################
+###############################################################################
 
 all: $(BUILD_DIR)/$(PROJECT_NAME).elf $(BUILD_DIR)/$(PROJECT_NAME).hex $(BUILD_DIR)/$(PROJECT_NAME).bin
 
+# All .o file depend on respective .c file, the Makefile
+# and build directory existence
 $(BUILD_DIR)/cube/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/cube/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
@@ -147,19 +167,29 @@ $(BUILD_DIR)/cube/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
 
+# All .o file depend on respective .s file, the Makefile
+# and build directory existence
+$(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
+	@echo "CC $<"
+	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
+
+# The .elf file depend on all object files and the Makefile
 $(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) Makefile | $(BUILD_DIR)
 	@echo "CC $@"
 	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
 
+# The .hex file depend on the .elf file and build directory existence
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	@echo "Creating $@"
 	$(AT)$(HEX) $< $@
 
+# The .bin file depend on the .elf file and build directory existence
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	@echo "Creating $@"
 	$(AT)$(BIN) $< $@
 
+# Create the build_dir
 $(BUILD_DIR):
 	@echo "Creating build directory"
 	$(AT)mkdir -p $@
@@ -167,13 +197,25 @@ $(BUILD_DIR):
 	$(AT)mkdir -p $@/submodules
 	$(AT)mkdir -p $@/cube
 
-######################################################################
-## Auxiliary Targets
-######################################################################
+###############################################################################
+## OS dependent commands
+###############################################################################
+
+ifeq ($(OS),Windows_NT)
+CUBE_JAR  := "$(CUBE_PATH)\STM32CubeMX.exe"
+JLINK_EXE := JLink.exe
+else
+CUBE_JAR  := "$(CUBE_PATH)/STM32CubeMX"
+JLINK_EXE := JLinkExe
+endif
 
 ifndef CUBE_PATH
 $(error 'CUBE_PATH not defined')
 endif
+
+###############################################################################
+## Auxiliary Targets
+###############################################################################
 
 # Create cube script
 .cube: Makefile
@@ -184,11 +226,7 @@ endif
 
 # Generate Cube Files
 cube: .cube
-ifeq ($(OS),Windows_NT)
-	$(AT)java -jar "$(CUBE_PATH)\STM32CubeMX.exe" -q $<
-else
-	$(AT)java -jar "$(CUBE_PATH)/STM32CubeMX" -q $<
-endif
+	$(AT)java -jar $(CUBE_JAR) -q $<
 
 # Prepare workspace
 # - Erases useless Makefile, renames cube's main.c and links githooks
@@ -201,8 +239,9 @@ prepare:
 
 # Flash Built files with st-flash
 flash load:
-	@echo "Flashing $(PROJECT_NAME).bin via STM32_Programmer_CLI"
-	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(PROJECT_NAME).bin 0x08000000 -v -rst
+	@echo "Flashing $(PROJECT_NAME).bin with STM32_Programmer_CLI"
+	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(TARGET).bin \
+		0x08000000 -v -rst
 
 # Create J-Link flash script
 .jlink-flash: Makefile
@@ -221,11 +260,7 @@ flash load:
 # Flash Built files with j-link
 jflash: .jlink-flash
 	@echo "Flashing $(PROJECT_NAME).hex with J-Link"
-ifeq ($(OS),Windows_NT)
-	$(AT)JLink.exe $<
-else
-	$(AT)JLinkExe $<
-endif
+	$(AT)$(JLINK_EXE) $<
 
 # Show MCU info
 info:
@@ -268,17 +303,17 @@ help:
 	@echo "                atuais e mude o arquivo se necessario                 "
 	@echo
 	@echo "Opcoes:"
-	@echo "	help:       mostra essa ajuda;"
-	@echo "	cube:       gera arquivos do cube;"
-	@echo "	prepare:    prepara para compilação inicial apagando arquivos do cube;"
-	@echo "	all:        compila todos os arquivos;"
-	@echo "	info:       mostra informações sobre o uC conectado;"
+	@echo "	help:       mostra essa ajuda"
+	@echo "	cube:       gera arquivos do cube"
+	@echo "	prepare:    prepara para compilação inicial apagando arquivos do cube"
+	@echo "	all:        compila todos os arquivos"
+	@echo "	info:       mostra informações sobre o uC conectado"
 	@echo "	flash:      carrega os arquivos compilados no microcontrolador via st-link"
 	@echo "	jflash:     carrega os arquivos compilados no microcontrolador via j-link"
-	@echo "	format:     formata os arquivos .c/.h;"
-	@echo "	clean:      limpa os arquivos compilados;"
-	@echo "	clean_all:  limpa os arquivos compilados, inclusive bibliotecas da ST;"
-	@echo "	clean_cube: limpa os arquivos gerados pelo Cube."
+	@echo "	format:     formata os arquivos .c/.h"
+	@echo "	clean:      limpa os arquivos compilados"
+	@echo "	clean_all:  limpa os arquivos compilados, inclusive bibliotecas da ST"
+	@echo "	clean_cube: limpa os arquivos gerados pelo Cube"
 	@echo
 	@echo "Configuracoes atuais:"
 	@echo "	DEVICE_FAMILY := "$(DEVICE_FAMILY)
