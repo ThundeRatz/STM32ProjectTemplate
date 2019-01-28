@@ -144,13 +144,15 @@ LDFLAGS  :=                                             \
 
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
-# All .o file depend on respective .c file, the Makefile and build_dir existence
+# All .o file depend on respective .c file, the Makefile
+# and build directory existence
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) \
 		-MF"$(@:.o=.d)" $< -o $@
 
-# All .o file depend on respective .s file, the Makefile and build_dir existence
+# All .o file depend on respective .s file, the Makefile
+# and build directory existence
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
@@ -161,12 +163,12 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) Makefile
 	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) $(LDFLAGS) -o $@
 	@$(SIZE) $@
 
-# The .hex file depend on the .elf file and build_dir existence
+# The .hex file depend on the .elf file and build directory existence
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	@echo "Creating $@"
 	$(AT)$(HEX) $< $@
 
-# The .bin file depend on the .elf file and build_dir existence
+# The .bin file depend on the .elf file and build directory existence
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	@echo "Creating $@"
 	$(AT)$(BIN) $< $@
@@ -184,7 +186,7 @@ ifeq ($(OS),Windows_NT)
 CUBE_JAR  := "$(CUBE_PATH)\STM32CubeMX.exe"
 JLINK_EXE := JLink.exe
 else
-CUBE_JAR := "$(CUBE_PATH)/STM32CubeMX"
+CUBE_JAR  := "$(CUBE_PATH)/STM32CubeMX"
 JLINK_EXE := JLinkExe
 endif
 
