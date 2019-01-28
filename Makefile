@@ -167,12 +167,6 @@ $(BUILD_DIR)/cube/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
 
-# All .o file depend on respective .s file, the Makefile
-# and build directory existence
-$(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
-	@echo "CC $<"
-	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
-
 # The .elf file depend on all object files and the Makefile
 $(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) Makefile | $(BUILD_DIR)
 	@echo "CC $@"
