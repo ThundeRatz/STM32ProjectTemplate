@@ -234,7 +234,7 @@ prepare:
 # Flash Built files with st-flash
 flash load:
 	@echo "Flashing $(PROJECT_NAME).bin with STM32_Programmer_CLI"
-	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(TARGET).bin \
+	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(PROJECT_NAME).bin \
 		0x08000000 -v -rst
 
 # Create J-Link flash script
@@ -271,7 +271,7 @@ clean_cube:
 	$(AT)-mv $(CUBE_DIR)/$(PROJECT_NAME).ioc .
 	$(AT)-rm -rf $(CUBE_DIR)
 	$(AT)-mkdir $(CUBE_DIR)
-	$(AT)-mv board.ioc $(CUBE_DIR)/
+	$(AT)-mv $(PROJECT_NAME).ioc $(CUBE_DIR)/
 
 # Clean build files
 # - Ignores cube-related build files (ST and CMSIS libraries)
