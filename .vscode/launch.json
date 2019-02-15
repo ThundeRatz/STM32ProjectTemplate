@@ -12,15 +12,15 @@
                 "miDebuggerPath": "${env:ARM_GCC_PATH}/arm-none-eabi-gdb.exe",
             },
             "targetArchitecture": "arm",
-            "program": "${workspaceRoot}/build/main.elf",
+            "program": "${workspaceRoot}/build/stm32_project_template.elf",
             "setupCommands": [{
-                    "text": "file '${workspaceRoot}/build/main.elf'"
+                    "text": "file '${workspaceRoot}/build/stm32_project_template.elf'"
                 },
                 {
                     "text": "target extended-remote localhost:2331"
                 },
                 {
-                    "text": "load ${workspaceRoot}/build/main.elf"
+                    "text": "load ${workspaceRoot}/build/stm32_project_template.elf"
                 }
             ],
             "launchCompleteCommand": "None",
@@ -31,7 +31,7 @@
             "type": "gnu-debugger",
             "request": "launch",
             "name": "GNU debugger",
-            "program": "${workspaceFolder}/build/main.elf",
+            "program": "${workspaceFolder}/build/stm32_project_template.elf",
             "toolchain": "${env:ARM_GCC_PATH}",
             "client": "arm-none-eabi-gdb",
             "server": "JLinkGDBServer",
@@ -47,6 +47,28 @@
                 "-speed", "4000"
             ],
             "serverPort": 2331,
+        },
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "stutil",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/stm32_project_template.elf",
+            "name": "Cortex Debug (ST-Util)",
+            "device": "STM32F303RE",
+            "v1": false
+        },
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "jlink",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/stm32_project_template.elf",
+            "name": "Cortex Debug (J-Link)",
+            "device": "STM32F303RE",
+            "interface": "swd",
+            "ipAddress": null,
+            "serialNumber": null,
         }
     ]
 }
