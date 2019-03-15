@@ -12,7 +12,6 @@ DEVICE_LD     := STM32F303RETx
 DEVICE_DEF    := STM32F303xE
 
 SUBMODULE_DIR := lib
-SUBMODULES    := STMSensors/VL53L0X STMSensors/LSM6DS3
 
 # Default values, can be set on the command line or here
 DEBUG   ?= 1
@@ -59,14 +58,9 @@ SUBM_SOURCES :=
 # Object Files
 CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/cube/,$(notdir $(CUBE_SOURCES:.c=.o)))
 CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/cube/,$(notdir $(ASM_SOURCES:.s=.o)))
-SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/submodules/,$(notdir $(SUBM_SOURCES:.c=.o)))
 OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
 
 vpath %.c $(sort $(dir $(CUBE_SOURCES)))
-
-ifneq ($(strip $(SUBM_SOURCES)),)
-vpath %.c $(sort $(dir $(SUBM_SOURCES)))
-endif
 
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
@@ -100,7 +94,14 @@ C_INCLUDES  :=                                                         \
 	-Iinc                                                              \
 
 # Adds Submodule sources and include directories
--include $(foreach sm,$(SUBMODULES),$(SUBMODULE_DIR)/$(sm)/sources.mk ))
+-include $(shell find $(SUBMODULE_DIR) -name "sources.mk")
+
+# Submodule objects
+SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/submodules/,$(notdir $(SUBM_SOURCES:.c=.o)))
+
+ifneq ($(strip $(SUBM_SOURCES)),)
+vpath %.c $(sort $(dir $(SUBM_SOURCES)))
+endif
 
 # Compile Flags
 MCUFLAGS := -mthumb
