@@ -136,10 +136,6 @@ opções da lista para executar os comandos de compilação e gravação mais ra
 * Flash Program (_make flash_)
 * Build and Flash (_make && make flash_)
 
-## Debug
-
-> Em breve
-
 ## Adding a submodule
 
 Create a directory called lib and add the submodules there.
@@ -150,3 +146,7 @@ Example:
 mkdir lib
 git submodule add --name STMSensors git@github.com:ThundeRatz/STMSensors.git lib/
 ```
+
+## Debug
+
+> Em breve
