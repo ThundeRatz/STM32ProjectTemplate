@@ -70,6 +70,8 @@ novamente para que eles sejam gerados do zero.
 As primeiras linhas do Makefile devem ser alteradas de acordo com o projeto:
 
 ```Makefile
+PROJECT_NAME = stm32_project_template
+
 DEVICE_FAMILY := STM32F3xx
 DEVICE_TYPE   := STM32F303xx
 DEVICE        := STM32F303RE
@@ -77,7 +79,7 @@ DEVICE_LD     := STM32F303RETx
 DEVICE_DEF    := STM32F303xE
 ```
 
-Basta pegar o nome completo do processador e colocar nessas configurações, seguindo o padrão.
+Basta mudar o nome do projeto e pegar o nome completo do processador e colocar nessas configurações, seguindo o padrão. O nome do projeto deve ser o mesmo nome do arquivo do Cube (por exemplo, `stm32_project_template.ioc`).
 
 > Em caso de dúvida, basta ver o nome do arquivo `.ld` gerado na pasta `cube`,
 > ele contém o nome completo, que deve ir na variável `DEVICE_LD`,
