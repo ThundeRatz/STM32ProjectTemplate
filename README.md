@@ -138,11 +138,11 @@ opções da lista para executar os comandos de compilação e gravação mais ra
 * Flash Program (_make flash_)
 * Build and Flash (_make && make flash_)
 
-## Adding a submodule
+## Adicionando um submódulo
 
-Create a directory called lib and add the submodules there.
+Crie um diretório chamado `lib` e adicione o submódulo nele.
 
-Example:
+Exemplo:
 
 ```
 mkdir lib
