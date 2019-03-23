@@ -146,7 +146,7 @@ Exemplo:
 
 ```
 mkdir lib
-git submodule add --name STMSensors git@github.com:ThundeRatz/STMSensors.git lib/
+git submodule add --name STMSensors git@github.com:ThundeRatz/STMSensors.git lib/STMSensors
 ```
 
 ## Debug
