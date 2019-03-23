@@ -93,8 +93,10 @@ C_INCLUDES  :=                                                         \
 	-I$(CUBE_DIR)/Inc                                                  \
 	-Iinc                                                              \
 
-# Adds Submodule sources and include directories
+# Adds submodule sources and include directories
+ifneq ($(wildcard $(SUBMODULE_DIR)/.*),)
 -include $(shell find $(SUBMODULE_DIR) -name "sources.mk")
+endif
 
 # Submodule objects
 SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/submodules/,$(notdir $(SUBM_SOURCES:.c=.o)))
