@@ -53,6 +53,7 @@ BUILD_DIR := build
 CUBE_SOURCES := $(shell find $(CUBE_DIR) -name "*.c")
 ASM_SOURCES  := $(shell find $(CUBE_DIR) -name "*.s")
 C_SOURCES    := $(shell find src -name "*.c")
+C_HEADERS    := $(shell find inc -name "*.h")
 SUBM_SOURCES :=
 
 # Object Files
@@ -287,11 +288,19 @@ clean_all:
 	@echo "Cleaning all build files"
 	$(AT)-rm -rf $(BUILD_DIR)
 
-# Format source code
-format:
-	@echo "Formatting files"
-	$(AT)clang-format -i $(C_SOURCES) $(wildcard */*.h)
-	@echo "Done"
+# Uncrustify auxiliary variables
+UNCRUSTIFY_FILES = $(C_SOURCES) $(C_HEADERS)
+UNCRUSTIFIED_SOURCES = $(UNCRUSTIFY_FILES:%=.uncrustify/%)
+
+# Uncrustify auxiliary target
+.uncrustify/%: %
+	@mkdir -p $(dir $@)
+	@uncrustify -f $< -c uncrustify.cfg -o $@
+	@cp -f $@ $<
+
+# Format source code using uncrustify
+format: $(UNCRUSTIFIED_SOURCES) Makefile
+	@rm -rf .uncrustify/
 
 # Display help
 help:
