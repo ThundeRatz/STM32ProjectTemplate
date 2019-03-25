@@ -18,10 +18,10 @@ alguns arquivos de configuração.
   > É necessário que a pasta `bin` dessa instalação esteja no `PATH`
   > e numa variável de ambiente `ARM_GCC_PATH`
 
-* clang-format
-  > Linux: `sudo apt install clang-format`
+* uncrustify
+  > Linux: `sudo apt install uncrustify`
   >
-  > Windows: `msys2> pacman -S clang`
+  > Windows: Baixe o .zip no [SourceForge](https://sourceforge.net/projects/uncrustify/files/). Adicione o local do executável na variável de ambiente `PATH`.
 
 * [Visual Studio Code](https://code.visualstudio.com/)
   * [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
