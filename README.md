@@ -18,10 +18,10 @@ alguns arquivos de configuração.
   > É necessário que a pasta `bin` dessa instalação esteja no `PATH`
   > e numa variável de ambiente `ARM_GCC_PATH`
 
-* clang-format
-  > Linux: `sudo apt install clang-format`
+* uncrustify
+  > Linux: `sudo apt install uncrustify`
   >
-  > Windows: `msys2> pacman -S clang`
+  > Windows: Baixe o .zip no [SourceForge](https://sourceforge.net/projects/uncrustify/files/). Adicione o local do executável na variável de ambiente `PATH`.
 
 * [Visual Studio Code](https://code.visualstudio.com/)
   * [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
@@ -70,6 +70,8 @@ novamente para que eles sejam gerados do zero.
 As primeiras linhas do Makefile devem ser alteradas de acordo com o projeto:
 
 ```Makefile
+PROJECT_NAME = stm32_project_template
+
 DEVICE_FAMILY := STM32F3xx
 DEVICE_TYPE   := STM32F303xx
 DEVICE        := STM32F303RE
@@ -77,7 +79,7 @@ DEVICE_LD     := STM32F303RETx
 DEVICE_DEF    := STM32F303xE
 ```
 
-Basta pegar o nome completo do processador e colocar nessas configurações, seguindo o padrão.
+Basta mudar o nome do projeto e pegar o nome completo do processador e colocar nessas configurações, seguindo o padrão. O nome do projeto deve ser o mesmo nome do arquivo do Cube (por exemplo, `stm32_project_template.ioc`).
 
 > Em caso de dúvida, basta ver o nome do arquivo `.ld` gerado na pasta `cube`,
 > ele contém o nome completo, que deve ir na variável `DEVICE_LD`,
@@ -135,6 +137,17 @@ opções da lista para executar os comandos de compilação e gravação mais ra
 * Rebuild Project (_make clean && make_)
 * Flash Program (_make flash_)
 * Build and Flash (_make && make flash_)
+
+## Adicionando um submódulo
+
+Crie um diretório chamado `lib` e adicione o submódulo nele.
+
+Exemplo:
+
+```
+mkdir lib
+git submodule add --name STMSensors git@github.com:ThundeRatz/STMSensors.git lib/STMSensors
+```
 
 ## Debug
 

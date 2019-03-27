@@ -12,7 +12,6 @@ DEVICE_LD     := STM32F303RETx
 DEVICE_DEF    := STM32F303xE
 
 SUBMODULE_DIR := lib
-SUBMODULES    := STMSensors/VL53L0X STMSensors/LSM6DS3
 
 # Default values, can be set on the command line or here
 DEBUG   ?= 1
@@ -54,19 +53,15 @@ BUILD_DIR := build
 CUBE_SOURCES := $(shell find $(CUBE_DIR) -name "*.c")
 ASM_SOURCES  := $(shell find $(CUBE_DIR) -name "*.s")
 C_SOURCES    := $(shell find src -name "*.c")
+C_HEADERS    := $(shell find inc -name "*.h")
 SUBM_SOURCES :=
 
 # Object Files
 CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/cube/,$(notdir $(CUBE_SOURCES:.c=.o)))
 CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/cube/,$(notdir $(ASM_SOURCES:.s=.o)))
-SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/submodules/,$(notdir $(SUBM_SOURCES:.c=.o)))
 OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
 
 vpath %.c $(sort $(dir $(CUBE_SOURCES)))
-
-ifneq ($(strip $(SUBM_SOURCES)),)
-vpath %.c $(sort $(dir $(SUBM_SOURCES)))
-endif
 
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
@@ -99,8 +94,17 @@ C_INCLUDES  :=                                                         \
 	-I$(CUBE_DIR)/Inc                                                  \
 	-Iinc                                                              \
 
-# Adds Submodule sources and include directories
--include $(foreach sm,$(SUBMODULES),$(SUBMODULE_DIR)/$(sm)/sources.mk ))
+# Adds submodule sources and include directories
+ifneq ($(wildcard $(SUBMODULE_DIR)/.*),)
+-include $(shell find $(SUBMODULE_DIR) -name "sources.mk")
+endif
+
+# Submodule objects
+SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/submodules/,$(notdir $(SUBM_SOURCES:.c=.o)))
+
+ifneq ($(strip $(SUBM_SOURCES)),)
+vpath %.c $(sort $(dir $(SUBM_SOURCES)))
+endif
 
 # Compile Flags
 MCUFLAGS := -mthumb
@@ -284,11 +288,19 @@ clean_all:
 	@echo "Cleaning all build files"
 	$(AT)-rm -rf $(BUILD_DIR)
 
-# Format source code
-format:
-	@echo "Formatting files"
-	$(AT)clang-format -i $(C_SOURCES) $(wildcard */*.h)
-	@echo "Done"
+# Uncrustify auxiliary variables
+UNCRUSTIFY_FILES = $(C_SOURCES) $(C_HEADERS)
+UNCRUSTIFIED_SOURCES = $(UNCRUSTIFY_FILES:%=.uncrustify/%)
+
+# Uncrustify auxiliary target
+.uncrustify/%: %
+	@mkdir -p $(dir $@)
+	@uncrustify -f $< -c uncrustify.cfg -o $@
+	@cp -f $@ $<
+
+# Format source code using uncrustify
+format: $(UNCRUSTIFIED_SOURCES) Makefile
+	@rm -rf .uncrustify/
 
 # Display help
 help:
