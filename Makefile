@@ -225,8 +225,8 @@ endif
 	@echo "exit" >> $@
 
 # Generate Cube Files
-cube: .cube
-	$(AT)java -jar $(CUBE_JAR) -q $<
+cube:
+	$(AT)java -jar $(CUBE_JAR) "$(CUBE_DIR)"/"$(PROJECT_NAME)".ioc
 
 # Prepare workspace
 # - Erases useless Makefile, renames cube's main.c and links githooks
