@@ -220,9 +220,9 @@ endif
 # Create cube script
 .cube: Makefile
 	@echo "Creating Cube script"
-	@echo "config load "$(CUBE_DIR)"/"$(PROJECT_NAME)".ioc" >> $@
-	@echo "project generate" >> $@
-	@echo "exit" >> $@
+	@echo "config load "$(CUBE_DIR)"/"$(PROJECT_NAME)".ioc" > $@
+	@echo "project generate" > $@
+	@echo "exit" > $@
 
 # Generate Cube Files
 cube:
@@ -247,15 +247,15 @@ flash load:
 .jlink-flash: Makefile
 	@echo "Creating J-Link flash script"
 	@echo device $(DEVICE) > $@
-	@echo si SWD >> $@
-	@echo speed 4000 >> $@
-	@echo connect >> $@
-	@echo r >> $@
-	@echo h >> $@
-	@echo loadfile $(BUILD_DIR)/$(PROJECT_NAME).hex >> $@
-	@echo r >> $@
-	@echo g >> $@
-	@echo exit >> $@
+	@echo si SWD > $@
+	@echo speed 4000 > $@
+	@echo connect > $@
+	@echo r > $@
+	@echo h > $@
+	@echo loadfile $(BUILD_DIR)/$(PROJECT_NAME).hex > $@
+	@echo r > $@
+	@echo g > $@
+	@echo exit > $@
 
 # Flash Built files with j-link
 jflash: .jlink-flash

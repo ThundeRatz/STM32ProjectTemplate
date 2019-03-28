@@ -31,34 +31,37 @@ alguns arquivos de configuração.
   > É necessário que o executável também esteja no `PATH`
 
 ## Preparando
+
 ### Projeto
 
-Primeiro é necessário criar um projeto `board` do Cube na pasta `cube/`,
-ele deve ter as seguintes opções de projeto:
+Primeiro é necessário criar um projeto do Cube na pasta `cube/` com o nome desejado,
+que deve ter as seguintes opções de projeto:
 
 Project:
-* Project Name: *board*
+
 * Application Structure: *Basic*
+* [x] Do not generate the main()
 * Toolchain / IDE: *Makefile*
 
 Code Generator:
+
 * STM32Cube Firmware Library Package: *Copy only the necessary library files*
 * Generated files:
   * *Generate peripheral initialization as a pair of .c/.h files per peripheral*
   * *Delete previously generated files when not re-generated*
 
-Um arquivo de exemplo se encontra em `cube/board.ioc` com todas as configurações necessárias.
+Um arquivo de exemplo se encontra em `cube/stm32_project_template.ioc` com todas as configurações necessárias.
 
-Para projetos existentes, basta mover o arquivo `.ioc` para a pasta `cube/`,
-mudar o nome para `board.ioc` e conferir se as configurações estão como acima.
+Para projetos existentes, basta mover o arquivo `.ioc` para a pasta `cube/`.
 
 ### Gerando arquivos
 
 Com o arquivo do projeto na pasta correta, os seguintes comandos devem ser 
 executados (necessário apenas após dar checkout no repositório ou mudar o cube):
+
 ```bash
-$ make cube     # Gera os arquivos do cube
-$ make prepare  # Apaga os arquivos do cube desnecessários
+make cube     # Gera os arquivos do cube
+make prepare  # Apaga os arquivos do cube desnecessários
 ```
 
 Se, após modificar os arquivos do cube, ocorrer algum erro nos comandos acima,
@@ -100,12 +103,14 @@ Também é necessário mudar o arquivo `.vscode/c_cpp_properties.json` e colocar
 ## Compilando
 
 Para compilar os arquivos rode
+
 ```bash
-$ make
+make
 ```
 
 Às vezes, é necessário limpar os arquivos já compilados, se algum erro estiver 
 acontecendo, para isso faça:
+
 ```bash
 make clean
 ```
@@ -114,6 +119,7 @@ Isso apaga todos os arquivos de compilação gerados, exceto aqueles gerados a p
 das bibliotecas da ST geradas pelo Cube, isso ocorre para agilizar um novo build,
 já que raramente será necessário recompilar esses arquivos, mas caso seja necessário,
 é possível limpar todos os arquivos de compilação com
+
 ```bash
 make clean_all
 ```
@@ -121,13 +127,15 @@ make clean_all
 ## Gravando
 
 Para gravar os arquivos na placa, rode
+
 ```bash
-$ make flash
+make flash
 ```
 
 Ou, caso use um gravador com J-Link:
+
 ```bash
-$ make jflash
+make jflash
 ```
 
 ## Tasks
@@ -147,7 +155,7 @@ Crie um diretório chamado `lib` e adicione o submódulo nele.
 
 Exemplo:
 
-```
+```bash
 mkdir lib
 git submodule add --name STMSensors git@github.com:ThundeRatz/STMSensors.git lib/STMSensors
 ```
