@@ -83,10 +83,13 @@ Basta mudar o nome do projeto e pegar o nome completo do processador e colocar n
 
 > Em caso de dúvida, basta ver o nome do arquivo `.ld` gerado na pasta `cube`,
 > ele contém o nome completo, que deve ir na variável `DEVICE_LD`,
-> para as outras basta substituir por `x`)
+> para as outras basta substituir por `x`.
+
+> Se estiver usando a família STM32G0, a variável `DEVICE_DEF` deverá ser igual à `DEVICE_TYPE`.
 
 Também é necessário mudar o arquivo `.vscode/c_cpp_properties.json` e colocar o
 `DEVICE_DEF` nele, para que o IntelliSense possa encontrar as configurações corretas:
+
 ```json
 "defines": [
     "STM32F303xE",
