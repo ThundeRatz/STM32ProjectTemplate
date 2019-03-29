@@ -17,7 +17,7 @@
                     "text": "file '${workspaceRoot}/build/stm32_project_template.elf'"
                 },
                 {
-                    "text": "target extended-remote localhost:2331"
+                    "text": "target extended-remote localhost:4242"
                 },
                 {
                     "text": "load ${workspaceRoot}/build/stm32_project_template.elf"
