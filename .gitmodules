@@ -1,3 +1,0 @@
-[submodule "STMSensors"]
-	path = lib/STMSensors
-	url = https://github.com/ThundeRatz/STMSensors.git

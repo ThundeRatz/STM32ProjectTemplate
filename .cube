@@ -1,3 +1,0 @@
-config load cube/board.ioc
-project generate
-exit
