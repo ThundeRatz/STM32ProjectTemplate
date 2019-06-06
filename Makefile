@@ -32,7 +32,10 @@ else
 AT :=
 endif
 
-# Optmization
+###############################################################################
+## Code Optimization
+###############################################################################
+
 ifeq ($(DEBUG),1)
 OPT := -Og
 else
@@ -62,7 +65,6 @@ CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/cube/,$(notdir $(ASM_SOURCES:.s=.o)))
 OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
 
 vpath %.c $(sort $(dir $(CUBE_SOURCES)))
-
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
@@ -86,17 +88,15 @@ C_DEFS  :=            \
 
 # Include Paths
 AS_INCLUDES :=
-C_INCLUDES  :=                                                         \
-	-I$(CUBE_DIR)/Drivers/CMSIS/Device/ST/$(DEVICE_FAMILY)/Include     \
-	-I$(CUBE_DIR)/Drivers/CMSIS/Include                                \
-	-I$(CUBE_DIR)/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc              \
-	-I$(CUBE_DIR)/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc/Legacy       \
-	-I$(CUBE_DIR)/Inc                                                  \
-	-Iinc                                                              \
+C_INCLUDES  := $(addprefix -I,                            \
+	$(sort $(dir $(C_HEADERS)))                           \
+	$(sort $(dir $(shell find $(CUBE_DIR) -name "*.h")))  \
+	$(sort $(dir $(shell find $(LIB_DIR) -name "*.h")))   \
+)                                                         \
 
 # Adds submodule sources and include directories
 ifneq ($(wildcard $(SUBMODULE_DIR)/.*),)
--include $(shell find $(SUBMODULE_DIR) -name "sources.mk")
+-include $(shell find -L $(SUBMODULE_DIR) -name "sources.mk")
 endif
 
 # Submodule objects
@@ -136,7 +136,7 @@ CFLAGS  :=                                  \
 
 ifeq ($(DEBUG),1)
 ASFLAGS += -g
-CFLAGS  += -g3
+CFLAGS  += -g3 -DDEBUG
 endif
 
 # Linker Flags
@@ -290,19 +290,9 @@ clean_all:
 	@echo "Cleaning all build files"
 	$(AT)-rm -rf $(BUILD_DIR)
 
-# Uncrustify auxiliary variables
-UNCRUSTIFY_FILES = $(C_SOURCES) $(C_HEADERS)
-UNCRUSTIFIED_SOURCES = $(UNCRUSTIFY_FILES:%=.uncrustify/%)
-
-# Uncrustify auxiliary target
-.uncrustify/%: %
-	@mkdir -p $(dir $@)
-	@uncrustify -f $< -c uncrustify.cfg -o $@
-	@cp -f $@ $<
-
 # Format source code using uncrustify
-format: $(UNCRUSTIFIED_SOURCES) Makefile
-	@rm -rf .uncrustify/
+format: Makefile
+	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS)
 
 # Display help
 help:
