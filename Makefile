@@ -231,11 +231,11 @@ cube:
 # Prepare workspace
 # - Erases useless Makefile, renames cube's main.c and links githooks
 prepare:
-	@echo "Linking githooks"
-	$(AT)git config core.hooksPath .githooks
 	@echo "Preparing cube files"
 	$(AT)-mv -f $(CUBE_DIR)/Src/main.c $(CUBE_DIR)/Src/cube_main.c
 	$(AT)-rm -f $(CUBE_DIR)/Makefile
+	@echo "Linking githooks"
+	$(AT)git config core.hooksPath .githooks
 
 # Flash Built files with st-flash
 flash load:
