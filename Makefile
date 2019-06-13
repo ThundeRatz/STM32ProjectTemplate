@@ -11,7 +11,7 @@ DEVICE        := STM32F303RE
 DEVICE_LD     := STM32F303RETx
 DEVICE_DEF    := STM32F303xE
 
-SUBMODULE_DIR := lib
+LIB_DIR := lib
 
 # Default values, can be set on the command line or here
 DEBUG   ?= 1
@@ -57,7 +57,7 @@ CUBE_SOURCES := $(shell find $(CUBE_DIR) -name "*.c")
 ASM_SOURCES  := $(shell find $(CUBE_DIR) -name "*.s")
 C_SOURCES    := $(shell find src -name "*.c")
 C_HEADERS    := $(shell find inc -name "*.h")
-SUBM_SOURCES :=
+LIB_SOURCES :=
 
 # Object Files
 CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/cube/,$(notdir $(CUBE_SOURCES:.c=.o)))
@@ -91,7 +91,6 @@ AS_INCLUDES :=
 C_INCLUDES  := $(addprefix -I,                            \
 	$(sort $(dir $(C_HEADERS)))                           \
 	$(sort $(dir $(shell find $(CUBE_DIR) -name "*.h")))  \
-	$(sort $(dir $(shell find $(LIB_DIR) -name "*.h")))   \
 )                                                         \
 
 # Adds submodule sources and include directories
@@ -100,10 +99,10 @@ ifneq ($(wildcard $(SUBMODULE_DIR)/.*),)
 endif
 
 # Submodule objects
-SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/submodules/,$(notdir $(SUBM_SOURCES:.c=.o)))
+LIB_OBJECTS := $(addprefix $(BUILD_DIR)/submodules/,$(notdir $(LIB_SOURCES:.c=.o)))
 
-ifneq ($(strip $(SUBM_SOURCES)),)
-vpath %.c $(sort $(dir $(SUBM_SOURCES)))
+ifneq ($(strip $(LIB_SOURCES)),)
+vpath %.c $(sort $(dir $(LIB_SOURCES)))
 endif
 
 # Compile Flags
@@ -159,7 +158,8 @@ all: $(BUILD_DIR)/$(PROJECT_NAME).elf $(BUILD_DIR)/$(PROJECT_NAME).hex $(BUILD_D
 # and build directory existence
 $(BUILD_DIR)/cube/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
-	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/cube/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
+	$(AT)$(CC) -c $(CFLAGS) -Wno-unused-parameter -Wa,-a,-ad,-alms=$(BUILD_DIR)/cube/$(notdir $(<:.c=.lst)) \
+		-MF"$(@:.o=.d)" $< -o $@
 
 $(BUILD_DIR)/submodules/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
@@ -174,9 +174,9 @@ $(BUILD_DIR)/cube/%.o: %.s Makefile | $(BUILD_DIR)
 	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
 
 # The .elf file depend on all object files and the Makefile
-$(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) Makefile | $(BUILD_DIR)
 	@echo "CC $@"
-	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) $(LDFLAGS) -o $@
+	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
 
 # The .hex file depend on the .elf file and build directory existence
