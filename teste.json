@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "inc/","cube/Drivers/CMSIS/Device/ST/STM32F3xx/Include/","cube/Drivers/CMSIS/Include/","cube/Drivers/STM32F3xx_HAL_Driver/Inc/","cube/Drivers/STM32F3xx_HAL_Driver/Inc/Legacy/","cube/Inc/"
+            ],
+
+            "defines": [
+                "USE_HAL_DRIVER","STM32F303xE"
+            ],
+
+            "compilerPath": "${env:ARM_GCC_PATH}/arm-none-eabi-gcc",
+            "cStandard": "c99",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
