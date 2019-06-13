@@ -11,7 +11,7 @@ DEVICE        := STM32F303RE
 DEVICE_LD     := STM32F303RETx
 DEVICE_DEF    := STM32F303xE
 
-SUBMODULE_DIR := lib
+LIB_DIR := lib
 
 # Default values, can be set on the command line or here
 DEBUG   ?= 1
@@ -32,7 +32,10 @@ else
 AT :=
 endif
 
-# Optmization
+###############################################################################
+## Code Optimization
+###############################################################################
+
 ifeq ($(DEBUG),1)
 OPT := -Og
 else
@@ -54,7 +57,7 @@ CUBE_SOURCES := $(shell find $(CUBE_DIR) -name "*.c")
 ASM_SOURCES  := $(shell find $(CUBE_DIR) -name "*.s")
 C_SOURCES    := $(shell find src -name "*.c")
 C_HEADERS    := $(shell find inc -name "*.h")
-SUBM_SOURCES :=
+LIB_SOURCES :=
 
 # Object Files
 CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/cube/,$(notdir $(CUBE_SOURCES:.c=.o)))
@@ -62,7 +65,6 @@ CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/cube/,$(notdir $(ASM_SOURCES:.s=.o)))
 OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
 
 vpath %.c $(sort $(dir $(CUBE_SOURCES)))
-
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
@@ -86,24 +88,21 @@ C_DEFS  :=            \
 
 # Include Paths
 AS_INCLUDES :=
-C_INCLUDES  :=                                                         \
-	-I$(CUBE_DIR)/Drivers/CMSIS/Device/ST/$(DEVICE_FAMILY)/Include     \
-	-I$(CUBE_DIR)/Drivers/CMSIS/Include                                \
-	-I$(CUBE_DIR)/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc              \
-	-I$(CUBE_DIR)/Drivers/$(DEVICE_FAMILY)_HAL_Driver/Inc/Legacy       \
-	-I$(CUBE_DIR)/Inc                                                  \
-	-Iinc                                                              \
+C_INCLUDES  := $(addprefix -I,                            \
+	$(sort $(dir $(C_HEADERS)))                           \
+	$(sort $(dir $(shell find $(CUBE_DIR) -name "*.h")))  \
+)                                                         \
 
 # Adds submodule sources and include directories
 ifneq ($(wildcard $(SUBMODULE_DIR)/.*),)
--include $(shell find $(SUBMODULE_DIR) -name "sources.mk")
+-include $(shell find -L $(SUBMODULE_DIR) -name "sources.mk")
 endif
 
 # Submodule objects
-SUBM_OBJECTS := $(addprefix $(BUILD_DIR)/submodules/,$(notdir $(SUBM_SOURCES:.c=.o)))
+LIB_OBJECTS := $(addprefix $(BUILD_DIR)/submodules/,$(notdir $(LIB_SOURCES:.c=.o)))
 
-ifneq ($(strip $(SUBM_SOURCES)),)
-vpath %.c $(sort $(dir $(SUBM_SOURCES)))
+ifneq ($(strip $(LIB_SOURCES)),)
+vpath %.c $(sort $(dir $(LIB_SOURCES)))
 endif
 
 # Compile Flags
@@ -136,7 +135,7 @@ CFLAGS  :=                                  \
 
 ifeq ($(DEBUG),1)
 ASFLAGS += -g
-CFLAGS  += -g3
+CFLAGS  += -g3 -DDEBUG
 endif
 
 # Linker Flags
@@ -159,7 +158,8 @@ all: $(BUILD_DIR)/$(PROJECT_NAME).elf $(BUILD_DIR)/$(PROJECT_NAME).hex $(BUILD_D
 # and build directory existence
 $(BUILD_DIR)/cube/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
-	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/cube/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
+	$(AT)$(CC) -c $(CFLAGS) -Wno-unused-parameter -Wa,-a,-ad,-alms=$(BUILD_DIR)/cube/$(notdir $(<:.c=.lst)) \
+		-MF"$(@:.o=.d)" $< -o $@
 
 $(BUILD_DIR)/submodules/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
@@ -174,9 +174,9 @@ $(BUILD_DIR)/cube/%.o: %.s Makefile | $(BUILD_DIR)
 	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
 
 # The .elf file depend on all object files and the Makefile
-$(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) Makefile | $(BUILD_DIR)
 	@echo "CC $@"
-	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(SUBM_OBJECTS) $(LDFLAGS) -o $@
+	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
 
 # The .hex file depend on the .elf file and build directory existence
@@ -231,11 +231,11 @@ cube:
 # Prepare workspace
 # - Erases useless Makefile, renames cube's main.c and links githooks
 prepare:
-	@echo "Linking githooks"
-	$(AT)git config core.hooksPath .githooks
 	@echo "Preparing cube files"
 	$(AT)-mv -f $(CUBE_DIR)/Src/main.c $(CUBE_DIR)/Src/cube_main.c
 	$(AT)-rm -f $(CUBE_DIR)/Makefile
+	@echo "Linking githooks"
+	$(AT)git config core.hooksPath .githooks
 
 # Flash Built files with st-flash
 flash load:
@@ -290,19 +290,9 @@ clean_all:
 	@echo "Cleaning all build files"
 	$(AT)-rm -rf $(BUILD_DIR)
 
-# Uncrustify auxiliary variables
-UNCRUSTIFY_FILES = $(C_SOURCES) $(C_HEADERS)
-UNCRUSTIFIED_SOURCES = $(UNCRUSTIFY_FILES:%=.uncrustify/%)
-
-# Uncrustify auxiliary target
-.uncrustify/%: %
-	@mkdir -p $(dir $@)
-	@uncrustify -f $< -c uncrustify.cfg -o $@
-	@cp -f $@ $<
-
 # Format source code using uncrustify
-format: $(UNCRUSTIFIED_SOURCES) Makefile
-	@rm -rf .uncrustify/
+format: Makefile
+	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS)
 
 # Display help
 help:
