@@ -129,7 +129,7 @@ CFLAGS  += -g3
 endif
 
 # Linker Flags
-LDSCRIPT := $(CUBE_DIR)/$(DEVICE_LD).ld
+LDSCRIPT := $(CUBE_DIR)/$(DEVICE_LD_FILE).ld
 
 LIBS     := -lc -lm -lnosys
 LIBDIR   :=
