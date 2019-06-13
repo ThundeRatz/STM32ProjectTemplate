@@ -3,23 +3,12 @@
 # ThundeRatz Robotics Team
 # 08/2018
 
-PROJECT_NAME = stm32_project_template
-
-DEVICE_FAMILY  := STM32F3xx
-DEVICE_TYPE    := STM32F303xx
-DEVICE         := STM32F303RE
-DEVICE_LD_FILE := STM32F303RETx_FLASH
-DEVICE_DEF     := STM32F303xE
-
-LIB_DIR := lib
-
-# Default values, can be set on the command line or here
-DEBUG   ?= 1
-VERBOSE ?= 0
-
 ###############################################################################
 
 # Tune the lines below only if you know what you are doing:
+
+# Project specific configurations
+include config.mk
 
 ###############################################################################
 ## Output configuration
@@ -45,9 +34,6 @@ endif
 ###############################################################################
 ## Input files
 ###############################################################################
-
-# Cube Directory
-CUBE_DIR := cube
 
 # Build Directory
 BUILD_DIR := build
@@ -98,8 +84,8 @@ C_INCLUDES  := $(addprefix -I,                            \
 )                                                         \
 
 # Adds submodule sources and include directories
-ifneq ($(wildcard $(SUBMODULE_DIR)/.*),)
--include $(shell find -L $(SUBMODULE_DIR) -name "sources.mk")
+ifneq ($(wildcard $(LIB_DIR)/.*),)
+-include $(shell find -L $(LIB_DIR) -name "sources.mk")
 endif
 
 # Submodule objects
@@ -160,20 +146,20 @@ all: $(BUILD_DIR)/$(PROJECT_NAME).elf $(BUILD_DIR)/$(PROJECT_NAME).hex $(BUILD_D
 
 # All .o file depend on respective .c file, the Makefile
 # and build directory existence
-$(BUILD_DIR)/cube/%.o: %.c Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(CUBE_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
-	$(AT)$(CC) -c $(CFLAGS) -Wno-unused-parameter -Wa,-a,-ad,-alms=$(BUILD_DIR)/cube/$(notdir $(<:.c=.lst)) \
+	$(AT)$(CC) -c $(CFLAGS) -Wno-unused-parameter -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(CUBE_DIR)/$(notdir $(<:.c=.lst)) \
 		-MF"$(@:.o=.d)" $< -o $@
 
-$(BUILD_DIR)/submodules/%.o: %.c Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(LIB_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
-	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/submodules/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
+	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(LIB_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
 $(BUILD_DIR)/obj/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/obj/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
-$(BUILD_DIR)/cube/%.o: %.s Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(CUBE_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
 
@@ -198,8 +184,8 @@ $(BUILD_DIR):
 	@echo "Creating build directory"
 	$(AT)mkdir -p $@
 	$(AT)mkdir -p $@/obj
-	$(AT)mkdir -p $@/submodules
-	$(AT)mkdir -p $@/cube
+	$(AT)mkdir -p $@/$(LIB_DIR)
+	$(AT)mkdir -p $@/$(CUBE_DIR)
 
 ###############################################################################
 ## OS dependent commands
@@ -306,8 +292,8 @@ help:
 	@echo
 	@echo "Opcoes:"
 	@echo "	help:       mostra essa ajuda"
-	@echo "	cube:       gera arquivos do cube"
-	@echo "	prepare:    prepara para compilação inicial apagando arquivos do cube"
+	@echo "	cube:       gera arquivos do cube (não funciona no momento por limitações no cube)"
+	@echo "	prepare:    prepara para compilação inicial apagando arquivos do cube, gera arquivos de configuração do vs code"
 	@echo "	all:        compila todos os arquivos"
 	@echo "	info:       mostra informações sobre o uC conectado"
 	@echo "	flash:      carrega os arquivos compilados no microcontrolador via st-link"
@@ -318,17 +304,11 @@ help:
 	@echo "	clean_cube: limpa os arquivos gerados pelo Cube"
 	@echo
 	@echo "Configuracoes atuais:"
-	@echo "	DEVICE_FAMILY := "$(DEVICE_FAMILY)
-	@echo "	DEVICE_TYPE   := "$(DEVICE_TYPE)
-	@echo "	DEVICE        := "$(DEVICE)
-	@echo "	DEVICE_LD     := "$(DEVICE_LD)
-	@echo "	DEVICE_DEF    := "$(DEVICE_DEF)
-
-# Include dependecy files for .h dependency detection
--include $(wildcard $(BUILD_DIR)/**/*.d)
-
-.PHONY: all cube prepare flash load jflash info reset clean_cube clean clean_all format help
-
+	@echo "	DEVICE_FAMILY  := "$(DEVICE_FAMILY)
+	@echo "	DEVICE_TYPE    := "$(DEVICE_TYPE)
+	@echo "	DEVICE         := "$(DEVICE)
+	@echo "	DEVICE_LD_FILE := "$(DEVICE_LD_FILE)
+	@echo "	DEVICE_DEF     := "$(DEVICE_DEF)
 
 ###############################################################################
 ## VS Code files
@@ -398,3 +378,13 @@ vs_cpp_properties: Makefile | $(VSCODE_FOLDER)
 
 $(VSCODE_FOLDER):
 	$(AT)mkdir -p $@
+
+###############################################################################
+
+# Include dependecy files for .h dependency detection
+-include $(wildcard $(BUILD_DIR)/**/*.d)
+
+.PHONY: \
+	all cube prepare flash load jflash info reset \
+	clean_cube clean clean_all format help \
+	vs_launch vs_cpp_properties
