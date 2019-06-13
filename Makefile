@@ -89,7 +89,7 @@ ifneq ($(wildcard $(LIB_DIR)/.*),)
 endif
 
 # Submodule objects
-LIB_OBJECTS := $(addprefix $(BUILD_DIR)/submodules/,$(notdir $(LIB_SOURCES:.c=.o)))
+LIB_OBJECTS := $(addprefix $(BUILD_DIR)/$(LIB_DIR)/,$(notdir $(LIB_SOURCES:.c=.o)))
 
 ifneq ($(strip $(LIB_SOURCES)),)
 vpath %.c $(sort $(dir $(LIB_SOURCES)))
