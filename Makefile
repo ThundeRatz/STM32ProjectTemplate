@@ -5,11 +5,11 @@
 
 PROJECT_NAME = stm32_project_template
 
-DEVICE_FAMILY := STM32F3xx
-DEVICE_TYPE   := STM32F303xx
-DEVICE        := STM32F303RE
-DEVICE_LD     := STM32F303RETx
-DEVICE_DEF    := STM32F303xE
+DEVICE_FAMILY  := STM32F3xx
+DEVICE_TYPE    := STM32F303xx
+DEVICE         := STM32F303RE
+DEVICE_LD_FILE := STM32F303RETx_FLASH
+DEVICE_DEF     := STM32F303xE
 
 LIB_DIR := lib
 
@@ -57,11 +57,11 @@ CUBE_SOURCES := $(shell find $(CUBE_DIR) -name "*.c")
 ASM_SOURCES  := $(shell find $(CUBE_DIR) -name "*.s")
 C_SOURCES    := $(shell find src -name "*.c")
 C_HEADERS    := $(shell find inc -name "*.h")
-LIB_SOURCES :=
+LIB_SOURCES  :=
 
 # Object Files
-CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/cube/,$(notdir $(CUBE_SOURCES:.c=.o)))
-CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/cube/,$(notdir $(ASM_SOURCES:.s=.o)))
+CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
+CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
 
 vpath %.c $(sort $(dir $(CUBE_SOURCES)))
@@ -85,6 +85,10 @@ AS_DEFS :=
 C_DEFS  :=            \
 	-DUSE_HAL_DRIVER  \
 	-D$(DEVICE_DEF)   \
+
+ifeq ($(DEBUG),1)
+C_DEFS += -DDEBUG
+endif
 
 # Include Paths
 AS_INCLUDES :=
@@ -113,7 +117,7 @@ else ifeq ($(DEVICE_FAMILY), $(filter $(DEVICE_FAMILY),STM32L0xx STM32G0xx))
 MCUFLAGS += -mcpu=cortex-m0plus
 else ifeq ($(DEVICE_FAMILY), $(filter $(DEVICE_FAMILY),STM32F1xx STM32L1xx STM32F2xx STM32L2xx))
 MCUFLAGS += -mcpu=cortex-m3
-else ifeq ($(DEVICE_FAMILY), $(filter $(DEVICE_FAMILY),STM32F3xx STM32L3xx STM32F4xx STM32L4xx))
+else ifeq ($(DEVICE_FAMILY), $(filter $(DEVICE_FAMILY),STM32F3xx STM32L3xx STM32F4xx STM32L4xx STM32WBxx))
 MCUFLAGS += -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 else ifeq ($(DEVICE_FAMILY), $(filter $(DEVICE_FAMILY),STM32F7xx STM32L7xx))
 MCUFLAGS += -mcpu=cortex-m7 -mfpu=fpv4-sp-d16 -mfloat-abi=hard
@@ -135,11 +139,11 @@ CFLAGS  :=                                  \
 
 ifeq ($(DEBUG),1)
 ASFLAGS += -g
-CFLAGS  += -g3 -DDEBUG
+CFLAGS  += -g3
 endif
 
 # Linker Flags
-LDSCRIPT := $(CUBE_DIR)/$(DEVICE_LD)_FLASH.ld
+LDSCRIPT := $(CUBE_DIR)/$(DEVICE_LD).ld
 
 LIBS     := -lc -lm -lnosys
 LIBDIR   :=
@@ -230,7 +234,7 @@ cube:
 
 # Prepare workspace
 # - Erases useless Makefile, renames cube's main.c and links githooks
-prepare:
+prepare: vs_launch vs_cpp_properties
 	@echo "Preparing cube files"
 	$(AT)-mv -f $(CUBE_DIR)/Src/main.c $(CUBE_DIR)/Src/cube_main.c
 	$(AT)-rm -f $(CUBE_DIR)/Makefile
@@ -324,3 +328,73 @@ help:
 -include $(wildcard $(BUILD_DIR)/**/*.d)
 
 .PHONY: all cube prepare flash load jflash info reset clean_cube clean clean_all format help
+
+
+###############################################################################
+## VS Code files
+###############################################################################
+
+VSCODE_FOLDER = .vscode
+
+NULL  :=
+SPACE := $(NULL) #
+COMMA := ,
+
+define VS_LAUNCH
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "jlink",
+            "cwd": "$${workspaceRoot}",
+            "executable": "./$(BUILD_DIR)/$(PROJECT_NAME).elf",
+            "name": "Cortex Debug (J-Link)",
+            "device": "$(DEVICE)",
+            "interface": "swd",
+        }
+    ]
+}
+endef
+
+ifeq ($(OS),Windows_NT)
+NAME := Win32"
+else
+NAME := Linux
+endif
+
+define VS_CPP_PROPERTIES
+{
+    "configurations": [
+        {
+            "name": "$(NAME)",
+            "includePath": [
+                $(subst -I,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(C_INCLUDES),"$(inc)"))))
+            ],
+
+            "defines": [
+                $(subst -D,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach def,$(C_DEFS),"$(def)"))))
+            ],
+
+            "compilerPath": "$${env:ARM_GCC_PATH}/arm-none-eabi-gcc",
+            "cStandard": "c99",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
+endef
+
+export VS_LAUNCH
+export VS_CPP_PROPERTIES
+
+vs_launch: Makefile | $(VSCODE_FOLDER)
+	$(AT)echo "$$VS_LAUNCH" > $(VSCODE_FOLDER)/launch.json
+
+vs_cpp_properties: Makefile | $(VSCODE_FOLDER)
+	$(AT)echo "$$VS_CPP_PROPERTIES" > $(VSCODE_FOLDER)/c_cpp_properties.json
+
+$(VSCODE_FOLDER):
+	$(AT)mkdir -p $@
