@@ -227,11 +227,10 @@ prepare: vs_launch vs_cpp_properties
 	@echo "Linking githooks"
 	$(AT)git config core.hooksPath .githooks
 
-# Flash Built files with st-flash
+# Flash Built files with STM32CubeProgrammer
 flash load:
-	@echo "Flashing $(PROJECT_NAME).bin with STM32_Programmer_CLI"
-	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(PROJECT_NAME).bin \
-		0x08000000 -v -rst
+	@echo "Flashing $(PROJECT_NAME).hex with STM32_Programmer_CLI"
+	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(PROJECT_NAME).hex -v -rst
 
 # Create J-Link flash script
 .jlink-flash: Makefile
