@@ -324,6 +324,16 @@ define VS_LAUNCH
 {
     "version": "0.2.0",
     "configurations": [
+		{
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "stutil",
+            "cwd": "$${workspaceRoot}",
+            "executable": "./$(BUILD_DIR)/$(PROJECT_NAME).elf",
+            "name": "Cortex Debug (ST-Util)",
+            "device": "$(DEVICE)",
+            "v1": false
+        },
         {
             "type": "cortex-debug",
             "request": "launch",
@@ -339,7 +349,7 @@ define VS_LAUNCH
 endef
 
 ifeq ($(OS),Windows_NT)
-NAME := Win32"
+NAME := Win32
 else
 NAME := Linux
 endif
