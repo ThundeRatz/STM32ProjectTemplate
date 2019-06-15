@@ -26,6 +26,7 @@ alguns arquivos de configuração.
 * [Visual Studio Code](https://code.visualstudio.com/)
   * [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
   * [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
+  * [Cortex-Debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug)
 
 * [STM32 Cube Programmer](https://www.st.com/en/development-tools/stm32cubeprog.html) ou [J-Link](https://www.segger.com/downloads/jlink/)
   > É necessário que o executável também esteja no `PATH`
@@ -60,44 +61,61 @@ Com o arquivo do projeto na pasta correta, os seguintes comandos devem ser
 executados (necessário apenas após dar checkout no repositório ou mudar o cube):
 
 ```bash
-make cube     # Gera os arquivos do cube
-make prepare  # Apaga os arquivos do cube desnecessários
+make cube     # Gera arquivos do cube (não funciona no momento por limitações no cube)
+make prepare  # Apaga os arquivos do cube desnecessários e gera arquivos de configuração do VS Code
 ```
 
 Se, após modificar os arquivos do cube, ocorrer algum erro nos comandos acima,
 pode rodar `make clean_cube` para apagar os arquivos gerados e então tentar 
 novamente para que eles sejam gerados do zero.
 
-### Makefile
+### [config.mk](config.mk)
 
-As primeiras linhas do Makefile devem ser alteradas de acordo com o projeto:
+O arquivo [config.mk](config.mk) deve ser alterado de acordo com o projeto. 
+
+Para isso é necessário mudar o nome do projeto, o qual deve ter o mesmo do arquivo do Cube (por exemplo, `stm32_project_template.ioc`), porém sem a extensão `.ioc`.
 
 ```Makefile
+# Cube file name without .ioc extension
 PROJECT_NAME = stm32_project_template
-
-DEVICE_FAMILY := STM32F3xx
-DEVICE_TYPE   := STM32F303xx
-DEVICE        := STM32F303RE
-DEVICE_LD     := STM32F303RETx
-DEVICE_DEF    := STM32F303xE
 ```
 
-Basta mudar o nome do projeto e pegar o nome completo do processador e colocar nessas configurações, seguindo o padrão. O nome do projeto deve ser o mesmo nome do arquivo do Cube (por exemplo, `stm32_project_template.ioc`).
+Também é necessário alterar as seguintes configuraões:
 
-> Em caso de dúvida, basta ver o nome do arquivo `.ld` gerado na pasta `cube`,
-> ele contém o nome completo, que deve ir na variável `DEVICE_LD`,
-> para as outras basta substituir por `x`.
+```Makefile
+DEVICE_FAMILY  := STM32F3xx
+DEVICE_TYPE    := STM32F303xx
+DEVICE_DEF     := STM32F303xE
+DEVICE         := STM32F303RE
+```
+
+Basta pegar o nome completo do microcontrolador e colocar nessas configurações, seguindo o padrão, fazendo as substituições que forem precisas por `x`.
+
+> Em caso de dúvida, veja o nome do arquivo `.ld` gerado na pasta `cube`,
+> ele contém o nome completo do microcontrolador.
 
 > Se estiver usando a família STM32G0, a variável `DEVICE_DEF` deverá ser igual à `DEVICE_TYPE`.
 
-Também é necessário mudar o arquivo `.vscode/c_cpp_properties.json` e colocar o
-`DEVICE_DEF` nele, para que o IntelliSense possa encontrar as configurações corretas:
+Além disso, deve-se colocar o nome completo do arquivo com extensão `.ld` em `DEVICE_LD_FILE`.
 
-```json
-"defines": [
-    "STM32F303xE",
-    "USE_HAL_DRIVER"
-],
+```Makefile
+# Linker script file without .ld extension
+# Find it on cube folder after code generation
+DEVICE_LD_FILE := STM32F303RETx_FLASH
+```
+
+As seguintes configurações não precisam ser alteradas, elas definem nomes de diretórios e opções de compilação, sendo o sugerido permanecerem com seus valores padrão:
+
+```Makefile
+# Lib dir
+LIB_DIR  := lib
+
+# Cube Directory
+CUBE_DIR := cube
+
+# Default values, can be set on the command line or here
+DEBUG   ?= 1
+VERBOSE ?= 0
 ```
 
 ## Compilando
