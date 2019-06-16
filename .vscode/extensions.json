@@ -6,7 +6,6 @@
     "recommendations": [
         "ms-vscode.cpptools",
         "EditorConfig.EditorConfig",
-        "metalcode-eu.gnu-debugger",
         "marus25.Cortex-Debug",
     ],
 
