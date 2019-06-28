@@ -220,7 +220,7 @@ cube:
 
 # Prepare workspace
 # - Erases useless Makefile, renames cube's main.c and links githooks
-prepare: vs_launch vs_cpp_properties
+prepare:
 	@echo "Preparing cube files"
 	$(AT)-mv -f $(CUBE_DIR)/Src/main.c $(CUBE_DIR)/Src/cube_main.c
 	$(AT)-rm -f $(CUBE_DIR)/Makefile
@@ -263,10 +263,10 @@ reset:
 # Clean cube generated files
 clean_cube:
 	@echo "Cleaning cube files"
-	$(AT)-mv $(CUBE_DIR)/$(PROJECT_NAME).ioc .
+	$(AT)-mv $(CUBE_DIR)/*.ioc .
 	$(AT)-rm -rf $(CUBE_DIR)
 	$(AT)-mkdir $(CUBE_DIR)
-	$(AT)-mv $(PROJECT_NAME).ioc $(CUBE_DIR)/
+	$(AT)-mv *.ioc $(CUBE_DIR)/
 
 # Clean build files
 # - Ignores cube-related build files (ST and CMSIS libraries)
@@ -313,7 +313,9 @@ help:
 ## VS Code files
 ###############################################################################
 
-VSCODE_FOLDER = .vscode
+VSCODE_FOLDER            := .vscode
+VS_LAUNCH_FILE           := $(VSCODE_FOLDER)/launch.json
+VS_C_CPP_PROPERTIES_FILE := $(VSCODE_FOLDER)/c_cpp_properties.json
 
 NULL  :=
 SPACE := $(NULL) #
@@ -323,7 +325,7 @@ define VS_LAUNCH
 {
     "version": "0.2.0",
     "configurations": [
-		{
+        {
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "stutil",
@@ -347,17 +349,11 @@ define VS_LAUNCH
 }
 endef
 
-ifeq ($(OS),Windows_NT)
-NAME := Win32
-else
-NAME := Linux
-endif
-
 define VS_CPP_PROPERTIES
 {
     "configurations": [
         {
-            "name": "$(NAME)",
+            "name": "STM32_TR",
             "includePath": [
                 $(subst -I,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(C_INCLUDES),"$(inc)"))))
             ],
@@ -379,11 +375,13 @@ endef
 export VS_LAUNCH
 export VS_CPP_PROPERTIES
 
-vs_launch: Makefile | $(VSCODE_FOLDER)
-	$(AT)echo "$$VS_LAUNCH" > $(VSCODE_FOLDER)/launch.json
+vs_files: $(VS_LAUNCH_FILE) $(VS_C_CPP_PROPERTIES_FILE)
 
-vs_cpp_properties: Makefile | $(VSCODE_FOLDER)
-	$(AT)echo "$$VS_CPP_PROPERTIES" > $(VSCODE_FOLDER)/c_cpp_properties.json
+$(VS_LAUNCH_FILE): Makefile | $(VSCODE_FOLDER)
+	$(AT)echo "$$VS_LAUNCH" > $@
+
+$(VS_C_CPP_PROPERTIES_FILE): Makefile | $(VSCODE_FOLDER)
+	$(AT)echo "$$VS_CPP_PROPERTIES" > $@
 
 $(VSCODE_FOLDER):
 	$(AT)mkdir -p $@
@@ -393,7 +391,6 @@ $(VSCODE_FOLDER):
 # Include dependecy files for .h dependency detection
 -include $(wildcard $(BUILD_DIR)/**/*.d)
 
-.PHONY: \
-	all cube prepare flash load jflash info reset \
-	clean_cube clean clean_all format help \
-	vs_launch vs_cpp_properties
+.PHONY:                                                       \
+	all cube prepare flash load jflash info reset clean_cube  \
+	clean clean_all format help vs_files
