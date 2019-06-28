@@ -220,7 +220,7 @@ cube:
 
 # Prepare workspace
 # - Erases useless Makefile, renames cube's main.c and links githooks
-prepare:
+prepare: $(VS_LAUNCH_FILE) $(VS_C_CPP_PROPERTIES_FILE)
 	@echo "Preparing cube files"
 	$(AT)-mv -f $(CUBE_DIR)/Src/main.c $(CUBE_DIR)/Src/cube_main.c
 	$(AT)-rm -f $(CUBE_DIR)/Makefile
