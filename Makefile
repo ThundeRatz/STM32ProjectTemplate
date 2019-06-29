@@ -146,25 +146,25 @@ all: $(BUILD_DIR)/$(PROJECT_NAME).elf $(BUILD_DIR)/$(PROJECT_NAME).hex $(BUILD_D
 
 # All .o file depend on respective .c file, the Makefile
 # and build directory existence
-$(BUILD_DIR)/$(CUBE_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(CUBE_DIR)/%.o: %.c config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -c $(CFLAGS) -Wno-unused-parameter -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(CUBE_DIR)/$(notdir $(<:.c=.lst)) \
 		-MF"$(@:.o=.d)" $< -o $@
 
-$(BUILD_DIR)/$(LIB_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(LIB_DIR)/%.o: %.c config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(LIB_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
-$(BUILD_DIR)/obj/%.o: %.c Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/obj/%.o: %.c config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/obj/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
-$(BUILD_DIR)/$(CUBE_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(CUBE_DIR)/%.o: %.s config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
 
 # The .elf file depend on all object files and the Makefile
-$(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $@"
 	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
@@ -208,7 +208,7 @@ endif
 ###############################################################################
 
 # Create cube script
-.cube: Makefile
+.cube: config.mk Makefile
 	@echo "Creating Cube script"
 	@echo "config load "$(CUBE_DIR)"/"$(PROJECT_NAME)".ioc" > $@
 	@echo "project generate" >> $@
@@ -233,7 +233,7 @@ flash load:
 	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(PROJECT_NAME).hex -v -rst
 
 # Create J-Link flash script
-.jlink-flash: Makefile
+.jlink-flash: config.mk Makefile
 	@echo "Creating J-Link flash script"
 	@echo device $(DEVICE) > $@
 	@echo si SWD >> $@
@@ -280,7 +280,7 @@ clean_all:
 	$(AT)-rm -rf $(BUILD_DIR)
 
 # Format source code using uncrustify
-format: Makefile
+format:
 	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS)
 
 # Display help
@@ -377,10 +377,10 @@ export VS_CPP_PROPERTIES
 
 vs_files: $(VS_LAUNCH_FILE) $(VS_C_CPP_PROPERTIES_FILE)
 
-$(VS_LAUNCH_FILE): Makefile | $(VSCODE_FOLDER)
+$(VS_LAUNCH_FILE): config.mk Makefile | $(VSCODE_FOLDER)
 	$(AT)echo "$$VS_LAUNCH" > $@
 
-$(VS_C_CPP_PROPERTIES_FILE): Makefile | $(VSCODE_FOLDER)
+$(VS_C_CPP_PROPERTIES_FILE): config.mk Makefile | $(VSCODE_FOLDER)
 	$(AT)echo "$$VS_CPP_PROPERTIES" > $@
 
 $(VSCODE_FOLDER):
