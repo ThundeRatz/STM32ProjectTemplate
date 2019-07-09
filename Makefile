@@ -60,6 +60,7 @@ vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
 # Executables
 CC      := arm-none-eabi-gcc
+AS      := $(CC) -x assembler-with-cpp
 OBJCOPY := arm-none-eabi-objcopy
 SIZE    := arm-none-eabi-size
 GDB     := arm-none-eabi-gdb
@@ -160,8 +161,8 @@ $(BUILD_DIR)/obj/%.o: %.c config.mk Makefile | $(BUILD_DIR)
 	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/obj/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
 $(BUILD_DIR)/$(CUBE_DIR)/%.o: %.s config.mk Makefile | $(BUILD_DIR)
-	@echo "CC $<"
-	$(AT)$(CC) -x assembler-with-cpp -c $(CFLAGS) -MF"$(@:%.o=%.d)" $< -o $@
+	@echo "AS $<"
+	$(AT)$(AS) -c $(ASFLAGS) $< -o $@
 
 # The .elf file depend on all object files and the Makefile
 $(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
