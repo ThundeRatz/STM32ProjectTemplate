@@ -123,6 +123,7 @@ CFLAGS  :=                                  \
 	-Wall -Wextra -fdata-sections           \
 	-ffunction-sections -fmessage-length=0  \
 	$(OPT) -std=c11 -MMD -MP                \
+	-include utils.h                        \
 
 ifeq ($(DEBUG),1)
 ASFLAGS += -g
@@ -362,6 +363,8 @@ define VS_CPP_PROPERTIES
             "defines": [
                 $(subst -D,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach def,$(C_DEFS),"$(def)"))))
             ],
+
+            "forcedInclude": [ "inc/utils.h" ],
 
             "compilerPath": "$${env:ARM_GCC_PATH}/arm-none-eabi-gcc",
             "cStandard": "c99",
