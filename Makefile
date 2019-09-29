@@ -38,21 +38,32 @@ endif
 # Build Directory
 BUILD_DIR := build
 
+# Tests Directory
+TEST_DIR := tests
+
 # Source Files
 CUBE_SOURCES := $(shell find $(CUBE_DIR) -name "*.c")
 ASM_SOURCES  := $(shell find $(CUBE_DIR) -name "*.s")
 C_SOURCES    := $(shell find src -name "*.c")
 C_HEADERS    := $(shell find inc -name "*.h")
 LIB_SOURCES  :=
+TEST_HEADERS := $(shell find $(TEST_DIR)/inc -name "*.h")
+TEST_SOURCES := $(shell find $(TEST_DIR)/src -name "*.c")
+
+ifeq ($(TEST), 1)
+C_SOURCES := $(filter-out $(shell find src -name "main.c"), $(C_SOURCES))
+endif
 
 # Object Files
 CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
 CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
+TEST_OBJECTS := $(addprefix $(BUILD_DIR)/$(TEST_DIR)/,$(notdir $(TEST_SOURCES:.c=.o)))
 
 vpath %.c $(sort $(dir $(CUBE_SOURCES)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
+vpath %.c $(sort $(dir $(TEST_SOURCES)))
 
 ###############################################################################
 ## Compiler settings
@@ -82,14 +93,15 @@ AS_INCLUDES :=
 C_INCLUDES  := $(addprefix -I,                            \
 	$(sort $(dir $(C_HEADERS)))                           \
 	$(sort $(dir $(shell find $(CUBE_DIR) -name "*.h")))  \
-)                                                         \
+	$(sort $(dir $(TEST_HEADERS)))                        \
+)
 
-# Adds submodule sources and include directories
+# Adds libs sources and include directories
 ifneq ($(wildcard $(LIB_DIR)/.*),)
 -include $(shell find -L $(LIB_DIR) -name "sources.mk")
 endif
 
-# Submodule objects
+# Libs objects
 LIB_OBJECTS := $(addprefix $(BUILD_DIR)/$(LIB_DIR)/,$(notdir $(LIB_SOURCES:.c=.o)))
 
 ifneq ($(strip $(LIB_SOURCES)),)
@@ -118,15 +130,26 @@ ASFLAGS :=                                 \
 	-Wall -Wextra -fdata-sections          \
 	-ffunction-sections $(OPT)             \
 
-CFLAGS  :=                                  \
+CFLAGS :=                                   \
 	$(MCUFLAGS) $(C_DEFS) $(C_INCLUDES)     \
 	-Wall -Wextra -fdata-sections           \
 	-ffunction-sections -fmessage-length=0  \
 	$(OPT) -std=c11 -MMD -MP                \
 
+ifneq ($(CFG_DIR),)
+CFLAGS += -include $(CFG_DIR)/board/$(TARGET_BOARD).h
+endif
+
 ifeq ($(DEBUG),1)
 ASFLAGS += -g
 CFLAGS  += -g3
+endif
+
+# Build target base name definition
+ifeq ($(TEST), 1)
+BUILD_TARGET_BASE_NAME := test_$(PROJECT_NAME)
+else
+BUILD_TARGET_BASE_NAME := $(PROJECT_NAME)
 endif
 
 # Linker Flags
@@ -134,16 +157,16 @@ LDSCRIPT := $(CUBE_DIR)/$(DEVICE_LD_FILE).ld
 
 LIBS     := -lc -lm -lnosys
 LIBDIR   :=
-LDFLAGS  :=                                                   \
-	$(MCUFLAGS) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR)     \
-	$(LIBS) -Wl,-Map=$(BUILD_DIR)/$(PROJECT_NAME).map,--cref  \
-	-Wl,--gc-sections                                         \
+LDFLAGS  :=                                                             \
+	$(MCUFLAGS) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR)               \
+	$(LIBS) -Wl,-Map=$(BUILD_DIR)/$(BUILD_TARGET_BASE_NAME).map,--cref  \
+	-Wl,--gc-sections                                                   \
 
 ###############################################################################
 ## Build Targets
 ###############################################################################
 
-all: $(BUILD_DIR)/$(PROJECT_NAME).elf $(BUILD_DIR)/$(PROJECT_NAME).hex $(BUILD_DIR)/$(PROJECT_NAME).bin
+all: $(BUILD_DIR)/$(BUILD_TARGET_BASE_NAME).elf $(BUILD_DIR)/$(BUILD_TARGET_BASE_NAME).hex $(BUILD_DIR)/$(BUILD_TARGET_BASE_NAME).bin
 
 # All .o file depend on respective .c file, the Makefile
 # and build directory existence
@@ -164,10 +187,20 @@ $(BUILD_DIR)/$(CUBE_DIR)/%.o: %.s config.mk Makefile | $(BUILD_DIR)
 	@echo "AS $<"
 	$(AT)$(AS) -c $(ASFLAGS) $< -o $@
 
+$(BUILD_DIR)/$(TEST_DIR)/%.o: %.c config.mk Makefile | $(BUILD_DIR)
+	@echo "CC $<"
+	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(TEST_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
+
 # The .elf file depend on all object files and the Makefile
 $(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $@"
 	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
+	$(AT)$(SIZE) $@
+
+# The .elf file depend on all object files and the Makefile
+$(BUILD_DIR)/test_$(PROJECT_NAME).elf: $(OBJECTS) $(TEST_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
+	@echo "CC $@"
+	$(AT)$(CC) $(OBJECTS) $(TEST_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
 
 # The .hex file depend on the .elf file and build directory existence
@@ -187,6 +220,7 @@ $(BUILD_DIR):
 	$(AT)mkdir -p $@/obj
 	$(AT)mkdir -p $@/$(LIB_DIR)
 	$(AT)mkdir -p $@/$(CUBE_DIR)
+	$(AT)mkdir -p $@/$(TEST_DIR)
 
 ###############################################################################
 ## OS dependent commands
@@ -230,8 +264,8 @@ prepare: $(VS_LAUNCH_FILE) $(VS_C_CPP_PROPERTIES_FILE)
 
 # Flash Built files with STM32CubeProgrammer
 flash load:
-	@echo "Flashing $(PROJECT_NAME).hex with STM32_Programmer_CLI"
-	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(PROJECT_NAME).hex -v -rst
+	@echo "Flashing $(BUILD_TARGET_BASE_NAME).hex with STM32_Programmer_CLI"
+	$(AT)STM32_Programmer_CLI -c port=SWD -w $(BUILD_DIR)/$(BUILD_TARGET_BASE_NAME).hex -v -rst
 
 # Create J-Link flash script
 .jlink-flash: config.mk Makefile
@@ -242,15 +276,21 @@ flash load:
 	@echo connect >> $@
 	@echo r >> $@
 	@echo h >> $@
-	@echo loadfile $(BUILD_DIR)/$(PROJECT_NAME).hex >> $@
+	@echo loadfile $(BUILD_DIR)/$(BUILD_TARGET_BASE_NAME).hex >> $@
 	@echo r >> $@
 	@echo g >> $@
 	@echo exit >> $@
 
 # Flash Built files with j-link
 jflash: .jlink-flash
-	@echo "Flashing $(PROJECT_NAME).hex with J-Link"
+	@echo "Flashing $(BUILD_TARGET_BASE_NAME).hex with J-Link"
 	$(AT)$(JLINK_EXE) $<
+
+ifeq ($(USE_RTT_LIB), 1)
+rtt:
+	$(AT)JLinkGDBServer -device $(DEVICE) -nohalt -if SWD -speed 4000 -port 2331 -vd -singlerun -timeout 0 -nogui > /dev/null &
+	$(AT)JLinkRTTClient
+endif
 
 # Show MCU info
 info:
@@ -272,8 +312,14 @@ clean_cube:
 # Clean build files
 # - Ignores cube-related build files (ST and CMSIS libraries)
 clean:
+ifeq ($(TEST), 0)
 	@echo "Cleaning build files"
 	$(AT)-rm -rf $(OBJECTS) $(OBJECTS:.o=.d) $(OBJECTS:.o=.lst)
+else
+# Clean test build files
+	@echo "Cleaning test build files"
+	$(AT)-rm -rf $(TEST_OBJECTS) $(TEST_OBJECTS:.o=.d) $(TEST_OBJECTS:.o=.lst)
+endif
 
 # Clean all build files
 clean_all:
@@ -282,7 +328,7 @@ clean_all:
 
 # Format source code using uncrustify
 format:
-	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS)
+	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS) $(TEST_HEADERS) $(TEST_SOURCES)
 
 # Display help
 help:
@@ -293,7 +339,7 @@ help:
 	@echo "Opcoes:"
 	@echo "	help:       mostra essa ajuda"
 	@echo "	cube:       gera arquivos do cube (não funciona no momento por limitações no cube)"
-	@echo "	prepare:    prepara para compilação inicial apagando arquivos do cube, gera arquivos de configuração do vs code"
+	@echo "	prepare:    prepara para compilação inicial apagando arquivos do cube"
 	@echo "	all:        compila todos os arquivos"
 	@echo "	info:       mostra informações sobre o uC conectado"
 	@echo "	flash:      carrega os arquivos compilados no microcontrolador via st-link"
@@ -302,6 +348,9 @@ help:
 	@echo "	clean:      limpa os arquivos compilados"
 	@echo "	clean_all:  limpa os arquivos compilados, inclusive bibliotecas da ST"
 	@echo "	clean_cube: limpa os arquivos gerados pelo Cube"
+	@echo "	vs_files:   gera arquivos de configuração do vs code"
+	@echo "	reset:      reseta o microcontrolador"
+	@echo "	rtt:        inicia sessão de depuração com a lib de RTT (precisa fazer parte do projeto)"
 	@echo
 	@echo "Configuracoes atuais:"
 	@echo "	DEVICE_FAMILY  := "$(DEVICE_FAMILY)
@@ -331,7 +380,7 @@ define VS_LAUNCH
             "request": "launch",
             "servertype": "stutil",
             "cwd": "$${workspaceRoot}",
-            "executable": "./$(BUILD_DIR)/$(PROJECT_NAME).elf",
+            "executable": "./$(BUILD_DIR)/$(BUILD_TARGET_BASE_NAME).elf",
             "name": "Cortex Debug (ST-Util)",
             "device": "$(DEVICE)",
             "v1": false
@@ -341,7 +390,7 @@ define VS_LAUNCH
             "request": "launch",
             "servertype": "jlink",
             "cwd": "$${workspaceRoot}",
-            "executable": "./$(BUILD_DIR)/$(PROJECT_NAME).elf",
+            "executable": "./$(BUILD_DIR)/$(BUILD_TARGET_BASE_NAME).elf",
             "name": "Cortex Debug (J-Link)",
             "device": "$(DEVICE)",
             "interface": "swd",
@@ -394,4 +443,4 @@ $(VSCODE_FOLDER):
 
 .PHONY:                                                       \
 	all cube prepare flash load jflash info reset clean_cube  \
-	clean clean_all format help vs_files
+	clean clean_all format help vs_files rtt

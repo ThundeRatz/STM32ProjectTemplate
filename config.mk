@@ -5,6 +5,9 @@
 
 # Cube file name without .ioc extension
 PROJECT_NAME = stm32_project_template
+VERSION := 1
+
+TARGET_BOARD := target_$(PROJECT_NAME)_$(VERSION)
 
 DEVICE_FAMILY  := STM32F3xx
 DEVICE_TYPE    := STM32F303xx
@@ -21,6 +24,10 @@ LIB_DIR  := lib
 # Cube Directory
 CUBE_DIR := cube
 
+# Config files directory
+CFG_DIR :=
+
 # Default values, can be set on the command line or here
 DEBUG   ?= 1
 VERBOSE ?= 0
+TEST    ?= 0
