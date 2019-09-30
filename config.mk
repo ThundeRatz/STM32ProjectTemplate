@@ -24,8 +24,11 @@ LIB_DIR  := lib
 # Cube Directory
 CUBE_DIR := cube
 
-# Config files directory
+# Config Files Directory
 CFG_DIR :=
+
+# Tests Directory
+TEST_DIR := tests
 
 # Default values, can be set on the command line or here
 DEBUG   ?= 1

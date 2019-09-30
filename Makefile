@@ -38,9 +38,6 @@ endif
 # Build Directory
 BUILD_DIR := build
 
-# Tests Directory
-TEST_DIR := tests
-
 # Source Files
 CUBE_SOURCES := $(shell find $(CUBE_DIR) -name "*.c")
 ASM_SOURCES  := $(shell find $(CUBE_DIR) -name "*.s")
@@ -93,6 +90,9 @@ AS_INCLUDES :=
 C_INCLUDES  := $(addprefix -I,                            \
 	$(sort $(dir $(C_HEADERS)))                           \
 	$(sort $(dir $(shell find $(CUBE_DIR) -name "*.h")))  \
+)
+
+C_TESTS_INCLUDES := $(addprefix -I,                       \
 	$(sort $(dir $(TEST_HEADERS)))                        \
 )
 
@@ -145,6 +145,9 @@ ASFLAGS += -g
 CFLAGS  += -g3
 endif
 
+TEST_CFLAGS :=                              \
+	$(CFLAGS) $(C_TESTS_INCLUDES)           \
+
 # Build target base name definition
 ifeq ($(TEST), 1)
 BUILD_TARGET_BASE_NAME := test_$(PROJECT_NAME)
@@ -189,7 +192,7 @@ $(BUILD_DIR)/$(CUBE_DIR)/%.o: %.s config.mk Makefile | $(BUILD_DIR)
 
 $(BUILD_DIR)/$(TEST_DIR)/%.o: %.c config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $<"
-	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(TEST_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
+	$(AT)$(CC) -c $(TEST_CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(TEST_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
 # The .elf file depend on all object files and the Makefile
 $(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
@@ -286,12 +289,6 @@ jflash: .jlink-flash
 	@echo "Flashing $(BUILD_TARGET_BASE_NAME).hex with J-Link"
 	$(AT)$(JLINK_EXE) $<
 
-ifeq ($(USE_RTT_LIB), 1)
-rtt:
-	$(AT)JLinkGDBServer -device $(DEVICE) -nohalt -if SWD -speed 4000 -port 2331 -vd -singlerun -timeout 0 -nogui > /dev/null &
-	$(AT)JLinkRTTClient
-endif
-
 # Show MCU info
 info:
 	$(AT)STM32_Programmer_CLI -c port=SWD
@@ -350,7 +347,6 @@ help:
 	@echo "	clean_cube: limpa os arquivos gerados pelo Cube"
 	@echo "	vs_files:   gera arquivos de configuração do vs code"
 	@echo "	reset:      reseta o microcontrolador"
-	@echo "	rtt:        inicia sessão de depuração com a lib de RTT (precisa fazer parte do projeto)"
 	@echo
 	@echo "Configuracoes atuais:"
 	@echo "	DEVICE_FAMILY  := "$(DEVICE_FAMILY)
@@ -405,7 +401,7 @@ define VS_CPP_PROPERTIES
         {
             "name": "STM32_TR",
             "includePath": [
-                $(subst -I,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(C_INCLUDES),"$(inc)"))))
+                $(subst -I,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(C_INCLUDES) $(C_TESTS_INCLUDES),"$(inc)"))))
             ],
 
             "defines": [
@@ -444,3 +440,5 @@ $(VSCODE_FOLDER):
 .PHONY:                                                       \
 	all cube prepare flash load jflash info reset clean_cube  \
 	clean clean_all format help vs_files rtt
+
+.DEFAULT_GOAL := all
