@@ -1,4 +1,4 @@
-# Name: Makefile_STM
+# Name: Makefile
 # Author: Daniel Nery Silva de Oliveira
 # ThundeRatz Robotics Team
 # 08/2018
