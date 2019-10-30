@@ -1,4 +1,4 @@
-# Name: Makefile_STM
+# Name: config.mk
 # Author: Daniel Nery Silva de Oliveira
 # ThundeRatz Robotics Team
 # 06/2019
