@@ -61,7 +61,7 @@ Com o arquivo do projeto na pasta correta, os seguintes comandos devem ser
 executados (necessário apenas após dar checkout no repositório ou mudar o cube):
 
 ```bash
-make cube     # Gera arquivos do cube (não funciona no momento por limitações no cube)
+make cube     # Gera arquivos do cube
 make prepare  # Apaga os arquivos do cube desnecessários e gera arquivos de configuração do VS Code
 ```
 

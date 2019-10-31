@@ -335,7 +335,7 @@ help:
 	@echo
 	@echo "Opcoes:"
 	@echo "	help:       mostra essa ajuda"
-	@echo "	cube:       gera arquivos do cube (não funciona no momento por limitações no cube)"
+	@echo "	cube:       gera arquivos do cube"
 	@echo "	prepare:    prepara para compilação inicial apagando arquivos do cube"
 	@echo "	all:        compila todos os arquivos"
 	@echo "	info:       mostra informações sobre o uC conectado"
