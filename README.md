@@ -114,7 +114,7 @@ LIB_DIR  := lib
 CUBE_DIR := cube
 
 # Default values, can be set on the command line or here
-DEBUG   ?= 1
+DEBUG_DEVICE   ?= 1
 VERBOSE ?= 0
 ```
 

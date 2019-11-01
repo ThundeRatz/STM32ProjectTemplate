@@ -25,7 +25,7 @@ endif
 ## Code Optimization
 ###############################################################################
 
-ifeq ($(DEBUG),1)
+ifeq ($(DEBUG_DEVICE),1)
 OPT := -Og
 else
 OPT := -Os
@@ -81,7 +81,7 @@ C_DEFS  :=            \
 	-DUSE_HAL_DRIVER  \
 	-D$(DEVICE_DEF)   \
 
-ifeq ($(DEBUG),1)
+ifeq ($(DEBUG_DEVICE),1)
 C_DEFS += -DDEBUG
 endif
 
@@ -140,7 +140,7 @@ ifneq ($(CFG_DIR),)
 CFLAGS += -include $(CFG_DIR)/board/$(TARGET_BOARD).h
 endif
 
-ifeq ($(DEBUG),1)
+ifeq ($(DEBUG_DEVICE),1)
 ASFLAGS += -g
 CFLAGS  += -g3
 endif
