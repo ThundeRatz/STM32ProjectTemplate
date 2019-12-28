@@ -116,7 +116,7 @@ else ifeq ($(DEVICE_FAMILY), $(filter $(DEVICE_FAMILY),STM32L0xx STM32G0xx))
 MCUFLAGS += -mcpu=cortex-m0plus
 else ifeq ($(DEVICE_FAMILY), $(filter $(DEVICE_FAMILY),STM32F1xx STM32L1xx STM32F2xx STM32L2xx))
 MCUFLAGS += -mcpu=cortex-m3
-else ifeq ($(DEVICE_FAMILY), $(filter $(DEVICE_FAMILY),STM32F3xx STM32L3xx STM32F4xx STM32L4xx STM32WBxx))
+else ifeq ($(DEVICE_FAMILY), $(filter $(DEVICE_FAMILY),STM32F3xx STM32L3xx STM32F4xx STM32L4xx STM32WBxx STM32G4xx))
 MCUFLAGS += -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 else ifeq ($(DEVICE_FAMILY), $(filter $(DEVICE_FAMILY),STM32F7xx STM32L7xx))
 MCUFLAGS += -mcpu=cortex-m7 -mfpu=fpv4-sp-d16 -mfloat-abi=hard
