@@ -44,7 +44,13 @@ ASM_SOURCES  := $(shell find $(CUBE_DIR) -name "*.s")
 C_SOURCES    := $(shell find src -name "*.c")
 C_HEADERS    := $(shell find inc -name "*.h")
 LIB_SOURCES  :=
+
+ifeq ($(TEST), 1)
 TEST_HEADERS := $(shell find $(TEST_DIR)/inc -name "*.h")
+else
+TEST_HEADERS :=
+endif
+
 TEST_SOURCES := $(shell find $(TEST_DIR)/src -name "*.c")
 
 ifeq ($(TEST), 1)
