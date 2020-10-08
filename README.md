@@ -189,7 +189,7 @@ git submodule add --name STMSensors git@github.com:ThundeRatz/STMSensors.git lib
 
 ### Inicializando um submódulo já existente
 
-Ao clonar um repositório que já tem submóluos, é necessário clonar os repositórios desse submódulo. Isso pode ser feito de duas formas, clonando junto com o repositório do projeto ou depois de já ter clonado.
+Ao clonar um repositório que já tem submódulos, é necessário clonar os repositórios desse submódulo. Isso pode ser feito de duas formas, clonando junto com o repositório do projeto ou depois de já ter clonado.
 
 Exemplo:
 
