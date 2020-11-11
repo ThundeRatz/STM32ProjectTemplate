@@ -7,7 +7,9 @@
 #ifndef __MCU_H__
 #define __MCU_H__
 
-#include <stdint.h>
+#include <cstdint>
+
+using namespace std;
 
 /*****************************************
  * Public Function Prototypes

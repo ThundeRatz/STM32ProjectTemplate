@@ -4,12 +4,12 @@
  * @brief MCU related
  */
 
-#include <stdint.h>
-
 #include "mcu.h"
 
 #include "gpio.h"
 #include "main.h"
+
+using namespace std;
 
 /*****************************************
  * Public Function Body Definitions

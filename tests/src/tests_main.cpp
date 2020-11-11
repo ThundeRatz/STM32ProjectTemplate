@@ -4,7 +4,7 @@
  * @brief Main function for tests.
  */
 
-#include <stdio.h>
+#include <cstdio>
 #include "mcu.h"
 
 int main(void) {
