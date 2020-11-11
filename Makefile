@@ -41,34 +41,34 @@ BUILD_DIR := build
 # Source Files
 CUBE_SOURCES := $(shell find $(CUBE_DIR) -name "*.c")
 ASM_SOURCES  := $(shell find $(CUBE_DIR) -name "*.s")
-C_SOURCES    := $(shell find src -name "*.c")
+C_SOURCES    := $(shell find src -name "*.cpp")
 C_HEADERS    := $(shell find inc -name "*.h")
 LIB_SOURCES  :=
 
 TEST_HEADERS := $(shell find $(TEST_DIR)/inc -name "*.h")
-TEST_SOURCES := $(shell find $(TEST_DIR)/src -name "*.c")
+TEST_SOURCES := $(shell find $(TEST_DIR)/src -name "*.cpp")
 
 ifeq ($(TEST), 1)
-C_SOURCES := $(filter-out $(shell find src -name "main.c"), $(C_SOURCES))
+C_SOURCES := $(filter-out $(shell find src -name "main.cpp"), $(C_SOURCES))
 endif
 
 # Object Files
 CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
 CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
-OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
-TEST_OBJECTS := $(addprefix $(BUILD_DIR)/$(TEST_DIR)/,$(notdir $(TEST_SOURCES:.c=.o)))
+OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.cpp=.o)))
+TEST_OBJECTS := $(addprefix $(BUILD_DIR)/$(TEST_DIR)/,$(notdir $(TEST_SOURCES:.cpp=.o)))
 
 vpath %.c $(sort $(dir $(CUBE_SOURCES)))
-vpath %.c $(sort $(dir $(C_SOURCES)))
+vpath %.cpp $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
-vpath %.c $(sort $(dir $(TEST_SOURCES)))
+vpath %.cpp $(sort $(dir $(TEST_SOURCES)))
 
 ###############################################################################
 ## Compiler settings
 ###############################################################################
 
 # Executables
-CC      := arm-none-eabi-gcc
+CC      := arm-none-eabi-g++
 AS      := $(CC) -x assembler-with-cpp
 OBJCOPY := arm-none-eabi-objcopy
 SIZE    := arm-none-eabi-size
@@ -135,7 +135,7 @@ CFLAGS :=                                   \
 	$(MCUFLAGS) $(C_DEFS) $(C_INCLUDES)     \
 	-Wall -Wextra -fdata-sections           \
 	-ffunction-sections -fmessage-length=0  \
-	$(OPT) -std=c11 -MMD -MP                \
+	$(OPT) -std=c++11 -MMD -MP                \
 
 ifneq ($(CFG_DIR),)
 CFLAGS += -include $(CFG_DIR)/board/$(TARGET_BOARD).h
@@ -183,17 +183,17 @@ $(BUILD_DIR)/$(LIB_DIR)/%.o: %.c config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $<"
 	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(LIB_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
-$(BUILD_DIR)/obj/%.o: %.c config.mk Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/obj/%.o: %.cpp config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $<"
-	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/obj/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
+	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/obj/$(notdir $(<:.cpp=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
 $(BUILD_DIR)/$(CUBE_DIR)/%.o: %.s config.mk Makefile | $(BUILD_DIR)
 	@echo "AS $<"
 	$(AT)$(AS) -c $(ASFLAGS) $< -o $@
 
-$(BUILD_DIR)/$(TEST_DIR)/%.o: %.c config.mk Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(TEST_DIR)/%.o: %.cpp config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $<"
-	$(AT)$(CC) -c $(TEST_CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(TEST_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
+	$(AT)$(CC) -c $(TEST_CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(TEST_DIR)/$(notdir $(<:.cpp=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
 # The .elf file depend on all object files and the Makefile
 $(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
