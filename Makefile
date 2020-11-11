@@ -162,7 +162,7 @@ LDSCRIPT := $(CUBE_DIR)/$(DEVICE_LD_FILE).ld
 LIBS     := -lc -lm -lnosys
 LIBDIR   :=
 LDFLAGS  :=                                                             \
-	$(MCUFLAGS) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR)               \
+	$(MCUFLAGS) -specs=nosys.specs -T$(LDSCRIPT) $(LIBDIR)               \
 	$(LIBS) -Wl,-Map=$(BUILD_DIR)/$(BUILD_TARGET_BASE_NAME).map,--cref  \
 	-Wl,--gc-sections                                                   \
 
