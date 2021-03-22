@@ -48,8 +48,14 @@ LIB_SOURCES  :=
 TEST_HEADERS := $(shell find $(TEST_DIR)/inc -name "*.h")
 TEST_SOURCES := $(shell find $(TEST_DIR)/src -name "*.c")
 
+CONFIG_HEADERS :=
+
 ifeq ($(TEST), 1)
 C_SOURCES := $(filter-out $(shell find src -name "main.c"), $(C_SOURCES))
+endif
+
+ifneq ($(CFG_DIR),)
+CONFIG_HEADERS += $(shell find $(CFG_DIR) -name "*.h")
 endif
 
 # Object Files
@@ -326,7 +332,7 @@ clean_all:
 
 # Format source code using uncrustify
 format:
-	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS) $(TEST_HEADERS) $(TEST_SOURCES)
+	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS) $(TEST_HEADERS) $(TEST_SOURCES) $(CONFIG_HEADERS)
 
 # Display help
 help:
