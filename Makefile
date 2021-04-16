@@ -45,8 +45,10 @@ C_SOURCES    := $(shell find src -name "*.c")
 C_HEADERS    := $(shell find inc -name "*.h")
 LIB_SOURCES  :=
 
-TEST_SOURCES := $(shell find $(TEST_DIR) -name "*.c")
-CURRENT_TEST_SOURCE := $(shell find $(TEST_DIR) -name ${TEST_NAME}.c)
+TEST_HEADERS := $(shell find $(TEST_DIR)/inc -name "*.h")
+TEST_SOURCES := $(shell find $(TEST_DIR)/src -name "*.c")
+
+CURRENT_TEST_SOURCE := $(shell find $(TEST_DIR)/bin -name ${TEST_NAME}.c)
 
 CONFIG_HEADERS :=
 
@@ -62,11 +64,13 @@ endif
 CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
 CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
-TEST_OBJECT := $(addprefix $(BUILD_DIR)/$(TEST_DIR)/,$(notdir $(CURRENT_TEST_SOURCE:.c=.o)))
+TEST_OBJECTS := $(addprefix $(BUILD_DIR)/$(TEST_DIR)/,$(notdir $(TEST_SOURCES:.c=.o)))
+TEST_OBJECTS += $(addprefix $(BUILD_DIR)/$(TEST_DIR)/,$(notdir $(CURRENT_TEST_SOURCE:.c=.o)))
 
 vpath %.c $(sort $(dir $(CUBE_SOURCES)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
+vpath %.c $(sort $(dir $(TEST_SOURCES)))
 vpath %.c $(sort $(dir $(CURRENT_TEST_SOURCE)))
 
 ###############################################################################
@@ -97,6 +101,10 @@ AS_INCLUDES :=
 C_INCLUDES  := $(addprefix -I,                            \
 	$(sort $(dir $(C_HEADERS)))                           \
 	$(sort $(dir $(shell find $(CUBE_DIR) -name "*.h")))  \
+)
+
+C_TESTS_INCLUDES := $(addprefix -I,                       \
+	$(sort $(dir $(TEST_HEADERS)))                        \
 )
 
 # Adds libs sources and include directories
@@ -148,6 +156,9 @@ ASFLAGS += -g
 CFLAGS  += -g3
 endif
 
+TEST_CFLAGS :=                              \
+	$(CFLAGS) $(C_TESTS_INCLUDES)           \
+
 # Build target base name definition
 ifeq ($(TEST), 1)
 BUILD_TARGET_BASE_NAME := test_$(PROJECT_NAME)
@@ -192,7 +203,7 @@ $(BUILD_DIR)/$(CUBE_DIR)/%.o: %.s config.mk Makefile | $(BUILD_DIR)
 
 $(BUILD_DIR)/$(TEST_DIR)/%.o: %.c config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $<"
-	$(AT)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(TEST_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
+	$(AT)$(CC) -c $(TEST_CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(TEST_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
 # The .elf file depend on all object files and the Makefile
 $(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
@@ -201,9 +212,9 @@ $(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) conf
 	$(AT)$(SIZE) $@
 
 # The .elf file depend on all object files and the Makefile
-$(BUILD_DIR)/test_$(PROJECT_NAME).elf: $(OBJECTS) $(TEST_OBJECT) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/test_$(PROJECT_NAME).elf: $(OBJECTS) $(TEST_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $@"
-	$(AT)$(CC) $(OBJECTS) $(TEST_OBJECT) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
+	$(AT)$(CC) $(OBJECTS) $(TEST_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
 
 # The .hex file depend on the .elf file and build directory existence
@@ -315,7 +326,7 @@ ifeq ($(TEST), 0)
 else
 # Clean test build files
 	@echo "Cleaning test build files"
-	$(AT)-rm -rf $(TEST_OBJECT) $(TEST_OBJECT:.o=.d) $(TEST_OBJECT:.o=.lst)
+	$(AT)-rm -rf $(TEST_OBJECTS) $(TEST_OBJECTS:.o=.d) $(TEST_OBJECTS:.o=.lst)
 endif
 
 # Clean all build files
@@ -325,7 +336,7 @@ clean_all:
 
 # Format source code using uncrustify
 format:
-	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS) $(TEST_SOURCES) $(CONFIG_HEADERS)
+	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS) $(TEST_HEADERS) $(TEST_SOURCES) $(CONFIG_HEADERS)
 
 # Display help
 help:
@@ -401,7 +412,7 @@ define VS_CPP_PROPERTIES
         {
             "name": "STM32_TR",
             "includePath": [
-                $(subst -I,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(C_INCLUDES),"$(inc)"))))
+                $(subst -I,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(C_INCLUDES) $(C_TESTS_INCLUDES),"$(inc)"))))
             ],
 
             "defines": [
