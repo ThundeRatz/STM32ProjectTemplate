@@ -162,7 +162,7 @@ TEST_CFLAGS :=                              \
 
 # Build target base name definition
 ifeq ($(TEST), 1)
-BUILD_TARGET_BASE_NAME := test_$(PROJECT_NAME)
+BUILD_TARGET_BASE_NAME := $(TEST_NAME)_$(PROJECT_NAME)
 else
 BUILD_TARGET_BASE_NAME := $(PROJECT_NAME)
 endif
@@ -213,7 +213,7 @@ $(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) conf
 	$(AT)$(SIZE) $@
 
 # The .elf file depend on all object files and the Makefile
-$(BUILD_DIR)/test_$(PROJECT_NAME).elf: $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(TEST_NAME)_$(PROJECT_NAME).elf: $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $@"
 	$(AT)$(CC) $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
