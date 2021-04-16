@@ -45,10 +45,10 @@ C_SOURCES    := $(shell find src -name "*.c")
 C_HEADERS    := $(shell find inc -name "*.h")
 LIB_SOURCES  :=
 
-TEST_HEADERS := $(shell find $(TEST_DIR)/inc -name "*.h")
-TEST_SOURCES := $(shell find $(TEST_DIR)/src -name "*.c")
+TESTS_HEADERS := $(shell find $(TEST_DIR)/inc -name "*.h")
+TESTS_SOURCES := $(shell find $(TEST_DIR)/src -name "*.c")
 
-CURRENT_TEST_SOURCE := $(shell find $(TEST_DIR)/bin -name ${TEST_NAME}.c)
+CURRENT_TEST_BIN := $(shell find $(TEST_DIR)/bin -name ${TEST_NAME}.c)
 
 CONFIG_HEADERS :=
 
@@ -64,14 +64,14 @@ endif
 CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
 CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
-TEST_OBJECTS := $(addprefix $(BUILD_DIR)/$(TEST_DIR)/,$(notdir $(TEST_SOURCES:.c=.o)))
-TEST_OBJECTS += $(addprefix $(BUILD_DIR)/$(TEST_DIR)/,$(notdir $(CURRENT_TEST_SOURCE:.c=.o)))
+TESTS_OBJECTS := $(addprefix $(BUILD_DIR)/$(TEST_DIR)/,$(notdir $(TESTS_SOURCES:.c=.o)))
+TESTS_OBJECTS += $(addprefix $(BUILD_DIR)/$(TEST_DIR)/,$(notdir $(CURRENT_TEST_BIN:.c=.o)))
 
 vpath %.c $(sort $(dir $(CUBE_SOURCES)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
-vpath %.c $(sort $(dir $(TEST_SOURCES)))
-vpath %.c $(sort $(dir $(CURRENT_TEST_SOURCE)))
+vpath %.c $(sort $(dir $(TESTS_SOURCES)))
+vpath %.c $(sort $(dir $(CURRENT_TEST_BIN)))
 
 ###############################################################################
 ## Compiler settings
@@ -104,7 +104,7 @@ C_INCLUDES  := $(addprefix -I,                            \
 )
 
 C_TESTS_INCLUDES := $(addprefix -I,                       \
-	$(sort $(dir $(TEST_HEADERS)))                        \
+	$(sort $(dir $(TESTS_HEADERS)))                        \
 )
 
 # Adds libs sources and include directories
@@ -212,9 +212,9 @@ $(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) conf
 	$(AT)$(SIZE) $@
 
 # The .elf file depend on all object files and the Makefile
-$(BUILD_DIR)/test_$(PROJECT_NAME).elf: $(OBJECTS) $(TEST_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/test_$(PROJECT_NAME).elf: $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $@"
-	$(AT)$(CC) $(OBJECTS) $(TEST_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
+	$(AT)$(CC) $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
 
 # The .hex file depend on the .elf file and build directory existence
@@ -326,7 +326,7 @@ ifeq ($(TEST), 0)
 else
 # Clean test build files
 	@echo "Cleaning test build files"
-	$(AT)-rm -rf $(TEST_OBJECTS) $(TEST_OBJECTS:.o=.d) $(TEST_OBJECTS:.o=.lst)
+	$(AT)-rm -rf $(TESTS_OBJECTS) $(TESTS_OBJECTS:.o=.d) $(TESTS_OBJECTS:.o=.lst)
 endif
 
 # Clean all build files
@@ -336,7 +336,7 @@ clean_all:
 
 # Format source code using uncrustify
 format:
-	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS) $(TEST_HEADERS) $(TEST_SOURCES) $(CONFIG_HEADERS)
+	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS) $(TESTS_HEADERS) $(TESTS_SOURCES) $(CONFIG_HEADERS)
 
 # Display help
 help:
