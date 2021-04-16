@@ -47,6 +47,7 @@ LIB_SOURCES  :=
 
 TESTS_HEADERS := $(shell find $(TEST_DIR)/inc -name "*.h")
 TESTS_SOURCES := $(shell find $(TEST_DIR)/src -name "*.c")
+TESTS_BIN := $(shell find $(TEST_DIR)/bin -name "*.c")
 
 CURRENT_TEST_BIN := $(shell find $(TEST_DIR)/bin -name ${TEST_NAME}.c)
 
@@ -336,7 +337,7 @@ clean_all:
 
 # Format source code using uncrustify
 format:
-	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS) $(TESTS_HEADERS) $(TESTS_SOURCES) $(CONFIG_HEADERS)
+	$(AT)uncrustify -c uncrustify.cfg --replace --no-backup $(C_SOURCES) $(C_HEADERS) $(TESTS_HEADERS) $(TESTS_SOURCES) $(TESTS_BIN) $(CONFIG_HEADERS)
 
 # Display help
 help:
