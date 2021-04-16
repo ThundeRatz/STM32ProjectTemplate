@@ -62,9 +62,9 @@ CONFIG_HEADERS += $(shell find $(CFG_DIR) -name "*.h")
 endif
 
 # Object Files
-CUBE_OBJECTS := $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
-CUBE_OBJECTS += $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
-OBJECTS      := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
+CUBE_OBJECTS  := $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(CUBE_SOURCES:.c=.o)))
+CUBE_OBJECTS  += $(addprefix $(BUILD_DIR)/$(CUBE_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
+OBJECTS       := $(addprefix $(BUILD_DIR)/obj/,$(notdir $(C_SOURCES:.c=.o)))
 TESTS_OBJECTS := $(addprefix $(BUILD_DIR)/$(TEST_DIR)/,$(notdir $(TESTS_SOURCES:.c=.o)))
 TESTS_OBJECTS += $(addprefix $(BUILD_DIR)/$(TEST_DIR)/,$(notdir $(CURRENT_TEST_BIN:.c=.o)))
 
