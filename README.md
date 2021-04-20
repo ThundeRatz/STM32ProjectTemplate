@@ -207,7 +207,7 @@ git submodule update --init
 
 ## Diretório de testes
 
-O diretório definido pela variável `TEST_DIR` contém arquivos para testes de partes específicas do projeto, separando isso do código do proejto em si. Esses arquivos devem ser implementados de acordo com as necessidades dos desenvolvedores. 
+O diretório definido pela variável `TEST_DIR` contém arquivos para testes de partes específicas do projeto, separando isso do código do projeto em si. Esses arquivos devem ser implementados de acordo com as necessidades dos desenvolvedores. 
 
 Para se habilitar a compilação e gravação dos testes, deve-se definir o valor da variável `TEST` para 1, isso pode ser feito tanto no arquivo `config.mk`, quanto pela linha de comando ao rodar o `make` passando no comando `TEST=1`, por exemplo:
 
