@@ -5,10 +5,10 @@
  */
 
 #include <stdio.h>
-#include "mcu.h"
+#include "tests_core.h"
 
 int main(void) {
-    mcu_init();
+    test_core_init();
 
     for (;;) {
     }
