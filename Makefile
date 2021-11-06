@@ -243,7 +243,7 @@ $(BUILD_DIR):
 
 ifeq ($(OS),Windows_NT)
 CUBE_JAR  := "$(CUBE_PATH)\STM32CubeMX.exe"
-JAVA_EXE  := "$(CUBE_PATH)\jre\bin\java"
+JAVA_EXE  := "$(CUBE_PATH)\jre\bin\java.exe"
 JLINK_EXE := JLink.exe
 else
 CUBE_JAR  := "$(CUBE_PATH)/STM32CubeMX"
