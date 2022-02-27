@@ -73,10 +73,9 @@ novamente para que eles sejam gerados do zero.
 
 O arquivo [config.mk](config.mk) deve ser alterado de acordo com o projeto. 
 
-Para isso é necessário mudar o nome do projeto, o qual deve ter o mesmo do arquivo do Cube (por exemplo, `stm32_project_template.ioc`), porém sem a extensão `.ioc`.
+Para isso é necessário mudar o nome do projeto, o qual deve ter o mesmo do arquivo do Cube (por exemplo, `stm32_project_template.ioc`), porém sem a extensão `.ioc` (no caso de não se utilizar o versionamento dos arquivos do Cube).
 
 ```Makefile
-# Cube file name without .ioc extension
 PROJECT_NAME = stm32_project_template
 ```
 
