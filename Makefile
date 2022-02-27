@@ -51,13 +51,19 @@ TESTS_BIN     := $(shell find $(TEST_DIR)/bin -name "*.c")
 
 CURRENT_TEST_BIN := $(shell find $(TEST_DIR)/bin -name ${TEST_NAME}.c)
 
-CONFIG_HEADERS :=
-
 ifeq ($(TEST), 1)
 C_SOURCES := $(filter-out $(shell find src -name "main.c"), $(C_SOURCES))
 endif
 
+CONFIG_HEADERS :=
+BOARD_CONFIG_HEADER :=
+GENERAL_CONFIG_HEADERS :=
+
 ifneq ($(CFG_DIR),)
+BOARD_CONFIG_HEADER += $(CFG_DIR)/board/$(TARGET_BOARD).h
+
+GENERAL_CONFIG_HEADERS += $(shell find $(CFG_DIR) -name "*.h" -not -path "$(CFG_DIR)/board/*")
+
 CONFIG_HEADERS += $(shell find $(CFG_DIR) -name "*.h")
 endif
 
@@ -105,8 +111,16 @@ C_INCLUDES  := $(addprefix -I,                            \
 )
 
 C_TESTS_INCLUDES := $(addprefix -I,                       \
-	$(sort $(dir $(TESTS_HEADERS)))                        \
+	$(sort $(dir $(TESTS_HEADERS)))                       \
 )
+
+C_GENERAL_CONFIG_INCLUDES :=
+
+ifneq ($(CFG_DIR),)
+C_GENERAL_CONFIG_INCLUDES += $(addprefix -I,              \
+	$(sort $(dir $(GENERAL_CONFIG_HEADERS)))              \
+)
+endif
 
 # Adds libs sources and include directories
 ifneq ($(wildcard $(LIB_DIR)/.*),)
@@ -149,7 +163,8 @@ CFLAGS :=                                   \
 	$(OPT) -std=c11 -MMD -MP                \
 
 ifneq ($(CFG_DIR),)
-CFLAGS += -include $(CFG_DIR)/board/$(TARGET_BOARD).h
+CFLAGS += -include $(BOARD_CONFIG_HEADER)
+CFLAGS += $(C_GENERAL_CONFIG_INCLUDES)
 endif
 
 ifeq ($(DEBUG),1)
