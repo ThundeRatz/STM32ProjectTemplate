@@ -5,7 +5,11 @@
     // List of extensions which should be recommended for users of this workspace.
     "recommendations": [
         "ms-vscode.cpptools",
-        "EditorConfig.EditorConfig",
+        "ms-vscode.cpptools",
+		"cschlosser.doxdocgen",
+		"editorconfig.editorconfig",
+		"davidanson.vscode-markdownlint",
+		"zachflower.uncrustify",
         "marus25.Cortex-Debug",
     ],
 
