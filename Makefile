@@ -53,7 +53,7 @@ CURRENT_TEST_BIN := $(shell find $(TEST_DIR)/bin -name ${TEST_NAME}.c)
 
 CONFIG_HEADERS :=
 
-ifeq ($(TEST), 1)
+ifneq ($(TEST_NAME),)
 C_SOURCES := $(filter-out $(shell find src -name "main.c"), $(C_SOURCES))
 endif
 
@@ -161,7 +161,7 @@ TEST_CFLAGS :=                              \
 	$(CFLAGS) $(C_TESTS_INCLUDES)           \
 
 # Build target base name definition
-ifeq ($(TEST), 1)
+ifneq ($(TEST_NAME),)
 BUILD_TARGET_BASE_NAME := $(TEST_NAME)_$(PROJECT_NAME)
 else
 BUILD_TARGET_BASE_NAME := $(PROJECT_NAME)
@@ -326,7 +326,7 @@ clean_cube:
 # Clean build files
 # - Ignores cube-related build files (ST and CMSIS libraries)
 clean:
-ifeq ($(TEST), 0)
+ifeq ($(TEST_NAME),)
 	@echo "Cleaning build files"
 	$(AT)-rm -rf $(OBJECTS) $(OBJECTS:.o=.d) $(OBJECTS:.o=.lst)
 else

@@ -33,6 +33,5 @@ TEST_DIR := tests
 # Default values, can be set on the command line or here
 DEBUG   ?= 1
 VERBOSE ?= 0
-TEST    ?= 0
 
-TEST_NAME ?= test_main
+TEST_NAME ?= 
