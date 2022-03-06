@@ -78,7 +78,10 @@ vpath %.c $(sort $(dir $(CUBE_SOURCES)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 vpath %.c $(sort $(dir $(TESTS_SOURCES)))
+
+ifneq ($(TEST_NAME),)
 vpath %.c $(sort $(dir $(CURRENT_TEST_BIN)))
+endif
 
 ###############################################################################
 ## Compiler settings
