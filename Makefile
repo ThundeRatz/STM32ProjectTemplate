@@ -53,7 +53,7 @@ CURRENT_TEST_BIN := $(shell find $(TEST_DIR)/bin -name ${TEST_NAME}.c)
 
 ifneq ($(TEST_NAME),)
 ifeq ($(CURRENT_TEST_BIN),)
-$(error Invalid test name: $(TEST_NAME))
+$(error Invalid test name, $(TEST_NAME).c not found)
 endif
 endif
 
