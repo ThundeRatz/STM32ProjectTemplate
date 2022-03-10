@@ -162,9 +162,9 @@ TEST_CFLAGS :=                              \
 
 # Build target base name definition
 ifeq ($(TEST), 1)
-BUILD_TARGET_BASE_NAME := $(TEST_NAME)_$(PROJECT_NAME)
+BUILD_TARGET_BASE_NAME := $(TEST_NAME)_$(PROJECT_RELEASE)
 else
-BUILD_TARGET_BASE_NAME := $(PROJECT_NAME)
+BUILD_TARGET_BASE_NAME := $(PROJECT_RELEASE)
 endif
 
 # Linker Flags
@@ -207,13 +207,13 @@ $(BUILD_DIR)/$(TEST_DIR)/%.o: %.c config.mk Makefile | $(BUILD_DIR)
 	$(AT)$(CC) -c $(TEST_CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(TEST_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
 # The .elf file depend on all object files and the Makefile
-$(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(PROJECT_RELEASE).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $@"
 	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
 
 # The .elf file depend on all object files and the Makefile
-$(BUILD_DIR)/$(TEST_NAME)_$(PROJECT_NAME).elf: $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(TEST_NAME)_$(PROJECT_RELEASE).elf: $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $@"
 	$(AT)$(CC) $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
@@ -262,7 +262,7 @@ endif
 # Create cube script
 .cube: config.mk Makefile
 	@echo "Creating Cube script"
-	@echo "config load "$(CUBE_DIR)"/"$(PROJECT_NAME)".ioc" > $@
+	@echo "config load "$(CUBE_DIR)"/"$(PROJECT_RELEASE)".ioc" > $@
 	@echo "project generate" >> $@
 	@echo "exit" >> $@
 
