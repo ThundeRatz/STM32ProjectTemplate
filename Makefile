@@ -441,9 +441,13 @@ define VS_CPP_PROPERTIES
     "configurations": [
         {
             "name": "STM32_TR",
+
             "includePath": [
-                $(subst -I,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(C_INCLUDES) $(C_TESTS_INCLUDES),"$(inc)"))))
+                $(subst -I,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(C_INCLUDES) $(C_TESTS_INCLUDES) $(GENERAL_CONFIG_HEADERS),"$(inc)"))))
             ],
+			"forcedInclude": [
+				"$(BOARD_CONFIG_HEADER)"
+			],
 
             "defines": [
                 $(subst -D,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach def,$(C_DEFS),"$(def)"))))
