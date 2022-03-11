@@ -51,9 +51,15 @@ TESTS_BIN     := $(shell find $(TEST_DIR)/bin -name "*.c")
 
 CURRENT_TEST_BIN := $(shell find $(TEST_DIR)/bin -name ${TEST_NAME}.c)
 
+ifneq ($(TEST_NAME),)
+ifeq ($(CURRENT_TEST_BIN),)
+$(error Invalid test name, $(TEST_NAME).c not found)
+endif
+endif
+
 CONFIG_HEADERS :=
 
-ifeq ($(TEST), 1)
+ifneq ($(TEST_NAME),)
 C_SOURCES := $(filter-out $(shell find src -name "main.c"), $(C_SOURCES))
 endif
 
@@ -72,7 +78,10 @@ vpath %.c $(sort $(dir $(CUBE_SOURCES)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 vpath %.c $(sort $(dir $(TESTS_SOURCES)))
+
+ifneq ($(TEST_NAME),)
 vpath %.c $(sort $(dir $(CURRENT_TEST_BIN)))
+endif
 
 ###############################################################################
 ## Compiler settings
@@ -161,7 +170,7 @@ TEST_CFLAGS :=                              \
 	$(CFLAGS) $(C_TESTS_INCLUDES)           \
 
 # Build target base name definition
-ifeq ($(TEST), 1)
+ifneq ($(TEST_NAME),)
 BUILD_TARGET_BASE_NAME := $(TEST_NAME)_$(PROJECT_RELEASE)
 else
 BUILD_TARGET_BASE_NAME := $(PROJECT_RELEASE)
@@ -326,7 +335,7 @@ clean_cube:
 # Clean build files
 # - Ignores cube-related build files (ST and CMSIS libraries)
 clean:
-ifeq ($(TEST), 0)
+ifeq ($(TEST_NAME),)
 	@echo "Cleaning build files"
 	$(AT)-rm -rf $(OBJECTS) $(OBJECTS:.o=.d) $(OBJECTS:.o=.lst)
 else
