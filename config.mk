@@ -36,4 +36,4 @@ TEST_DIR := tests
 DEBUG   ?= 1
 VERBOSE ?= 0
 
-TEST_NAME ?= 
+TEST_NAME ?=
