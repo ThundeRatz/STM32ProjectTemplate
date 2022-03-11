@@ -73,10 +73,9 @@ novamente para que eles sejam gerados do zero.
 
 O arquivo [config.mk](config.mk) deve ser alterado de acordo com o projeto. 
 
-Para isso é necessário mudar o nome do projeto, o qual deve ter o mesmo do arquivo do Cube (por exemplo, `stm32_project_template.ioc`), porém sem a extensão `.ioc`.
+Para isso é necessário mudar o nome do projeto, o qual deve ter o mesmo do arquivo do Cube (por exemplo, `stm32_project_template.ioc`), porém sem a extensão `.ioc` (no caso de não se utilizar o versionamento dos arquivos do Cube).
 
 ```Makefile
-# Cube file name without .ioc extension
 PROJECT_NAME = stm32_project_template
 ```
 
@@ -207,21 +206,19 @@ git submodule update --init
 
 ## Diretório de testes
 
-O diretório definido pela variável `TEST_DIR` contém arquivos para testes de partes específicas do projeto, separando isso do código do projeto em si. Esses arquivos devem ser implementados de acordo com as necessidades dos desenvolvedores. 
+O diretório definido pela variável `TEST_DIR` contém arquivos para testes de partes específicas do projeto, separando isso do código do projeto em si. Esses arquivos devem ser implementados de acordo com as necessidades dos desenvolvedores.
 
-Para se habilitar a compilação e gravação dos testes, deve-se definir o valor da variável `TEST` para 1, isso pode ser feito tanto no arquivo `config.mk`, quanto pela linha de comando ao rodar o `make` passando no comando `TEST=1`, por exemplo:
-
-```bash
-make flash TEST=1
-```
-
-Uma observação é que o comando `make clean`, quando `TEST` for 1, irá apagar os arquivos de compilação referentes aos arquivos de teste.
-
-Cada arquivo de teste no diretório de testes funciona de forma independente, ou seja, cada um deve ter uma função `main()`, sendo cada um compilado, gravado e executado separadamente. A escolha de qual teste será rodado é feita pela variável `TEST_NAME`, que assim como a variável `TEST`, pode ser definida no arquivo `config.mk` ou pela linha de comando, por exemplo:
+Para se habilitar a compilação e gravação dos testes, deve-se definir o valor da variável `TEST_NAME` para o nome do arquivo de teste que se quer utilizar, isso pode ser feito tanto no arquivo `config.mk`, quanto pela linha de comando ao rodar o `make`, como por exemplo:
 
 ```bash
-make TEST=1 TEST_NAME=test_sensors
+make flash TEST_NAME=test_digital_sensors
 ```
+
+Caso o valor da variável `TEST_NAME` seja vazio, não se utilizará o modo de teste.
+
+Uma observação é que o comando `make clean`, quando `TEST_NAME` não for vazio, irá apagar os arquivos de compilação referentes aos arquivos de teste.
+
+Cada arquivo de teste no diretório de testes funciona de forma independente, ou seja, cada um deve ter uma função `main()`, sendo cada um compilado, gravado e executado separadamente.
 
 Note que o nome do teste não inclui a extensão do arquivo.
 

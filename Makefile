@@ -51,7 +51,13 @@ TESTS_BIN     := $(shell find $(TEST_DIR)/bin -name "*.c")
 
 CURRENT_TEST_BIN := $(shell find $(TEST_DIR)/bin -name ${TEST_NAME}.c)
 
-ifeq ($(TEST), 1)
+ifneq ($(TEST_NAME),)
+ifeq ($(CURRENT_TEST_BIN),)
+$(error Invalid test name, $(TEST_NAME).c not found)
+endif
+endif
+
+ifneq ($(TEST_NAME),)
 C_SOURCES := $(filter-out $(shell find src -name "main.c"), $(C_SOURCES))
 endif
 
@@ -78,7 +84,10 @@ vpath %.c $(sort $(dir $(CUBE_SOURCES)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 vpath %.c $(sort $(dir $(TESTS_SOURCES)))
+
+ifneq ($(TEST_NAME),)
 vpath %.c $(sort $(dir $(CURRENT_TEST_BIN)))
+endif
 
 ###############################################################################
 ## Compiler settings
@@ -176,10 +185,10 @@ TEST_CFLAGS :=                              \
 	$(CFLAGS) $(C_TESTS_INCLUDES)           \
 
 # Build target base name definition
-ifeq ($(TEST), 1)
-BUILD_TARGET_BASE_NAME := $(TEST_NAME)_$(PROJECT_NAME)
+ifneq ($(TEST_NAME),)
+BUILD_TARGET_BASE_NAME := $(TEST_NAME)_$(PROJECT_RELEASE)
 else
-BUILD_TARGET_BASE_NAME := $(PROJECT_NAME)
+BUILD_TARGET_BASE_NAME := $(PROJECT_RELEASE)
 endif
 
 # Linker Flags
@@ -222,13 +231,13 @@ $(BUILD_DIR)/$(TEST_DIR)/%.o: %.c config.mk Makefile | $(BUILD_DIR)
 	$(AT)$(CC) -c $(TEST_CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(TEST_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
 # The .elf file depend on all object files and the Makefile
-$(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(PROJECT_RELEASE).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $@"
 	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
 
 # The .elf file depend on all object files and the Makefile
-$(BUILD_DIR)/$(TEST_NAME)_$(PROJECT_NAME).elf: $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(TEST_NAME)_$(PROJECT_RELEASE).elf: $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $@"
 	$(AT)$(CC) $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
@@ -277,7 +286,7 @@ endif
 # Create cube script
 .cube: config.mk Makefile
 	@echo "Creating Cube script"
-	@echo "config load "$(CUBE_DIR)"/"$(PROJECT_NAME)".ioc" > $@
+	@echo "config load "$(CUBE_DIR)"/"$(PROJECT_RELEASE)".ioc" > $@
 	@echo "project generate" >> $@
 	@echo "exit" >> $@
 
@@ -341,7 +350,7 @@ clean_cube:
 # Clean build files
 # - Ignores cube-related build files (ST and CMSIS libraries)
 clean:
-ifeq ($(TEST), 0)
+ifeq ($(TEST_NAME),)
 	@echo "Cleaning build files"
 	$(AT)-rm -rf $(OBJECTS) $(OBJECTS:.o=.d) $(OBJECTS:.o=.lst)
 else
