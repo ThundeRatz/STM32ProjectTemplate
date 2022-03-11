@@ -465,9 +465,11 @@ export VS_CPP_PROPERTIES
 vs_files: $(VS_LAUNCH_FILE) $(VS_C_CPP_PROPERTIES_FILE)
 
 $(VS_LAUNCH_FILE): config.mk Makefile | $(VSCODE_FOLDER)
+	$(AT)rm $(VS_LAUNCH_FILE)
 	$(AT)echo "$$VS_LAUNCH" > $@
 
 $(VS_C_CPP_PROPERTIES_FILE): config.mk Makefile | $(VSCODE_FOLDER)
+	$(AT)rm $(VS_C_CPP_PROPERTIES_FILE)
 	$(AT)echo "$$VS_CPP_PROPERTIES" > $@
 
 $(VSCODE_FOLDER):
