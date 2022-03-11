@@ -126,8 +126,8 @@ C_TESTS_INCLUDES := $(addprefix -I,                       \
 C_GENERAL_CONFIG_INCLUDES :=
 
 ifneq ($(CFG_DIR),)
-C_GENERAL_CONFIG_INCLUDES += $(addprefix -I,              \
-	$(sort $(dir $(GENERAL_CONFIG_HEADERS)))              \
+C_GENERAL_CONFIG_INCLUDES += $(addprefix -include ,       \
+	$(GENERAL_CONFIG_HEADERS)                             \
 )
 endif
 
@@ -443,10 +443,10 @@ define VS_CPP_PROPERTIES
             "name": "STM32_TR",
 
             "includePath": [
-                $(subst -I,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(C_INCLUDES) $(C_TESTS_INCLUDES) $(GENERAL_CONFIG_HEADERS),"$(inc)"))))
+                $(subst -I,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(C_INCLUDES) $(C_TESTS_INCLUDES),"$(inc)"))))
             ],
 			"forcedInclude": [
-				"$(BOARD_CONFIG_HEADER)"
+				$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(BOARD_CONFIG_HEADER) $(GENERAL_CONFIG_HEADERS),"$(inc)")))
 			],
 
             "defines": [
