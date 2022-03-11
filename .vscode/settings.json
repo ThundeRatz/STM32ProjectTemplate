@@ -11,6 +11,7 @@
 
     "[c]": {
         "editor.formatOnSave": true,
+        "editor.defaultFormatter": "zachflower.uncrustify",
     },
 
     "[makefile]": {
@@ -21,4 +22,21 @@
         "files.trimTrailingWhitespace": false,
         "files.trimFinalNewlines": false,
     },
+
+    "doxdocgen.generic.dateFormat": "MM/YYYY",
+    "doxdocgen.file.copyrightTag": [
+        "@copyright MIT License - Copyright (c) {year} ThundeRatz"
+    ],
+    "doxdocgen.generic.authorTag": "@author {author} <{email}>",
+    "doxdocgen.file.fileOrder": [
+        "file",
+        "author",
+        "brief",
+        "date",
+        "empty",
+        "copyright",
+        "empty",
+        "custom"
+    ],
+
 }

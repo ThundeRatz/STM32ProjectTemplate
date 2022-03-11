@@ -5,9 +5,11 @@
 
 # Cube file name without .ioc extension
 PROJECT_NAME = stm32_project_template
-VERSION := 1
+VERSION := v1
 
-TARGET_BOARD := target_$(PROJECT_NAME)_$(VERSION)
+PROJECT_RELEASE := $(PROJECT_NAME)_$(VERSION)
+
+TARGET_BOARD := target_$(PROJECT_RELEASE)
 
 DEVICE_FAMILY  := STM32F3xx
 DEVICE_TYPE    := STM32F303xx
