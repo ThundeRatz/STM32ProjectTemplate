@@ -66,7 +66,7 @@ BOARD_CONFIG_HEADER :=
 GENERAL_CONFIG_HEADERS :=
 
 ifneq ($(CFG_DIR),)
-BOARD_CONFIG_HEADER += $(CFG_DIR)/board/$(TARGET_BOARD).h
+BOARD_CONFIG_HEADER += $(shell find -wholename ./$(CFG_DIR)/board/$(TARGET_BOARD).h)
 
 GENERAL_CONFIG_HEADERS += $(shell find $(CFG_DIR) -name "*.h" -not -path "$(CFG_DIR)/board/*")
 
@@ -126,8 +126,8 @@ C_TESTS_INCLUDES := $(addprefix -I,                       \
 C_GENERAL_CONFIG_INCLUDES :=
 
 ifneq ($(CFG_DIR),)
-C_GENERAL_CONFIG_INCLUDES += $(addprefix -include ,       \
-	$(GENERAL_CONFIG_HEADERS)                             \
+C_CONFIG_INCLUDES += $(addprefix -include ,               \
+	$(GENERAL_CONFIG_HEADERS) $(BOARD_CONFIG_HEADER)      \
 )
 endif
 
@@ -172,8 +172,7 @@ CFLAGS :=                                   \
 	$(OPT) -std=c11 -MMD -MP                \
 
 ifneq ($(CFG_DIR),)
-CFLAGS += -include $(BOARD_CONFIG_HEADER)
-CFLAGS += $(C_GENERAL_CONFIG_INCLUDES)
+CFLAGS += $(C_CONFIG_INCLUDES)
 endif
 
 ifeq ($(DEBUG),1)
