@@ -465,15 +465,15 @@ endef
 export VS_LAUNCH
 export VS_CPP_PROPERTIES
 
-vs_files: $(VS_LAUNCH_FILE) $(VS_C_CPP_PROPERTIES_FILE)
+vs_files: vs_launch vs_c_cpp_properties
 
-$(VS_LAUNCH_FILE): config.mk Makefile | $(VSCODE_FOLDER)
+vs_launch: config.mk Makefile | $(VSCODE_FOLDER)
 	$(AT)rm -f $(VS_LAUNCH_FILE)
-	$(AT)echo "$$VS_LAUNCH" > $@
+	$(AT)echo "$$VS_LAUNCH" > $(VS_LAUNCH_FILE)
 
-$(VS_C_CPP_PROPERTIES_FILE): config.mk Makefile | $(VSCODE_FOLDER)
+vs_c_cpp_properties: config.mk Makefile $(C_HEADERS) $(TESTS_HEADERS) $(BOARD_CONFIG_HEADER) $(GENERAL_CONFIG_HEADERS) | $(VSCODE_FOLDER)
 	$(AT)rm -f $(VS_C_CPP_PROPERTIES_FILE)
-	$(AT)echo "$$VS_CPP_PROPERTIES" > $@
+	$(AT)echo "$$VS_CPP_PROPERTIES" > $(VS_C_CPP_PROPERTIES_FILE)
 
 $(VSCODE_FOLDER):
 	$(AT)mkdir -p $@
@@ -483,8 +483,8 @@ $(VSCODE_FOLDER):
 # Include dependecy files for .h dependency detection
 -include $(wildcard $(BUILD_DIR)/**/*.d)
 
-.PHONY:                                                       \
-	all cube prepare flash load jflash info reset clean_cube  \
-	clean clean_all format help vs_files rtt
+.PHONY:                                                                    \
+	all cube prepare flash load jflash info reset clean_cube               \
+	clean clean_all format help vs_files rtt vs_launch vs_c_cpp_properties
 
 .DEFAULT_GOAL := all
