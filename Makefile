@@ -452,7 +452,7 @@ define VS_CPP_PROPERTIES
                 $(subst -D,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach def,$(C_DEFS),"$(def)"))))
             ],
 
-            "compilerPath": "$${env:ARM_GCC_PATH}/arm-none-eabi-gcc",
+            "compilerPath": "$(ARM_GCC_PATH)/arm-none-eabi-gcc",
             "cStandard": "c99",
             "cppStandard": "c++14",
             "intelliSenseMode": "clang-x64"
