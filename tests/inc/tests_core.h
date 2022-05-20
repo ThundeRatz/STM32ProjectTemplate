@@ -9,6 +9,9 @@
  *
  */
 
+#ifndef __TESTS_CORE_H__
+#define __TESTS_CORE_H__
+
 /*****************************************
  * Public Functions Prototypes
  *****************************************/
@@ -18,3 +21,5 @@
  *
  */
 void test_core_init(void);
+
+#endif // __TESTS_CORE_H__
