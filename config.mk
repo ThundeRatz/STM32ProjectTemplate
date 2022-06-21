@@ -22,6 +22,7 @@ DEVICE_LD_FILE := STM32F303RETx_FLASH
 
 # Lib dir
 LIB_DIR  := lib
+LIB_HANDLERS :=
 
 # Cube Directory
 CUBE_DIR := cube
@@ -36,4 +37,4 @@ TEST_DIR := tests
 DEBUG   ?= 1
 VERBOSE ?= 0
 
-TEST_NAME ?= 
+TEST_NAME ?=

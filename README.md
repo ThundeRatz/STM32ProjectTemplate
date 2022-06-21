@@ -108,12 +108,13 @@ As seguintes configurações não precisam ser alteradas, elas definem nomes de 
 ```Makefile
 # Lib dir
 LIB_DIR  := lib
+LIB_HANDLERS :=
 
 # Cube Directory
 CUBE_DIR := cube
 
 # Config Files Directory
-CFG_DIR :=
+CFG_DIR := cfg
 
 # Tests Directory
 TEST_DIR := tests
@@ -121,7 +122,9 @@ TEST_DIR := tests
 # Default values, can be set on the command line or here
 DEBUG   ?= 1
 VERBOSE ?= 0
-TEST    ?= 0
+VERBOSE ?= 0
+
+TEST_NAME ?=
 ```
 
 ## Compilando
