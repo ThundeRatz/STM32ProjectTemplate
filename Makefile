@@ -393,6 +393,7 @@ define VS_LAUNCH
             "request": "launch",
             "servertype": "stutil",
             "cwd": "$${workspaceRoot}",
+            "gdbPath": "${ARM_GCC_PATH}/arm-none-eabi-gcc",
             "executable": "./$(BUILD_DIR)/$(BUILD_TARGET_BASE_NAME).elf",
             "name": "Cortex Debug (ST-Util)",
             "device": "$(DEVICE)",
@@ -403,6 +404,7 @@ define VS_LAUNCH
             "request": "launch",
             "servertype": "jlink",
             "cwd": "$${workspaceRoot}",
+            "gdbPath": "${ARM_GCC_PATH}/arm-none-eabi-gcc",
             "executable": "./$(BUILD_DIR)/$(BUILD_TARGET_BASE_NAME).elf",
             "name": "Cortex Debug (J-Link)",
             "device": "$(DEVICE)",
@@ -425,10 +427,10 @@ define VS_CPP_PROPERTIES
                 $(subst -D,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach def,$(C_DEFS),"$(def)"))))
             ],
 
-            "compilerPath": "$${env:ARM_GCC_PATH}/arm-none-eabi-gcc",
+            "compilerPath": "${ARM_GCC_PATH}/arm-none-eabi-gcc",
             "cStandard": "c99",
             "cppStandard": "c++14",
-            "intelliSenseMode": "clang-x64"
+            "intelliSenseMode": "linux-gcc-arm"
         }
     ],
     "version": 4

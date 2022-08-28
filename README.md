@@ -16,7 +16,7 @@ alguns arquivos de configuração.
 
 * [GNU Arm Embedded Toolchain](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
   > É necessário que a pasta `bin` dessa instalação esteja no `PATH`
-  > e numa variável de ambiente `ARM_GCC_PATH`
+  > e numa variável de ambiente `ARM_GCC_PATH` (e.g: `export ARM_GCC_PATH="/home/user/gcc-arm-none-eabi-10-2020-q4-major/bin"`)
 
 * uncrustify
   > Linux: `sudo apt install uncrustify`
