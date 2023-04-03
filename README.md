@@ -228,13 +228,14 @@ Note que o nome do teste não inclui a extensão do arquivo.
 ## Debug
 
 É necessário o download da ferramenta [stlink-tools](https://github.com/stlink-org/stlink):
+
 ```bash
 sudo apt install stlink-tools
 ```
 
 Isso instalará no sistema a ferramenta "st-utils", que será usada pela extensão [Cortex-Debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug) para o debug no VScode.
 
-O arquivo _.vscode/launch.json_ gerado quando fazemos o comando 
+O arquivo _.vscode/launch.json_ gerado quando rodamos o comando 
 
 ```bash
 make vs_files
@@ -243,6 +244,6 @@ Possui configurações que são utilizadas por essa extensão para debugar o có
 
 Para inicializar o _debugger_, vá na aba "Run and Debug" na lateral esquerda do VSCode, e clique no simbolo de "Play" no topo da tela.
 
-O comando do makefile  cria duas configurações de Debug. Uma para ser utilizada com o ST-Utils e outra com o J-link. Fica a critério de qual gravador está utilizando na placa.
+O comando do Makefile  cria duas configurações de Debug. Uma para ser utilizada com o ST-Utils e outra com o J-link. Fica a critério de qual gravador está utilizando na placa.
 
 > Completar com mais detalhes
