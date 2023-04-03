@@ -484,7 +484,7 @@ $(VSCODE_FOLDER):
 -include $(wildcard $(BUILD_DIR)/**/*.d)
 
 .PHONY:                                                                    \
-	all cube prepare flash load jflash info reset clean_cube               \
+	all cube prepare flash load .jlink-flash jflash info reset clean_cube  \
 	clean clean_all format help vs_files rtt vs_launch vs_c_cpp_properties
 
 .DEFAULT_GOAL := all
