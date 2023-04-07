@@ -8,17 +8,18 @@
     "files.insertFinalNewline": true,
     "files.eol": "\n",
     "files.encoding": "utf8",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
 
     "[c]": {
-        "editor.formatOnSave": true,
+        "editor.formatOnSave": true
     },
 
     "[makefile]": {
-        "editor.insertSpaces": false,
+        "editor.insertSpaces": false
     },
 
     "[markdown]": {
         "files.trimTrailingWhitespace": false,
-        "files.trimFinalNewlines": false,
-    },
+        "files.trimFinalNewlines": false
+    }
 }
