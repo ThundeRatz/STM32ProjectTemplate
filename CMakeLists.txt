@@ -17,6 +17,7 @@ set(CMAKE_C_STANDARD 11)
 # @see: https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
 set(CMAKE_BUILD_TYPE Debug)
 
+# Cube file name without .ioc extension
 project(stm32_project_template C ASM)
 
 # Set the board version to an empty string if your board doesn't have a version

@@ -55,15 +55,43 @@ Um arquivo de exemplo se encontra em `cube/stm32_project_template.ioc` com todas
 
 Para projetos existentes, basta mover o arquivo `.ioc` para a pasta `cube/`.
 
+### Compilação
+
+O arquivo `CMakeLists.txt` deve ser editado de acordo com o projeto.
+
+Para isso é necessário mudar o nome do projeto, o qual deve ter o mesmo do arquivo do Cube (por exemplo, `stm32_project_template.ioc`), porém sem a extensão `.ioc`.
+
+```c
+# Cube file name without .ioc extension
+project(stm32_project_template C ASM)
+```
+
+> Os argumentos `C` e `ASM` estão relacionados ao tipo de linguagem que o projeto utiliza (C e Assembly).
+
+Também é necessário alterar as seguintes configurações:
+
+```c
+# Device Configuration
+set(DEVICE_CORTEX F3)
+set(DEVICE_FAMILY STM32F3xx)
+set(DEVICE_TYPE STM32F303xx)
+set(DEVICE_DEF STM32F303xE)
+set(DEVICE STM32F303RE)
+```
+
+Basta pegar o nome completo do microcontrolador e colocar nessas configurações, seguindo o padrão, fazendo as substituições que forem precisas por x.
+
+> Em caso de dúvida, veja o nome do arquivo .ld gerado na pasta cube, ele contém o nome completo do microcontrolador.
+
 ## Gerando arquivos
 
-Com o arquivo do projeto na pasta correta, você deve se direcionar para a pasta `build`. Estando lá, basta rodar o seguinte comando:
+Com as configurações realizadas corretamente, você deve se direcionar para a pasta `build`. Estando lá, basta rodar o seguinte comando:
 
 ```bash
 cmake ..
 ```
 
-Esse comando é de extrema importância, pois nenhum dos outros comandos de compilação funcionará sem ele ter sido rodado antes.
+Esse comando é de extrema importância, pois nenhum dos outros comandos de compilação funcionarão sem ele ter sido rodado antes.
 
 Basicamente, ele configura o ambiente do CMake e gera os arquivos do cube, caso a pasta `cube` esteja vazia. Todavia, caso você queira apenas gerar os arquivos do cube, também é possível rodar o comando
 
