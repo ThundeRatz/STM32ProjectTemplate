@@ -9,10 +9,13 @@ alguns arquivos de configuração.
 * [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html)
   > É necessário colocar o local de instalação na varíavel de ambiente `CUBE_PATH`
 
-* make
-  > Linux: `sudo apt install make`
+* CMake
+  > Linux: `sudo apt install cmake`
   >
-  > Windows: `msys2> pacman -S make`
+  > Windows: Baixe o zip ou o instalador no [Installing CMake](https://cmake.org/download/)
+  >
+  > É necessário que a pasta `bin` dessa instalação esteja no `PATH`.
+  > No instalador do Windows, isso é feito automaticamente
 
 * [GNU Arm Embedded Toolchain](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
   > É necessário que a pasta `bin` dessa instalação esteja no `PATH`
