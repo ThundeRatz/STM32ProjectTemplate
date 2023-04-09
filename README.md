@@ -9,6 +9,11 @@ alguns arquivos de configuração.
 * [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html)
   > É necessário colocar o local de instalação na varíavel de ambiente `CUBE_PATH`
 
+* make
+  > Linux: `sudo apt install make`
+  >
+  > Windows: `msys2> pacman -S make`
+
 * CMake
   > Linux: `sudo apt install cmake`
   >
@@ -16,10 +21,6 @@ alguns arquivos de configuração.
   >
   > É necessário que a pasta `bin` dessa instalação esteja no `PATH`.
   > No instalador do Windows, isso é feito automaticamente
-
-* [GNU Arm Embedded Toolchain](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
-  > É necessário que a pasta `bin` dessa instalação esteja no `PATH`
-  > e numa variável de ambiente `ARM_GCC_PATH`
 
 * uncrustify
   > Linux: `sudo apt install uncrustify`
@@ -95,6 +96,8 @@ cmake ..
 ```
 
 Esse comando é de extrema importância, pois nenhum dos outros comandos de compilação funcionarão sem ele ter sido rodado antes.
+
+> Todos os comandos que envolvam `make` devem ser rodados dentro da pasta `build`, após o comando `cmake ..` ter sido feito.
 
 Basicamente, ele configura o ambiente do CMake e gera os arquivos do cube, caso a pasta `cube` esteja vazia. Todavia, caso você queira apenas gerar os arquivos do cube, também é possível rodar o comando
 
@@ -184,17 +187,6 @@ Para garantir que o código está formatado, utilize o atalho `CTRL`+`S` para sa
 make format
 ```
 
-## Tasks
-
-No Visual Studio Code, pode pressionar `CTRL`+`SHIFT`+`B` e escolher uma das
-opções da lista para executar os comandos de compilação e gravação mais rapidamente.
-
-* Clean Project (*make clean*)
-* Build Project (*make*)
-* Rebuild Project (*make clean && make*)
-* Flash Program (*make flash*)
-* Build and Flash (*make && make flash*)
-
 ## Submódulos
 
 ### Adicionando um submódulo
@@ -228,23 +220,11 @@ git submodule update --init
 
 ## Diretório de testes
 
-O diretório definido pela variável `TEST_DIR` contém arquivos para testes de partes específicas do projeto, separando isso do código do projeto em si. Esses arquivos devem ser implementados de acordo com as necessidades dos desenvolvedores.
+O diretório `test` contém arquivos para testes de partes específicas do projeto, separando isso do código do projeto em si. Esses arquivos devem ser implementados de acordo com as necessidades dos desenvolvedores.
 
-Para se habilitar a compilação e gravação dos testes, deve-se definir o valor da variável `TEST` para 1, isso pode ser feito tanto no arquivo `config.mk`, quanto pela linha de comando ao rodar o `make` passando no comando `TEST=1`, por exemplo:
+Para compilar e gravar um teste, siga as instruções [na seção de compilação](#compilando) e [na seção para gravação](#gravando).
 
-```bash
-make flash TEST=1
-```
-
-Uma observação é que o comando `make clean`, quando `TEST` for 1, irá apagar os arquivos de compilação referentes aos arquivos de teste.
-
-Cada arquivo de teste no diretório de testes funciona de forma independente, ou seja, cada um deve ter uma função `main()`, sendo cada um compilado, gravado e executado separadamente. A escolha de qual teste será rodado é feita pela variável `TEST_NAME`, que assim como a variável `TEST`, pode ser definida no arquivo `config.mk` ou pela linha de comando, por exemplo:
-
-```bash
-make TEST=1 TEST_NAME=test_sensors
-```
-
-Note que o nome do teste não inclui a extensão do arquivo.
+Cada arquivo de teste no diretório de testes funciona de forma independente, ou seja, cada um deve ter uma função `main()`, sendo cada um compilado, gravado e executado separadamente.
 
 ## Debug
 
