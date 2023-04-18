@@ -92,10 +92,14 @@ set(DEPENDENCIES
 
 # Add libraries .c files here
 set(LIB_SOURCES
+    # lib/lib_name/src/file1.c
+    # lib/lib_name/src/file2.c
 )
 
 # Add libraries include directories here
 set(LIB_INCLUDE_DIRECTORIES
+    # lib/lib_name/inc/file1.h
+    # lib/lib_name/inc/file2.h
 )
 
 ###############################################################################
