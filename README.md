@@ -22,6 +22,9 @@ alguns arquivos de configuração.
   > É necessário que a pasta `bin` dessa instalação esteja no `PATH`.
   > No instalador do Windows, isso é feito automaticamente
 
+* [GNU Arm Embedded Toolchain](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
+  > É necessário que a pasta `bin` dessa instalação esteja no `PATH`
+
 * uncrustify
   > Linux: `sudo apt install uncrustify`
   >
