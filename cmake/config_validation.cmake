@@ -7,8 +7,12 @@
 ## Auxiliary Sets
 ###############################################################################
 
+# This variable is used by the stm32-cmake lib to find the STM32CubeMX files
+# @see: https://github.com/ObKo/stm32-cmake#configuration
 set(STM32_CUBE_${DEVICE_CORTEX}_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cube)
 
+# This set contains all the variables that must be defined by the user
+# It is used to check if all of them are properly defined
 set(USER_INPUT_VARIABLES
     DEVICE_CORTEX
     DEVICE_FAMILY
