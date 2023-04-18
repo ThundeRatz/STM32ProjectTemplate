@@ -98,8 +98,7 @@ set(LIB_SOURCES
 
 # Add libraries include directories here
 set(LIB_INCLUDE_DIRECTORIES
-    # lib/lib_name/inc/file1.h
-    # lib/lib_name/inc/file2.h
+    # lib/lib_name/inc/
 )
 
 ###############################################################################
