@@ -51,13 +51,25 @@ TESTS_BIN     := $(shell find $(TEST_DIR)/bin -name "*.c")
 
 CURRENT_TEST_BIN := $(shell find $(TEST_DIR)/bin -name ${TEST_NAME}.c)
 
-CONFIG_HEADERS :=
+ifneq ($(TEST_NAME),)
+ifeq ($(CURRENT_TEST_BIN),)
+$(error Invalid test name, $(TEST_NAME).c not found)
+endif
+endif
 
-ifeq ($(TEST), 1)
+ifneq ($(TEST_NAME),)
 C_SOURCES := $(filter-out $(shell find src -name "main.c"), $(C_SOURCES))
 endif
 
+CONFIG_HEADERS :=
+BOARD_CONFIG_HEADER :=
+GENERAL_CONFIG_HEADERS :=
+
 ifneq ($(CFG_DIR),)
+BOARD_CONFIG_HEADER += $(shell find -wholename ./$(CFG_DIR)/board/$(TARGET_BOARD).h)
+
+GENERAL_CONFIG_HEADERS += $(shell find $(CFG_DIR) -name "*.h" -not -path "$(CFG_DIR)/board/*")
+
 CONFIG_HEADERS += $(shell find $(CFG_DIR) -name "*.h")
 endif
 
@@ -72,7 +84,10 @@ vpath %.c $(sort $(dir $(CUBE_SOURCES)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 vpath %.c $(sort $(dir $(TESTS_SOURCES)))
+
+ifneq ($(TEST_NAME),)
 vpath %.c $(sort $(dir $(CURRENT_TEST_BIN)))
+endif
 
 ###############################################################################
 ## Compiler settings
@@ -105,8 +120,16 @@ C_INCLUDES  := $(addprefix -I,                            \
 )
 
 C_TESTS_INCLUDES := $(addprefix -I,                       \
-	$(sort $(dir $(TESTS_HEADERS)))                        \
+	$(sort $(dir $(TESTS_HEADERS)))                       \
 )
+
+C_GENERAL_CONFIG_INCLUDES :=
+
+ifneq ($(CFG_DIR),)
+C_CONFIG_INCLUDES += $(addprefix -include ,               \
+	$(GENERAL_CONFIG_HEADERS) $(BOARD_CONFIG_HEADER)      \
+)
+endif
 
 # Adds libs sources and include directories
 ifneq ($(wildcard $(LIB_DIR)/.*),)
@@ -149,7 +172,7 @@ CFLAGS :=                                   \
 	$(OPT) -std=c11 -MMD -MP                \
 
 ifneq ($(CFG_DIR),)
-CFLAGS += -include $(CFG_DIR)/board/$(TARGET_BOARD).h
+CFLAGS += $(C_CONFIG_INCLUDES)
 endif
 
 ifeq ($(DEBUG),1)
@@ -161,10 +184,10 @@ TEST_CFLAGS :=                              \
 	$(CFLAGS) $(C_TESTS_INCLUDES)           \
 
 # Build target base name definition
-ifeq ($(TEST), 1)
-BUILD_TARGET_BASE_NAME := $(TEST_NAME)_$(PROJECT_NAME)
+ifneq ($(TEST_NAME),)
+BUILD_TARGET_BASE_NAME := $(TEST_NAME)_$(PROJECT_RELEASE)
 else
-BUILD_TARGET_BASE_NAME := $(PROJECT_NAME)
+BUILD_TARGET_BASE_NAME := $(PROJECT_RELEASE)
 endif
 
 # Linker Flags
@@ -207,13 +230,13 @@ $(BUILD_DIR)/$(TEST_DIR)/%.o: %.c config.mk Makefile | $(BUILD_DIR)
 	$(AT)$(CC) -c $(TEST_CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(TEST_DIR)/$(notdir $(<:.c=.lst)) -MF"$(@:.o=.d)" $< -o $@
 
 # The .elf file depend on all object files and the Makefile
-$(BUILD_DIR)/$(PROJECT_NAME).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(PROJECT_RELEASE).elf: $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $@"
 	$(AT)$(CC) $(OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
 
 # The .elf file depend on all object files and the Makefile
-$(BUILD_DIR)/$(TEST_NAME)_$(PROJECT_NAME).elf: $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/$(TEST_NAME)_$(PROJECT_RELEASE).elf: $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) config.mk Makefile | $(BUILD_DIR)
 	@echo "CC $@"
 	$(AT)$(CC) $(OBJECTS) $(TESTS_OBJECTS) $(CUBE_OBJECTS) $(LIB_OBJECTS) $(LDFLAGS) -o $@
 	$(AT)$(SIZE) $@
@@ -262,7 +285,7 @@ endif
 # Create cube script
 .cube: config.mk Makefile
 	@echo "Creating Cube script"
-	@echo "config load "$(CUBE_DIR)"/"$(PROJECT_NAME)".ioc" > $@
+	@echo "config load "$(CUBE_DIR)"/"$(PROJECT_RELEASE)".ioc" > $@
 	@echo "project generate" >> $@
 	@echo "exit" >> $@
 
@@ -326,7 +349,7 @@ clean_cube:
 # Clean build files
 # - Ignores cube-related build files (ST and CMSIS libraries)
 clean:
-ifeq ($(TEST), 0)
+ifeq ($(TEST_NAME),)
 	@echo "Cleaning build files"
 	$(AT)-rm -rf $(OBJECTS) $(OBJECTS:.o=.d) $(OBJECTS:.o=.lst)
 else
@@ -417,15 +440,19 @@ define VS_CPP_PROPERTIES
     "configurations": [
         {
             "name": "STM32_TR",
+
             "includePath": [
                 $(subst -I,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(C_INCLUDES) $(C_TESTS_INCLUDES),"$(inc)"))))
             ],
+			"forcedInclude": [
+				$(subst $(SPACE),$(COMMA),$(strip $(foreach inc,$(BOARD_CONFIG_HEADER) $(GENERAL_CONFIG_HEADERS),"$(inc)")))
+			],
 
             "defines": [
                 $(subst -D,$(NULL),$(subst $(SPACE),$(COMMA),$(strip $(foreach def,$(C_DEFS),"$(def)"))))
             ],
 
-            "compilerPath": "$${env:ARM_GCC_PATH}/arm-none-eabi-gcc",
+            "compilerPath": "$(ARM_GCC_PATH)/arm-none-eabi-gcc",
             "cStandard": "c99",
             "cppStandard": "c++14",
             "intelliSenseMode": "clang-x64"
@@ -438,13 +465,15 @@ endef
 export VS_LAUNCH
 export VS_CPP_PROPERTIES
 
-vs_files: $(VS_LAUNCH_FILE) $(VS_C_CPP_PROPERTIES_FILE)
+vs_files: vs_launch vs_c_cpp_properties
 
-$(VS_LAUNCH_FILE): config.mk Makefile | $(VSCODE_FOLDER)
-	$(AT)echo "$$VS_LAUNCH" > $@
+vs_launch: config.mk Makefile | $(VSCODE_FOLDER)
+	$(AT)rm -f $(VS_LAUNCH_FILE)
+	$(AT)echo "$$VS_LAUNCH" > $(VS_LAUNCH_FILE)
 
-$(VS_C_CPP_PROPERTIES_FILE): config.mk Makefile | $(VSCODE_FOLDER)
-	$(AT)echo "$$VS_CPP_PROPERTIES" > $@
+vs_c_cpp_properties: config.mk Makefile $(C_HEADERS) $(TESTS_HEADERS) $(BOARD_CONFIG_HEADER) $(GENERAL_CONFIG_HEADERS) | $(VSCODE_FOLDER)
+	$(AT)rm -f $(VS_C_CPP_PROPERTIES_FILE)
+	$(AT)echo "$$VS_CPP_PROPERTIES" > $(VS_C_CPP_PROPERTIES_FILE)
 
 $(VSCODE_FOLDER):
 	$(AT)mkdir -p $@
@@ -454,8 +483,8 @@ $(VSCODE_FOLDER):
 # Include dependecy files for .h dependency detection
 -include $(wildcard $(BUILD_DIR)/**/*.d)
 
-.PHONY:                                                       \
-	all cube prepare flash load jflash info reset clean_cube  \
-	clean clean_all format help vs_files rtt
+.PHONY:                                                                    \
+	all cube prepare flash load .jlink-flash jflash info reset clean_cube  \
+	clean clean_all format help vs_files rtt vs_launch vs_c_cpp_properties
 
 .DEFAULT_GOAL := all

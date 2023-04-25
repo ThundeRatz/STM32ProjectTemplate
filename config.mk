@@ -5,9 +5,11 @@
 
 # Cube file name without .ioc extension
 PROJECT_NAME = stm32_project_template
-VERSION := 1
+VERSION := v1
 
-TARGET_BOARD := target_$(PROJECT_NAME)_$(VERSION)
+PROJECT_RELEASE := $(PROJECT_NAME)_$(VERSION)
+
+TARGET_BOARD := target_$(PROJECT_RELEASE)
 
 DEVICE_FAMILY  := STM32F3xx
 DEVICE_TYPE    := STM32F303xx
@@ -33,6 +35,5 @@ TEST_DIR := tests
 # Default values, can be set on the command line or here
 DEBUG   ?= 1
 VERBOSE ?= 0
-TEST    ?= 0
 
-TEST_NAME ?= test_main
+TEST_NAME ?=
