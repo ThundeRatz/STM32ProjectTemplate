@@ -14,10 +14,6 @@
         "editor.formatOnSave": true
     },
 
-    "[makefile]": {
-        "editor.insertSpaces": false
-    },
-
     "[markdown]": {
         "files.trimTrailingWhitespace": false,
         "files.trimFinalNewlines": false
