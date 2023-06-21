@@ -13,7 +13,11 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/lib/stm32-cmake/cmake/stm32_gcc.cmake)
 set(CMAKE_C_STANDARD 11)
 
-# Debug, Release, RelWithDebInfo and MinSizeRel
+## Options:
+# Release: high optimization level, no debug info, code or asserts.
+# Debug: No optimization, asserts enabled, [custom debug (output) code enabled], debug info included in executable (so you can step through the code with a debugger and have address to source-file:line-number translation).
+# RelWithDebInfo: optimized, with debug info, but no debug (output) code or asserts.
+# MinSizeRel: same as Release but optimizing for size rather than speed.
 # @see: https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
 set(CMAKE_BUILD_TYPE Debug)
 
