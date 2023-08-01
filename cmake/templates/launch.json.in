@@ -7,7 +7,7 @@
             "servertype": "stutil",
             "cwd": "${CMAKE_CURRENT_SOURCE_DIR}",
             "gdbPath": "arm-none-eabi-gdb",
-            "executable": "build/${PROJECT_NAME}.elf",
+            "executable": "build/${DEBUG_FILE_NAME}.elf",
             "name": "Cortex Debug (ST-Util)",
             "device": "${DEVICE}",
             "v1": false
@@ -18,7 +18,7 @@
             "servertype": "jlink",
             "cwd": "${CMAKE_CURRENT_SOURCE_DIR}",
             "gdbPath": "arm-none-eabi-gdb",
-            "executable": "build/${PROJECT_NAME}.elf",
+            "executable": "build/${DEBUG_FILE_NAME}.elf",
             "name": "Cortex Debug (J-Link)",
             "device": "${DEVICE}",
             "interface": "swd",

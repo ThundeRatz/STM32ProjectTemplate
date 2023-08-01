@@ -48,6 +48,9 @@ set(TARGET_BOARD target_${PROJECT_RELEASE})
 ## Global compilation config
 ###############################################################################
 
+set(LAUNCH_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/.vscode/launch.json)
+set(DEBUG_FILE_NAME ${PROJECT_NAME})
+
 include(cmake/config_validation.cmake)
 include(cmake/workspace.cmake)
 include(cmake/targets.cmake)
@@ -139,7 +142,7 @@ list(REMOVE_ITEM CUBE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/cube/Src/system_${DEVI
 set(FORCED_INCLUDE_HEADERS
 )
 
-thunder_generate_format_target(C_SOURCES C_HEADERS TESTS_SOURCES TESTS_HEADERS TESTS_BIN)
+targets_generate_format_target(C_SOURCES C_HEADERS TESTS_SOURCES TESTS_HEADERS TESTS_BIN)
 
 ###############################################################################
 ## Main executable target
@@ -173,7 +176,8 @@ target_link_options(${PROJECT_NAME} PUBLIC
 stm32_print_size_of_target(${PROJECT_NAME})
 stm32_generate_hex_file(${PROJECT_NAME})
 
-thunder_generate_flash_target(${PROJECT_NAME})
+targets_generate_vsfiles_target(${PROJECT_NAME})
+targets_generate_flash_target(${PROJECT_NAME})
 
 ###############################################################################
 ## Generate test executables
@@ -217,6 +221,7 @@ foreach(TEST_FILE ${TESTS_BIN})
 
     stm32_generate_hex_file(${TEST_NAME})
 
-    thunder_generate_flash_target(${TEST_NAME})
+    targets_generate_vsfiles_target(${TEST_NAME})
+    targets_generate_flash_target(${TEST_NAME})
 
 endforeach()

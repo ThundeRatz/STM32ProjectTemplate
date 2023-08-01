@@ -9,7 +9,7 @@
 
 message(STATUS "Configuring VS Code files")
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/launch.json.in ${CMAKE_CURRENT_SOURCE_DIR}/.vscode/launch.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/launch.json.in ${LAUNCH_JSON_PATH}
 )
 
 ###############################################################################
