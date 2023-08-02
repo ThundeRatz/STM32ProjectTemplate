@@ -1,7 +1,7 @@
 /**
- * @file tests_core.c
+ * @file test_core.c
  *
- * @brief Core functions to the tests
+ * @brief Core functions to the test
  *
  * @date 04/2021
  *
@@ -9,7 +9,7 @@
  *
  */
 
-#include "tests_core.h"
+#include "test_core.h"
 #include "mcu.h"
 
 /*****************************************
