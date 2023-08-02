@@ -1,0 +1,26 @@
+
+------------------------------ Thunder CMake ------------------------------
+      Boas vindas ao CMakeLists da ThundeRatz, cheque as configuracoes
+                 atuais e mude o arquivo se necessario
+
+Opcoes:
+    helpme:             mostra essa ajuda
+    cube:               gera arquivos do cube
+    info:               mostra informações sobre o uC conectado
+    flash:              carrega os arquivos compilados do programa principal no microcontrolador via st-link
+    flash_[test_name]:  carrega os arquivos compilados de um teste no microcontrolador via st-link
+    jflash:             carrega os arquivos compilados do programa principal no microcontrolador via j-link
+    jflash_[test_name]: carrega os arquivos compilados de um teste no microcontrolador via j-link
+    format:             formata os arquivos .c/.h
+    clean:              limpa os arquivos compilados
+    clean_all:          apaga todos os arquivos da pasta /build
+    clean_cube:         limpa os arquivos gerados pelo Cube
+    reset:              reseta o microcontrolador
+    rebuild:            recompila os arquivos do /build
+    rebuild_all:        recompila os arquivos do /build os arquivos gerados pelo Cube
+
+Configuracoes atuais:
+    DEVICE_FAMILY  =  ${DEVICE_FAMILY}
+    DEVICE_TYPE    =  ${DEVICE_TYPE}
+    DEVICE         =  ${DEVICE}
+    DEVICE_DEF     =  ${DEVICE_DEF}

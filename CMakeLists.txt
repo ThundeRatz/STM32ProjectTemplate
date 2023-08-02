@@ -178,6 +178,7 @@ stm32_generate_hex_file(${PROJECT_NAME})
 
 targets_generate_vsfiles_target(${PROJECT_NAME})
 targets_generate_flash_target(${PROJECT_NAME})
+targets_generate_helpme_target()
 
 ###############################################################################
 ## Generate test executables

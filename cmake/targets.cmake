@@ -8,33 +8,7 @@
 ###############################################################################
 
 add_custom_target(helpme
-    COMMAND echo " "
-    COMMAND echo "----------------------- Thunder CMake ------------------------------"
-    COMMAND echo "   Boas vindas ao CMakeLists da ThundeRatz, cheque as configuracoes    "
-    COMMAND echo "                atuais e mude o arquivo se necessario                 "
-    COMMAND echo " "
-    COMMAND echo "Opcoes:"
-    COMMAND echo "  helpme:             mostra essa ajuda"
-    COMMAND echo "  cube:               gera arquivos do cube"
-    COMMAND echo "  info:               mostra informações sobre o uC conectado"
-    COMMAND echo "  flash:              carrega os arquivos compilados do programa principal no microcontrolador via st-link"
-    COMMAND echo "  flash_[test_name]:  carrega os arquivos compilados de um teste no microcontrolador via st-link"
-    COMMAND echo "  jflash:             carrega os arquivos compilados do programa principal no microcontrolador via j-link"
-    COMMAND echo "  jflash_[test_name]: carrega os arquivos compilados de um teste no microcontrolador via j-link"
-    COMMAND echo "  format:             formata os arquivos .c/.h"
-    COMMAND echo "  clean:              limpa os arquivos compilados"
-    COMMAND echo "  clean_all:          apaga todos os arquivos da pasta /build"
-    COMMAND echo "  clean_cube:         limpa os arquivos gerados pelo Cube"
-    COMMAND echo "  reset:              reseta o microcontrolador"
-    COMMAND echo "  rebuild:            recompila os arquivos do /build"
-    COMMAND echo "  rebuild_all:        recompila os arquivos do /build os arquivos gerados pelo Cube"
-    COMMAND echo " "
-    COMMAND echo "Configuracoes atuais:"
-    COMMAND echo "  DEVICE_FAMILY  =  ${DEVICE_FAMILY}"
-    COMMAND echo "  DEVICE_TYPE    =  ${DEVICE_TYPE}"
-    COMMAND echo "  DEVICE         =  ${DEVICE}"
-    COMMAND echo "  DEVICE_DEF     =  ${DEVICE_DEF}"
-    COMMAND echo "	"
+    COMMAND cat ${CMAKE_CURRENT_BINARY_DIR}/.helpme
 )
 
 add_custom_target(cube
@@ -138,4 +112,11 @@ function(targets_generate_vsfiles_target TARGET)
     )
 
     add_dependencies(debug_files${TARGET_SUFFIX} ${TARGET})
+endfunction()
+
+function(targets_generate_helpme_target)
+    set(input_file ${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/helpme.in)
+    set(ouput_save_file ${CMAKE_CURRENT_BINARY_DIR}/.helpme)
+
+    configure_file(${input_file} ${ouput_save_file})
 endfunction()
