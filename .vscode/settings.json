@@ -8,14 +8,35 @@
     "files.insertFinalNewline": true,
     "files.eol": "\n",
     "files.encoding": "utf8",
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
 
     "[c]": {
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "zachflower.uncrustify",
+    },
+
+    "[makefile]": {
+        "editor.insertSpaces": false,
     },
 
     "[markdown]": {
         "files.trimTrailingWhitespace": false,
-        "files.trimFinalNewlines": false
-    }
+        "files.trimFinalNewlines": false,
+    },
+
+    "doxdocgen.generic.dateFormat": "MM/YYYY",
+    "doxdocgen.file.copyrightTag": [
+        "@copyright MIT License - Copyright (c) {year} ThundeRatz"
+    ],
+    "doxdocgen.generic.authorTag": "@author {author} <{email}>",
+    "doxdocgen.file.fileOrder": [
+        "file",
+        "author",
+        "brief",
+        "date",
+        "empty",
+        "copyright",
+        "empty",
+        "custom"
+    ],
+
 }

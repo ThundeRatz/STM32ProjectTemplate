@@ -14,16 +14,9 @@ alguns arquivos de configuração.
   >
   > Windows: `msys2> pacman -S make`
 
-* CMake
-  > Linux: `sudo apt install cmake`
-  >
-  > Windows: Baixe o zip ou o instalador no [Installing CMake](https://cmake.org/download/)
-  >
-  > É necessário que a pasta `bin` dessa instalação esteja no `PATH`.
-  > No instalador do Windows, isso é feito automaticamente
-
 * [GNU Arm Embedded Toolchain](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
   > É necessário que a pasta `bin` dessa instalação esteja no `PATH`
+  > e numa variável de ambiente `ARM_GCC_PATH`
 
 * uncrustify
   > Linux: `sudo apt install uncrustify`
@@ -53,7 +46,7 @@ Project:
 
 Code Generator:
 
-* STM32Cube Firmware Library Package: *Copy all used libraries into the project folder*
+* STM32Cube Firmware Library Package: *Copy only the necessary library files*
 * Generated files:
   * *Generate peripheral initialization as a pair of .c/.h files per peripheral*
   * *Delete previously generated files when not re-generated*
@@ -62,98 +55,97 @@ Um arquivo de exemplo se encontra em `cube/stm32_project_template.ioc` com todas
 
 Para projetos existentes, basta mover o arquivo `.ioc` para a pasta `cube/`.
 
-### Compilação
+### Gerando arquivos
 
-O arquivo `CMakeLists.txt` deve ser editado de acordo com o projeto.
-
-Para isso é necessário mudar o nome do projeto, o qual deve ter o mesmo do arquivo do Cube (por exemplo, `stm32_project_template.ioc`), porém sem a extensão `.ioc`.
-
-```c
-# Cube file name without .ioc extension
-project(stm32_project_template C ASM)
-```
-
-> Os argumentos `C` e `ASM` estão relacionados ao tipo de linguagem que o projeto utiliza (C e Assembly).
-
-Também é necessário alterar as seguintes configurações:
-
-```c
-# Device Configuration
-set(DEVICE_CORTEX F3)
-set(DEVICE_FAMILY STM32F3xx)
-set(DEVICE_TYPE STM32F303xx)
-set(DEVICE_DEF STM32F303xE)
-set(DEVICE STM32F303RE)
-```
-
-Basta pegar o nome completo do microcontrolador e colocar nessas configurações, seguindo o padrão, fazendo as substituições que forem precisas por x.
-
-> Em caso de dúvida, veja o nome do arquivo .ld gerado na pasta cube, ele contém o nome completo do microcontrolador.
-
-## Gerando arquivos
-
-Com as configurações realizadas corretamente, você deve se direcionar para a pasta `build`. Estando lá, basta rodar o seguinte comando:
+Com o arquivo do projeto na pasta correta, os seguintes comandos devem ser 
+executados (necessário apenas após dar checkout no repositório ou mudar o cube):
 
 ```bash
-cmake ..
+make cube     # Gera arquivos do cube
+make prepare  # Apaga os arquivos do cube desnecessários e gera arquivos de configuração do VS Code
 ```
 
-Esse comando é de extrema importância, pois nenhum dos outros comandos de compilação funcionarão sem ele ter sido rodado antes.
+Se, após modificar os arquivos do cube, ocorrer algum erro nos comandos acima,
+pode rodar `make clean_cube` para apagar os arquivos gerados e então tentar 
+novamente para que eles sejam gerados do zero.
 
-> Todos os comandos que envolvam `make` devem ser rodados dentro da pasta `build`, após o comando `cmake ..` ter sido feito.
+### [config.mk](config.mk)
 
-Basicamente, ele configura o ambiente do CMake e gera os arquivos do cube, caso a pasta `cube` esteja vazia. Todavia, caso você queira apenas gerar os arquivos do cube, também é possível rodar o comando
+O arquivo [config.mk](config.mk) deve ser alterado de acordo com o projeto. 
 
-```bash
-make cube
+Para isso é necessário mudar o nome do projeto, o qual deve ter o mesmo do arquivo do Cube (por exemplo, `stm32_project_template.ioc`), porém sem a extensão `.ioc` (no caso de não se utilizar o versionamento dos arquivos do Cube).
+
+```Makefile
+PROJECT_NAME = stm32_project_template
+```
+
+Também é necessário alterar as seguintes configuraões:
+
+```Makefile
+DEVICE_FAMILY  := STM32F3xx
+DEVICE_TYPE    := STM32F303xx
+DEVICE_DEF     := STM32F303xE
+DEVICE         := STM32F303RE
+```
+
+Basta pegar o nome completo do microcontrolador e colocar nessas configurações, seguindo o padrão, fazendo as substituições que forem precisas por `x`.
+
+> Em caso de dúvida, veja o nome do arquivo `.ld` gerado na pasta `cube`,
+> ele contém o nome completo do microcontrolador.
+
+> Se estiver usando a família STM32G0, a variável `DEVICE_DEF` deverá ser igual à `DEVICE_TYPE`.
+
+Além disso, deve-se colocar o nome completo do arquivo com extensão `.ld` em `DEVICE_LD_FILE`.
+
+```Makefile
+# Linker script file without .ld extension
+# Find it on cube folder after code generation
+DEVICE_LD_FILE := STM32F303RETx_FLASH
+```
+
+As seguintes configurações não precisam ser alteradas, elas definem nomes de diretórios e opções de compilação, sendo o sugerido permanecerem com seus valores padrão:
+
+```Makefile
+# Lib dir
+LIB_DIR  := lib
+
+# Cube Directory
+CUBE_DIR := cube
+
+# Config Files Directory
+CFG_DIR :=
+
+# Tests Directory
+TEST_DIR := tests
+
+# Default values, can be set on the command line or here
+DEBUG   ?= 1
+VERBOSE ?= 0
+TEST    ?= 0
 ```
 
 ## Compilando
 
-Para compilar os arquivos, após ter rodado `cmake ..`, ainda dentro da pasta `build`, rode:
+Para compilar os arquivos rode
 
 ```bash
 make
 ```
 
-O comando `make` apenas compilará o código principal, não compilando nenhum teste. Para compilar um teste, cujo arquivo se chama **nome_do_teste.c**, rode:
-
-```bash
-make nome_do_teste
-```
-
-## Limpando Arquivos compilados
-
-Se acontecer algum erro, pode ser necessário limpar os arquivos já compilados. Para isso, dentro da pasta `build`,  faça:
+Às vezes, é necessário limpar os arquivos já compilados, se algum erro estiver 
+acontecendo, para isso faça:
 
 ```bash
 make clean
 ```
 
-Isso apaga todos os arquivos de compilação gerados, exceto aqueles que vêm das bibliotecas da ST geradas pelo Cube. Isso é feito para agilizar um novo build, já que raramente será necessário recompilar esses arquivos. Todavia, caso seja necessário, é possível limpá-los com o comando:
-
-```bash
-make clean_cube
-```
-
-Além disso, caso seja necessário limpar todos os arquivos de compilação, você pode rodar o comando:
+Isso apaga todos os arquivos de compilação gerados, exceto aqueles gerados a partir 
+das bibliotecas da ST geradas pelo Cube, isso ocorre para agilizar um novo build,
+já que raramente será necessário recompilar esses arquivos, mas caso seja necessário,
+é possível limpar todos os arquivos de compilação com
 
 ```bash
 make clean_all
-```
-
-## Recompilando
-
-Caso você queira apagar os arquivos compilados e recompilá-los, é possível fazer isso com um comando só, rodando, dentro da pasta `build`, o comando:
-
-```bash
-make rebuild
-```
-
-E, caso você queira apagar e recompilar todos os arquivos compilados, incluindo os do cube, rode o comando:
-
-```bash
-make rebuild_all
 ```
 
 ## Gravando
@@ -170,25 +162,16 @@ Ou, caso use um gravador com J-Link:
 make jflash
 ```
 
-Além disso, para gravar um teste, cujo nome do arquivo é **nome_do_teste.c**, deve-se rodar:
+## Tasks
 
-```bash
-make flash_nome_do_teste
-```
+No Visual Studio Code, pode pressionar `CTRL`+`SHIFT`+`B` e escolher uma das 
+opções da lista para executar os comandos de compilação e gravação mais rapidamente.
 
-Ou, caso use um gravador com J-Link:
-
-```bash
-make jflash_nome_do_teste
-```
-
-## Formatando
-
-Para garantir que o código está formatado, utilize o atalho `CTRL`+`S` para salvar e formatar o arquivo em que se está mexendo ou, para formatar todos os arquivos do repositório de uma vez, rode:
-
-```bash
-make format
-```
+* Clean Project (_make clean_)
+* Build Project (_make_)
+* Rebuild Project (_make clean && make_)
+* Flash Program (_make flash_)
+* Build and Flash (_make && make flash_)
 
 ## Submódulos
 
@@ -223,11 +206,21 @@ git submodule update --init
 
 ## Diretório de testes
 
-O diretório `test` contém arquivos para testes de partes específicas do projeto, separando isso do código do projeto em si. Esses arquivos devem ser implementados de acordo com as necessidades dos desenvolvedores.
+O diretório definido pela variável `TEST_DIR` contém arquivos para testes de partes específicas do projeto, separando isso do código do projeto em si. Esses arquivos devem ser implementados de acordo com as necessidades dos desenvolvedores.
 
-Para compilar e gravar um teste, siga as instruções [na seção de compilação](#compilando) e [na seção para gravação](#gravando).
+Para se habilitar a compilação e gravação dos testes, deve-se definir o valor da variável `TEST_NAME` para o nome do arquivo de teste que se quer utilizar, isso pode ser feito tanto no arquivo `config.mk`, quanto pela linha de comando ao rodar o `make`, como por exemplo:
+
+```bash
+make flash TEST_NAME=test_digital_sensors
+```
+
+Caso o valor da variável `TEST_NAME` seja vazio, não se utilizará o modo de teste.
+
+Uma observação é que o comando `make clean`, quando `TEST_NAME` não for vazio, irá apagar os arquivos de compilação referentes aos arquivos de teste.
 
 Cada arquivo de teste no diretório de testes funciona de forma independente, ou seja, cada um deve ter uma função `main()`, sendo cada um compilado, gravado e executado separadamente.
+
+Note que o nome do teste não inclui a extensão do arquivo.
 
 ## Debug
 
