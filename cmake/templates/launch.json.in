@@ -8,7 +8,7 @@
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "stutil",
-            "gdbPath": "gdb-multiarch",
+            "gdbPath": "arm-none-eabi-gdb",
             "device": "${DEVICE}",
             "v1": false
         },
@@ -19,7 +19,7 @@
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
-            "gdbPath": "gdb-multiarch",
+            "gdbPath": "arm-none-eabi-gdb",
             "configFiles":
             [
                 "${OPENOCD_SCRIPTS_PATH}/interface/stlink.cfg",
@@ -33,7 +33,7 @@
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "jlink",
-            "gdbPath": "gdb-multiarch",
+            "gdbPath": "arm-none-eabi-gdb",
             "device": "${DEVICE}",
             "interface": "swd",
         }
