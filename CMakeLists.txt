@@ -51,6 +51,17 @@ set(TARGET_BOARD target_${PROJECT_RELEASE})
 set(LAUNCH_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/.vscode/launch.json)
 set(DEBUG_FILE_NAME ${PROJECT_NAME})
 
+# SET OPENOCD TARGET CONFIGURATION FILE
+if(CMAKE_HOST_WIN32)
+    set(OPENOCD_SCRIPTS_PATH "C:\\msys64\\mingw64\\share\\openocd\\scripts")
+else()
+    set(OPENOCD_SCRIPTS_PATH "/usr/share/openocd/scripts")
+endif()
+string(TOLOWER ${DEVICE_FAMILY} LOWERCASE_DEVICE_FAMILY)
+string(LENGTH ${LOWERCASE_DEVICE_FAMILY} LENGTH)
+math(EXPR LENGTH_MINUS_ONE "${LENGTH} - 1")
+string(SUBSTRING ${LOWERCASE_DEVICE_FAMILY} 0 ${LENGTH_MINUS_ONE} TARGET_CFG)
+
 include(cmake/config_validation.cmake)
 include(cmake/workspace.cmake)
 include(cmake/targets.cmake)
