@@ -22,7 +22,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_BUILD_TYPE Debug)
 
 # Cube file name without .ioc extension
-project(stm32_project_template C ASM)
+project(stm32_project_template C CXX ASM)
 
 # Set the board version to an empty string if your board doesn't have a version
 set(BOARD_VERSION "")
@@ -125,12 +125,12 @@ set(TEST_INCLUDE_DIRECTORIES
 ## Input files
 ###############################################################################
 
-file(GLOB_RECURSE C_SOURCES CONFIGURE_DEPENDS "src/*.c")
-file(GLOB_RECURSE C_HEADERS CONFIGURE_DEPENDS "inc/*.h")
+file(GLOB_RECURSE C_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
+file(GLOB_RECURSE C_HEADERS CONFIGURE_DEPENDS "inc/*.hpp")
 
-file(GLOB_RECURSE TESTS_SOURCES CONFIGURE_DEPENDS "tests/src/*.c")
-file(GLOB_RECURSE TESTS_HEADERS CONFIGURE_DEPENDS "tests/inc/*.h")
-file(GLOB_RECURSE TESTS_BIN CONFIGURE_DEPENDS "tests/bin/*.c")
+file(GLOB_RECURSE TESTS_SOURCES CONFIGURE_DEPENDS "tests/src/*.cpp")
+file(GLOB_RECURSE TESTS_HEADERS CONFIGURE_DEPENDS "tests/inc/*.hpp")
+file(GLOB_RECURSE TESTS_BIN CONFIGURE_DEPENDS "tests/bin/*.cpp")
 
 file(GLOB_RECURSE CUBE_SOURCES CONFIGURE_DEPENDS "cube/Src/*.c")
 
@@ -184,12 +184,12 @@ targets_generate_helpme_target()
 ## Generate test executables
 ###############################################################################
 
-# Since each test has its own main function, we don't need the main.c from the project
-list(REMOVE_ITEM C_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c)
+# Since each test has its own main function, we don't need the main.cpp from the project
+list(REMOVE_ITEM C_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 foreach(TEST_FILE ${TESTS_BIN})
 
-    # If TEST_FILE contains /dir1/dir2/file.c, TEST_NAME will be 'file'
+    # If TEST_FILE contains /dir1/dir2/file.cpp, TEST_NAME will be 'file'
     get_filename_component(TEST_NAME ${TEST_FILE} NAME_WLE)
 
     add_executable(${TEST_NAME} EXCLUDE_FROM_ALL
