@@ -1,5 +1,5 @@
 /**
- * @file mcu.c
+ * @file mcu.cpp
  *
  * @brief MCU related
  */
