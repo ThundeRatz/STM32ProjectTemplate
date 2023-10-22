@@ -125,12 +125,12 @@ set(TEST_INCLUDE_DIRECTORIES
 ## Input files
 ###############################################################################
 
-file(GLOB_RECURSE C_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
-file(GLOB_RECURSE C_HEADERS CONFIGURE_DEPENDS "inc/*.hpp")
+file(GLOB_RECURSE C_SOURCES CONFIGURE_DEPENDS "src/*.cpp" "src/*.c")
+file(GLOB_RECURSE C_HEADERS CONFIGURE_DEPENDS "inc/*.hpp" "inc/*.h")
 
-file(GLOB_RECURSE TESTS_SOURCES CONFIGURE_DEPENDS "tests/src/*.cpp")
-file(GLOB_RECURSE TESTS_HEADERS CONFIGURE_DEPENDS "tests/inc/*.hpp")
-file(GLOB_RECURSE TESTS_BIN CONFIGURE_DEPENDS "tests/bin/*.cpp")
+file(GLOB_RECURSE TESTS_SOURCES CONFIGURE_DEPENDS "tests/src/*.cpp" "tests/src/*.c")
+file(GLOB_RECURSE TESTS_HEADERS CONFIGURE_DEPENDS "tests/inc/*.hpp" "tests/inc/*.h")
+file(GLOB_RECURSE TESTS_BIN CONFIGURE_DEPENDS "tests/bin/*.cpp" "tests/bin/*.c")
 
 file(GLOB_RECURSE CUBE_SOURCES CONFIGURE_DEPENDS "cube/Src/*.c")
 
@@ -185,7 +185,10 @@ targets_generate_helpme_target()
 ###############################################################################
 
 # Since each test has its own main function, we don't need the main.cpp from the project
-list(REMOVE_ITEM C_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
+list(REMOVE_ITEM C_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c
+)
 
 foreach(TEST_FILE ${TESTS_BIN})
 
