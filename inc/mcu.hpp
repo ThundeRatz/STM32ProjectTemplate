@@ -15,17 +15,15 @@
 
 extern "C"
 {
-    /**
-     * @brief Initializes System Clock.
-     * @note  Defined by cube.
-     */
-    void SystemClock_Config(void);
+/**
+ * @brief Initializes System Clock.
+ * @note  Defined by cube.
+ */
+void SystemClock_Config(void);
 }
 
-namespace hal
-{
-    class mcu
-    {
+namespace hal {
+class mcu {
     public:
         /**
          * @brief Initializes MCU and some peripherals.
@@ -43,6 +41,6 @@ namespace hal
          * @brief Toggles LED.
          */
         static void led_toggle(void);
-    };
+};
 };
 #endif // __MCU_H__

@@ -7,11 +7,9 @@
 #include <stdio.h>
 #include "test_core.hpp"
 
-int main(void)
-{
+int main(void) {
     test_core_init();
 
-    for (;;)
-    {
+    for (;;) {
     }
 }

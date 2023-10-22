@@ -16,12 +16,10 @@ static constexpr uint16_t led_toggle_delay_ms = 1500;
  * Main Function
  *****************************************/
 
-int main(void)
-{
+int main(void) {
     hal::mcu::init();
 
-    for (;;)
-    {
+    for (;;) {
         hal::mcu::led_toggle();
         hal::mcu::sleep(led_toggle_delay_ms);
     }

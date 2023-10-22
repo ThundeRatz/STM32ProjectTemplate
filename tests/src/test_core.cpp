@@ -16,7 +16,6 @@
  * Public Functions Bodies Definitions
  *****************************************/
 
-void test_core_init(void)
-{
+void test_core_init(void) {
     hal::mcu::init();
 }
