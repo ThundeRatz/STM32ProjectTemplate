@@ -43,4 +43,4 @@ class mcu {
         static void led_toggle(void);
 };
 };
-#endif // __MCU_H__
+#endif // __MCU_HPP__
