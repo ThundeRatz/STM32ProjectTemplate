@@ -4,8 +4,8 @@
  * @brief MCU related
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+#ifndef __MCU_HPP__
+#define __MCU_HPP__
 
 #include <stdint.h>
 
