@@ -21,6 +21,10 @@ set(CMAKE_C_STANDARD 11)
 # @see: https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
 set(CMAKE_BUILD_TYPE Debug)
 
+# Generate compile_commands.json for compatibility with LSPs
+# @see: https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Cube file name without .ioc extension
 project(stm32_project_template C ASM)
 

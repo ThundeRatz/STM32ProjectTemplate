@@ -2,6 +2,7 @@ cube/*
 !**/*.ioc
 
 build/
+.cache/
 -g
 .jlink-flash
 .cube
