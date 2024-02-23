@@ -2,18 +2,16 @@
     "editor.tabSize": 4,
     "editor.detectIndentation": false,
     "editor.insertSpaces": true,
-
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
     "files.eol": "\n",
     "files.encoding": "utf8",
+    "editor.defaultFormatter": "zachflower.uncrustify",
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-
     "[c]": {
         "editor.formatOnSave": true
     },
-
     "[markdown]": {
         "files.trimTrailingWhitespace": false,
         "files.trimFinalNewlines": false

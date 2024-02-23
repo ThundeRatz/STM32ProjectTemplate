@@ -70,7 +70,7 @@ Para isso é necessário mudar o nome do projeto, o qual deve ter o mesmo do arq
 
 ```c
 # Cube file name without .ioc extension
-project(stm32_project_template C ASM)
+project(stm32_project_template C CXX ASM)
 ```
 
 > Os argumentos `C` e `ASM` estão relacionados ao tipo de linguagem que o projeto utiliza (C e Assembly).

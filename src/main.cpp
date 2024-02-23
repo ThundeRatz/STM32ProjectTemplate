@@ -1,26 +1,25 @@
 /**
- * @file main.c
+ * @file main.cpp
  *
  * @brief Main function
  */
 
-#include "mcu.h"
+#include "mcu.hpp"
 
 /*****************************************
  * Private Constant Definitions
  *****************************************/
 
-#define LED_TOGGLE_DELAY_MS 1500
+static constexpr uint16_t led_toggle_delay_ms = 1500;
 
 /*****************************************
  * Main Function
  *****************************************/
 
 int main(void) {
-    mcu_init();
+    hal::mcu::init();
 
     for (;;) {
-        led_toggle();
-        mcu_sleep(LED_TOGGLE_DELAY_MS);
+        hal::mcu::sleep(led_toggle_delay_ms);
     }
 }

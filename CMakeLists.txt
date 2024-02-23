@@ -26,7 +26,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Cube file name without .ioc extension
-project(stm32_project_template C ASM)
+project(stm32_project_template C CXX ASM)
 
 # Set the board version to an empty string if your board doesn't have a version
 set(BOARD_VERSION "")
@@ -116,7 +116,7 @@ set(LIB_INCLUDE_DIRECTORIES
 ## Include directories
 ###############################################################################
 
-set(C_INCLUDE_DIRECTORIES
+set(PROJECT_INCLUDE_DIRECTORIES
     ./inc
     ./cube/Inc
 )
@@ -129,12 +129,12 @@ set(TEST_INCLUDE_DIRECTORIES
 ## Input files
 ###############################################################################
 
-file(GLOB_RECURSE C_SOURCES CONFIGURE_DEPENDS "src/*.c")
-file(GLOB_RECURSE C_HEADERS CONFIGURE_DEPENDS "inc/*.h")
+file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "src/*.cpp" "src/*.c")
+file(GLOB_RECURSE PROJECT_HEADERS CONFIGURE_DEPENDS "inc/*.hpp" "inc/*.h")
 
-file(GLOB_RECURSE TESTS_SOURCES CONFIGURE_DEPENDS "tests/src/*.c")
-file(GLOB_RECURSE TESTS_HEADERS CONFIGURE_DEPENDS "tests/inc/*.h")
-file(GLOB_RECURSE TESTS_BIN CONFIGURE_DEPENDS "tests/bin/*.c")
+file(GLOB_RECURSE TESTS_SOURCES CONFIGURE_DEPENDS "tests/src/*.cpp" "tests/src/*.c")
+file(GLOB_RECURSE TESTS_HEADERS CONFIGURE_DEPENDS "tests/inc/*.hpp" "tests/inc/*.h")
+file(GLOB_RECURSE TESTS_BIN CONFIGURE_DEPENDS "tests/bin/*.cpp" "tests/bin/*.c")
 
 file(GLOB_RECURSE CUBE_SOURCES CONFIGURE_DEPENDS "cube/Src/*.c")
 
@@ -146,7 +146,7 @@ list(REMOVE_ITEM CUBE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/cube/Src/system_${DEVI
 set(FORCED_INCLUDE_HEADERS
 )
 
-targets_generate_format_target(C_SOURCES C_HEADERS TESTS_SOURCES TESTS_HEADERS TESTS_BIN)
+targets_generate_format_target(PROJECT_SOURCES PROJECT_HEADERS TESTS_SOURCES TESTS_HEADERS TESTS_BIN)
 
 ###############################################################################
 ## Main executable target
@@ -154,12 +154,12 @@ targets_generate_format_target(C_SOURCES C_HEADERS TESTS_SOURCES TESTS_HEADERS T
 
 add_executable(${PROJECT_NAME}
     ${CUBE_SOURCES}
-    ${C_SOURCES}
+    ${PROJECT_SOURCES}
     ${LIB_SOURCES}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-    ${C_INCLUDE_DIRECTORIES}
+    ${PROJECT_INCLUDE_DIRECTORIES}
     ${LIB_INCLUDE_DIRECTORIES}
     ${CMSIS_INCLUDE_DIRS}
     ${HAL_INCLUDE_DIRS}
@@ -188,24 +188,27 @@ targets_generate_helpme_target()
 ## Generate test executables
 ###############################################################################
 
-# Since each test has its own main function, we don't need the main.c from the project
-list(REMOVE_ITEM C_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c)
+# Since each test has its own main function, we don't need the main.cpp from the project
+list(REMOVE_ITEM PROJECT_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c
+)
 
 foreach(TEST_FILE ${TESTS_BIN})
 
-    # If TEST_FILE contains /dir1/dir2/file.c, TEST_NAME will be 'file'
+    # If TEST_FILE contains /dir1/dir2/file.cpp, TEST_NAME will be 'file'
     get_filename_component(TEST_NAME ${TEST_FILE} NAME_WLE)
 
     add_executable(${TEST_NAME} EXCLUDE_FROM_ALL
         ${TEST_FILE}
         ${CUBE_SOURCES}
-        ${C_SOURCES}
+        ${PROJECT_SOURCES}
         ${TESTS_SOURCES}
         ${LIB_SOURCES}
     )
 
     target_include_directories(${TEST_NAME} PUBLIC
-        ${C_INCLUDE_DIRECTORIES}
+        ${PROJECT_INCLUDE_DIRECTORIES}
         ${LIB_INCLUDE_DIRECTORIES}
         ${CMSIS_INCLUDE_DIRS}
         ${HAL_INCLUDE_DIRS}
