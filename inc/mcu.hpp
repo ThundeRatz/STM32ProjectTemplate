@@ -36,11 +36,6 @@ class mcu {
          * @param ms  Sleep time in milliseconds
          */
         static void sleep(uint32_t ms);
-
-        /**
-         * @brief Toggles LED.
-         */
-        static void led_toggle(void);
 };
 };
 #endif // __MCU_HPP__

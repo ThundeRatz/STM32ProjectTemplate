@@ -20,7 +20,6 @@ int main(void) {
     hal::mcu::init();
 
     for (;;) {
-        hal::mcu::led_toggle();
         hal::mcu::sleep(led_toggle_delay_ms);
     }
 }
