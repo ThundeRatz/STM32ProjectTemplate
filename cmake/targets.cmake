@@ -85,7 +85,6 @@ function(targets_generate_flash_target TARGET)
 
     add_custom_target(jflash${TARGET_SUFFIX}
         COMMAND echo "Flashing ${PROJECT_NAME}.hex with J-Link"
-        COMMAND ${JLINK_EXE} ${CMAKE_CURRENT_BINARY_DIR}/.jlink-flash${TARGET_SUFFIX}
         COMMAND ${JLINK_EXE} ${CMAKE_CURRENT_BINARY_DIR}/jlinkflash/.jlink-flash${TARGET_SUFFIX}
     )
 
