@@ -1,5 +1,5 @@
 /**
- * @file test_core.h
+ * @file test_core.hpp
  *
  * @brief Core functions to the test
  *

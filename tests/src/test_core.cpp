@@ -1,5 +1,5 @@
 /**
- * @file test_core.c
+ * @file test_core.cpp
  *
  * @brief Core functions to the test
  *
@@ -9,13 +9,13 @@
  *
  */
 
-#include "test_core.h"
-#include "mcu.h"
+#include "test_core.hpp"
+#include "mcu.hpp"
 
 /*****************************************
  * Public Functions Bodies Definitions
  *****************************************/
 
 void test_core_init(void) {
-    mcu_init();
+    hal::mcu::init();
 }

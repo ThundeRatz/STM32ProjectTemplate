@@ -1,12 +1,12 @@
 /**
- * @file mcu.c
+ * @file mcu.cpp
  *
  * @brief MCU related
  */
 
 #include <stdint.h>
 
-#include "mcu.h"
+#include "mcu.hpp"
 
 #include "gpio.h"
 #include "main.h"
@@ -15,7 +15,8 @@
  * Public Function Body Definitions
  *****************************************/
 
-void mcu_init(void) {
+namespace hal {
+void mcu::init(void) {
     HAL_Init();
 
     SystemClock_Config();
@@ -23,10 +24,7 @@ void mcu_init(void) {
     MX_GPIO_Init();
 }
 
-void mcu_sleep(uint32_t ms) {
+void mcu::sleep(uint32_t ms) {
     HAL_Delay(ms);
 }
-
-void led_toggle(void) {
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 }
