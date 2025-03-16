@@ -133,3 +133,5 @@ foreach(TEST_FILE ${PROJECT_TESTS})
     targets_generate_flash_target(${TEST_NAME})
 
 endforeach()
+
+targets_generate_test_all_target(${PROJECT_TESTS})

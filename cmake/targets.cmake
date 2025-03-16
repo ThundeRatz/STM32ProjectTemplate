@@ -65,6 +65,18 @@ function(targets_generate_format_target)
     )
 endfunction()
 
+function(targets_generate_test_all_target)
+    foreach(FILE ${ARGV})
+        get_filename_component(TEST_NAME ${FILE} NAME_WLE)
+        list(APPEND TEST_TARGETS ${TEST_NAME})
+    endforeach()
+
+    add_custom_target(test_all
+        COMMAND ${CMAKE_MAKE_PROGRAM} ${TEST_TARGETS}
+    )
+endfunction()
+
+
 # Flash via st-link or jlink
 function(targets_generate_flash_target TARGET)
     if("${TARGET}" STREQUAL "${PROJECT_NAME}")
