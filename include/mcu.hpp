@@ -4,10 +4,10 @@
  * @brief MCU related
  */
 
-#ifndef __MCU_HPP__
-#define __MCU_HPP__
+#ifndef MCU_HPP
+#define MCU_HPP
 
-#include <stdint.h>
+#include <cstdint>
 
 /*****************************************
  * Public Function Prototypes
@@ -27,7 +27,7 @@ public:
     /**
      * @brief Initializes MCU and some peripherals.
      */
-    static void init(void);
+    static void init();
 
     /**
      * @brief Put the MCU to sleep.
@@ -37,4 +37,4 @@ public:
     static void sleep(uint32_t ms);
 };
 };  // namespace hal
-#endif  // __MCU_HPP__
+#endif  // MCU_HPP
