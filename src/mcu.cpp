@@ -4,19 +4,17 @@
  * @brief MCU related
  */
 
-#include <stdint.h>
-
 #include "mcu.hpp"
-
-#include "gpio.h"
-#include "main.h"
+// #include <gpio.h>
+// #include "gpio.h"
+#include "../cube/Inc/gpio.h"
 
 /*****************************************
  * Public Function Body Definitions
  *****************************************/
 
 namespace hal {
-void mcu::init(void) {
+void mcu::init() {
     HAL_Init();
 
     SystemClock_Config();
@@ -27,4 +25,4 @@ void mcu::init(void) {
 void mcu::sleep(uint32_t ms) {
     HAL_Delay(ms);
 }
-}
+}  // namespace hal

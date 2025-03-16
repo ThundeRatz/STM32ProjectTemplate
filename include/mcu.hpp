@@ -13,8 +13,7 @@
  * Public Function Prototypes
  *****************************************/
 
-extern "C"
-{
+extern "C" {
 /**
  * @brief Initializes System Clock.
  * @note  Defined by cube.
@@ -24,18 +23,18 @@ void SystemClock_Config(void);
 
 namespace hal {
 class mcu {
-    public:
-        /**
-         * @brief Initializes MCU and some peripherals.
-         */
-        static void init(void);
+public:
+    /**
+     * @brief Initializes MCU and some peripherals.
+     */
+    static void init(void);
 
-        /**
-         * @brief Put the MCU to sleep.
-         *
-         * @param ms  Sleep time in milliseconds
-         */
-        static void sleep(uint32_t ms);
+    /**
+     * @brief Put the MCU to sleep.
+     *
+     * @param ms  Sleep time in milliseconds
+     */
+    static void sleep(uint32_t ms);
 };
-};
-#endif // __MCU_HPP__
+};  // namespace hal
+#endif  // __MCU_HPP__

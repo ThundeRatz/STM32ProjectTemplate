@@ -61,7 +61,7 @@ function(targets_generate_format_target)
         list(APPEND FILES_LIST ${${FILE}})
     endforeach()
     add_custom_target(format
-        COMMAND uncrustify -c ${CMAKE_CURRENT_SOURCE_DIR}/uncrustify.cfg --replace --no-backup ${FILES_LIST}
+        COMMAND clang-format -style=file -i ${FILES_LIST} --verbose
     )
 endfunction()
 
