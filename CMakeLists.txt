@@ -86,7 +86,6 @@ targets_generate_format_target(FORMAT_SOURCES FORMAT_HEADERS)
 
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
 file(GLOB_RECURSE PROJECT_TESTS CONFIGURE_DEPENDS "tests/src/**.cpp")
-message(STATUS "Project tests: ${PROJECT_TESTS}")
 
 ###############################################################################
 ## Main executable target
@@ -113,8 +112,6 @@ targets_generate_helpme_target()
 ## Generate test executables
 ###############################################################################
 
-message(STATUS "Tests:")
-
 foreach(TEST_FILE ${PROJECT_TESTS})
     get_filename_component(TEST_NAME ${TEST_FILE} NAME_WLE)
 
@@ -131,8 +128,6 @@ foreach(TEST_FILE ${PROJECT_TESTS})
     )
 
     stm32_generate_hex_file(${TEST_NAME})
-
-    message(STATUS "Test: ${TEST_NAME}")
 
     targets_generate_vsfiles_target(${TEST_NAME})
     targets_generate_flash_target(${TEST_NAME})
