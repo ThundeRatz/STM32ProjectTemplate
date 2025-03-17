@@ -22,8 +22,8 @@ public:
      * @brief Configuration structure for GPIO pin
      */
     struct Config {
-        GPIO_TypeDef* port;
-        uint16_t      pin;
+        GPIO_TypeDef* port = {};
+        uint16_t      pin = {};
         GPIO_PinState active_state = GPIO_PIN_SET;
     };
 
