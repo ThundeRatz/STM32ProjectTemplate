@@ -84,8 +84,10 @@ file(GLOB_RECURSE FORMAT_HEADERS CONFIGURE_DEPENDS "lib/*.hpp" "include/*.hpp" "
 
 targets_generate_format_target(FORMAT_SOURCES FORMAT_HEADERS)
 
-file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
+file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "src/**.cpp")
 file(GLOB_RECURSE PROJECT_TESTS CONFIGURE_DEPENDS "tests/src/**.cpp")
+
+list(FILTER PROJECT_SOURCES EXCLUDE REGEX "main.cpp")
 
 ###############################################################################
 ## Main executable target
@@ -93,6 +95,7 @@ file(GLOB_RECURSE PROJECT_TESTS CONFIGURE_DEPENDS "tests/src/**.cpp")
 
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES}
+    "${CMAKE_SOURCE_DIR}/src/main.cpp"
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -124,7 +127,11 @@ foreach(TEST_FILE ${PROJECT_TESTS})
 
     add_executable(${TEST_NAME} EXCLUDE_FROM_ALL
         ${TEST_FILE}
-        ${PROJECT_TESTS_SOURCES}
+        ${PROJECT_SOURCES}
+    )
+
+    target_link_libraries(${TEST_NAME} PRIVATE
+       stm32cubemx
     )
 
     target_include_directories(${TEST_NAME} SYSTEM PUBLIC
