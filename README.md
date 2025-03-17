@@ -3,7 +3,9 @@
 
 # Template para Projetos STM32
 
-Template para projetos com microcontroladores STM32 usando STM32CubeMX, Makefile e CMake
+Template para projetos com microcontroladores STM32 usando STM32CubeMX e CMake
+
+_Baseado em projetos da ThundeRatz e no [Micras](https://github.com/Team-Micras/MicrasFirmware)_
 
 </div>
 
