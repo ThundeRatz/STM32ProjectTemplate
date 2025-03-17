@@ -20,7 +20,6 @@ _Baseado em projetos da ThundeRatz e no [Micras](https://github.com/Team-Micras/
 
 - [📑 Sumário](#-sumário)
 - [📁 Estrutura de Pastas](#-estrutura-de-pastas)
-- [⚙️ Requisitos](#-requisitos)
 - [🛠 Configuração](#-configuração)
 - [🔨 Compilação](#-compilação)
 - [🚀 Execução](#-execução)
@@ -33,48 +32,25 @@ _Baseado em projetos da ThundeRatz e no [Micras](https://github.com/Team-Micras/
 
 ## 📁 Estrutura de Pastas
 
+- **.github/** - Configurações do GitHub Actions
 - **.vscode/** - Configurações do Visual Studio Code
 - **build/** - Arquivos gerados durante a compilação (não versionado)
 - **cmake/** - Funções customizadas para CMake
+- **config/** - Configurações do projeto
 - **cube/** - Projeto do STM32CubeMX (.ioc e arquivos gerados)
+- **docker/** - Configurações e scripts do Docker
+- **include/** - Cabeçalhos
 - **docs/** - Documentação gerada (não versionado)
 - **lib/** - Submódulos e bibliotecas externas
 - **src/** - Código fonte principal da aplicação
 - **test/** - Testes
-
-## Requisitos
-
-### Ferramentas Essenciais
-
-- [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html)
-
-    > Configure a variável de ambiente `CUBE_PATH` com o caminho de instalação
-
-- **Compilação**
-
-    ```bash
-    sudo apt install cmake make gcc-arm-none-eabi
-    ```
-
-### Ferramentas Opcionais
-
-- **Programação**
-
-    - [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html)
-    - [J-Link](https://www.segger.com/downloads/jlink/) (para gravadores Segger)
-
-- **Desenvolvimento**
-
-    ```bash
-    sudo apt install clang-format
-    ```
 
 ## 🛠 Configuração
 
 ### 1. Projeto CubeMX
 
 1. Crie um novo projeto na pasta `cube/`
-2. Configurações recomendadas:
+2. Configurações:
     - **Project > Application Structure:** Basic
     - **Project > Toolchain/IDE:** CMake
     - **Code Generator > Generate peripheral initialization:** Pair of .c/.h
@@ -82,7 +58,7 @@ _Baseado em projetos da ThundeRatz e no [Micras](https://github.com/Team-Micras/
 
 ### 2. CMakeLists.txt
 
-Edite o arquivo principal `CMakeLists.txt` com as informações do seu microcontrolador:
+Edite o arquivo principal `CMakeLists.txt` com as informações do seu projeto:
 
 ```cmake
 # Nome do projeto (igual ao arquivo .ioc sem extensão)
@@ -94,29 +70,46 @@ set(BOARD_VERSION "")
 
 ## 🔨 Compilação
 
+Antes de iniciar, crie uma pasta `build/` na raiz do projeto
+
 ```bash
-# Configurar ambiente (dentro da pasta build)
+mkdir build
+cd build
+```
+
+Dentro dela, configure o ambiente com
+
+```bash
 cmake ..
+```
 
-# Compilar projeto principal
+Depois, compile o projeto
+
+```bash
 make -j
+```
 
-# Compilar e gravar
-make flash
+> O parâmetro `-j` ativa a compilação paralela, usando mais núcleos do seu processador
 
-# Compilar teste específico
-make meu_teste
-make flash_meu_teste
+### Limpar arquivos
 
-# Limpar arquivos
+```bash
 make clear       # Código do usuário
 make clear_cube  # Bibliotecas Cube
 make clear_all   # Tudo
 ```
 
+### Manual
+
+Para obter uma lista completa de comandos, use
+
+```bash
+make help
+```
+
 ## 🚀 Execução
 
-### Gravando via STM32CubeProgrammer
+### Gravando via [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html)
 
 ```bash
 make flash
@@ -132,15 +125,31 @@ make jflash
 
 Cada teste deve ser um arquivo independente na pasta `test/` com sua própria função `main()`
 
-```bash
-# Compilar todos os testes
-make test_all
+Para compilar um teste específico, use `make meu_teste`. Por exemplo, para compilar o teste `test/test_led.c`:
 
-# Compilar e gravar teste específico
-make flash_meu_teste
+```bash
+make test_led
+```
+
+Para gravar um teste específico, use `make flash_meu_teste`:
+
+```bash
+make flash_test_led
+```
+
+Para compilar todos os testes, use `make test_all`:
+
+```bash
+make test_all
 ```
 
 ## 🐛 Depuração
+
+Para debugar o projeto usando o [`gdb`](https://www.gnu.org/software/gdb), primeiro instale o `gdb-multiarch`, no Ubuntu, execute:
+
+```bash
+sudo apt install gdb-multiarch
+```
 
 1. Configure o build para debug:
 
@@ -154,32 +163,88 @@ cmake .. -DBUILD_TYPE=Debug
 make debug
 ```
 
+Para debugar um teste, use `make debug_meu_teste`:
+
+```bash
+make debug_test_led
+```
+
 3. Use a extensão Cortex-Debug no VS Code com uma das configurações:
 
-- J-Link
-- OpenOCD
-- ST-Util
+- [J-Link](https://www.segger.com/downloads/jlink/)
+- [OpenOCD](https://openocd.org/) (`sudo apt install openocd`)
+- [ST-Util](https://github.com/stlink-org/stlink) (`sudo apt install stlink-tools`)
 
 ## 💄 Formatação
 
 ### Formatação Automática
 
-```bash
-# Formatar todo o projeto
-make format
+Para formatar o projeto, usamos o `clang-format`. As configurações estão no arquivo `.clang-format`. Para instalar, no Ubuntu, execute:
 
-# Configurações:
-# - .clang-format
+```bash
+sudo apt install clang-format
+```
+
+Para formatar o projeto, execute o seguinte comando na pasta `build`:
+
+```bash
+make format
 ```
 
 ### Linting
 
-```bash
-# Ativar verificação durante a compilação
-cmake .. -DLINTER_MODE=ON
+The project uses a linter in order to follow the best code practices. The linter used is `clang-tidy`, there is a `.clang-tidy` with the linting rules for the project. To install it on Ubuntu, run the following command on the terminal:
 
-# Corrigir problemas automaticamente
+```bash
+sudo apt install clang-tidy
+```
+
+The linting process is done when compiling the project using a special config variable, the `LINTER_MODE` cmake variable. You can enable the linter by running:
+
+```bash
+cmake .. -DLINTER_MODE=ON
+```
+
+To disable the linter while compiling, do as follows:
+
+```bash
+cmake .. -DLINTER_MODE=OFF
+```
+
+It is also possible to lint the project and let the linter fix it using its suggestions:
+
+```bash
 cmake .. -DLINTER_MODE=FIX
+```
+
+Usamos o `clang-tidy` para seguir as melhores práticas de código. As regras de linting estão no arquivo `.clang-tidy`. Para instalar, no Ubuntu, execute:
+
+```bash
+sudo apt install clang-tidy
+```
+
+Para rodar o linter é preciso compilar o projeto com a variável `LINTER_MODE` do CMake. Para habilitar o linter, execute:
+
+```
+cmake .. -DLINTER_MODE=ON
+```
+
+Para desabilitar o linter, execute:
+
+```
+cmake .. -DLINTER_MODE=OFF
+```
+
+Também é possível rodar o linter e deixar ele corrigir automaticamente o código:
+
+```
+cmake .. -DLINTER_MODE=FIX
+```
+
+E então basta compilar o projeto normalmente:
+
+```bash
+make -j
 ```
 
 ## 📦 Submódulos
