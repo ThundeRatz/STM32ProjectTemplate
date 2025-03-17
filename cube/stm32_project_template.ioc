@@ -1,6 +1,6 @@
 #MicroXplorer Configuration settings - do not modify
-CAD.formats=
-CAD.pinconfig=
+CAD.formats=[]
+CAD.pinconfig=Dual
 CAD.provider=
 File.Version=6
 GPIO.groupedBy=Group By Peripherals
@@ -60,7 +60,7 @@ ProjectManager.KeepUserCode=true
 ProjectManager.LastFirmware=true
 ProjectManager.LibraryCopy=0
 ProjectManager.MainLocation=Src
-ProjectManager.NoMain=false
+ProjectManager.NoMain=true
 ProjectManager.PreviousToolchain=
 ProjectManager.ProjectBuild=false
 ProjectManager.ProjectFileName=stm32_project_template.ioc
