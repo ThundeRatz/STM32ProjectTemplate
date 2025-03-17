@@ -7,12 +7,6 @@
 ## Auxiliary Targets
 ###############################################################################
 
-if("$ENV{PROGRAMMER_CMD}" STREQUAL "")
-    set(PROGRAMMER_CMD "STM32_Programmer_CLI")
-else()
-    set(PROGRAMMER_CMD $ENV{PROGRAMMER_CMD})
-endif()
-
 add_custom_target(helpme
     COMMAND cat ${CMAKE_CURRENT_BINARY_DIR}/.helpme
 )
