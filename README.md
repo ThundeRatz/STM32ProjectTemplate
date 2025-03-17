@@ -191,32 +191,6 @@ Para formatar o projeto, execute o seguinte comando na pasta `build`:
 make format
 ```
 
-### Linting
-
-The project uses a linter in order to follow the best code practices. The linter used is `clang-tidy`, there is a `.clang-tidy` with the linting rules for the project. To install it on Ubuntu, run the following command on the terminal:
-
-```bash
-sudo apt install clang-tidy
-```
-
-The linting process is done when compiling the project using a special config variable, the `LINTER_MODE` cmake variable. You can enable the linter by running:
-
-```bash
-cmake .. -DLINTER_MODE=ON
-```
-
-To disable the linter while compiling, do as follows:
-
-```bash
-cmake .. -DLINTER_MODE=OFF
-```
-
-It is also possible to lint the project and let the linter fix it using its suggestions:
-
-```bash
-cmake .. -DLINTER_MODE=FIX
-```
-
 Usamos o `clang-tidy` para seguir as melhores práticas de código. As regras de linting estão no arquivo `.clang-tidy`. Para instalar, no Ubuntu, execute:
 
 ```bash
