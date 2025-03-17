@@ -79,8 +79,8 @@ add_compile_definitions(${CUBE_COMPILE_DEFINITIONS})
 ## Input files
 ###############################################################################
 
-file(GLOB_RECURSE FORMAT_SOURCES CONFIGURE_DEPENDS "lib/*.cpp" "src/*.cpp" "config/*.cpp" "tests/*.cpp" "thunder_*/include/*.cpp*")
-file(GLOB_RECURSE FORMAT_HEADERS CONFIGURE_DEPENDS "lib/*.hpp" "include/*.hpp" "config/*.hpp" "tests/*.hpp" "thunder_*/include/*.hpp*")
+file(GLOB_RECURSE FORMAT_SOURCES CONFIGURE_DEPENDS "lib/*.cpp" "src/*.cpp" "config/*.cpp" "tests/*.cpp")
+file(GLOB_RECURSE FORMAT_HEADERS CONFIGURE_DEPENDS "lib/*.hpp" "include/*.hpp" "config/*.hpp" "tests/*.hpp")
 
 targets_generate_format_target(FORMAT_SOURCES FORMAT_HEADERS)
 
