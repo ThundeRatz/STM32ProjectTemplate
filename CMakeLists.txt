@@ -95,8 +95,11 @@ add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES}
 )
 
+target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC
+    ${CUBE_INCLUDE_DIRECTORIES}
+)
+
 target_include_directories(${PROJECT_NAME} PUBLIC
-    SYSTEM ${CUBE_INCLUDE_DIRECTORIES}
     include
     config
 )
@@ -120,8 +123,11 @@ foreach(TEST_FILE ${PROJECT_TESTS})
         ${PROJECT_TESTS_SOURCES}
     )
 
+    target_include_directories(${TEST_NAME} SYSTEM PUBLIC
+        ${CUBE_INCLUDE_DIRECTORIES}
+    )
+
     target_include_directories(${TEST_NAME} PUBLIC
-        SYSTEM ${CUBE_INCLUDE_DIRECTORIES}
         include
         tests/include
         config
