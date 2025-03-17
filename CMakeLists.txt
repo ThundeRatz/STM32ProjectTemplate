@@ -68,7 +68,7 @@ get_target_property(CUBE_COMPILE_DEFINITIONS stm32cubemx INTERFACE_COMPILE_DEFIN
 
 # Remove warnings from Cube sources
 set_source_files_properties(
-    ${CUBE_SOURCES}
+    SYSTEM ${CUBE_SOURCES}
     PROPERTIES
     COMPILE_FLAGS "-w"
 )
@@ -96,7 +96,7 @@ add_executable(${PROJECT_NAME}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-    ${CUBE_INCLUDE_DIRECTORIES}
+    SYSTEM ${CUBE_INCLUDE_DIRECTORIES}
     include
     config
 )
@@ -121,7 +121,7 @@ foreach(TEST_FILE ${PROJECT_TESTS})
     )
 
     target_include_directories(${TEST_NAME} PUBLIC
-        ${CUBE_INCLUDE_DIRECTORIES}
+        SYSTEM ${CUBE_INCLUDE_DIRECTORIES}
         include
         tests/include
         config
