@@ -95,6 +95,10 @@ add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES}
 )
 
+target_link_libraries(${PROJECT_NAME} PRIVATE
+   stm32cubemx
+)
+
 target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC
     ${CUBE_INCLUDE_DIRECTORIES}
 )
