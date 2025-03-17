@@ -2,18 +2,27 @@
     "editor.tabSize": 4,
     "editor.detectIndentation": false,
     "editor.insertSpaces": true,
+
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
     "files.eol": "\n",
     "files.encoding": "utf8",
-    "editor.defaultFormatter": "zachflower.uncrustify",
+
+    "editor.defaultFormatter": "xaver.clang-format",
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "[c]": {
+
+    "[c, cpp]": {
         "editor.formatOnSave": true
     },
-    "[markdown]": {
-        "files.trimTrailingWhitespace": false,
-        "files.trimFinalNewlines": false
-    }
+
+    "doxdocgen.generic.dateFormat": "MM/YYYY",
+    "doxdocgen.file.fileOrder": [
+        "file",
+        "empty",
+        "brief",
+        "empty",
+        "date",
+        "custom"
+    ],
 }
