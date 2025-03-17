@@ -7,11 +7,7 @@ int main() {
     hal::Gpio led{led_config};
 
     for (;;) {
-        led.write(true);
-        hal::mcu::sleep(500);
-        led.write(false);
+        led.toggle();
         hal::mcu::sleep(500);
     }
-
-    return 0;
 }
