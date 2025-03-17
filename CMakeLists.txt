@@ -90,25 +90,36 @@ file(GLOB_RECURSE PROJECT_TESTS CONFIGURE_DEPENDS "tests/src/**.cpp")
 list(FILTER PROJECT_SOURCES EXCLUDE REGEX "main.cpp")
 
 ###############################################################################
+## Project library
+###############################################################################
+
+add_library(${PROJECT_NAME}_lib STATIC
+    ${PROJECT_SOURCES}
+)
+
+target_include_directories(${PROJECT_NAME}_lib SYSTEM PUBLIC
+    ${CUBE_INCLUDE_DIRECTORIES}
+)
+
+target_include_directories(${PROJECT_NAME}_lib PUBLIC
+    include
+    config
+)
+
+target_link_libraries(${PROJECT_NAME}_lib PRIVATE
+    stm32cubemx
+)
+
+###############################################################################
 ## Main executable target
 ###############################################################################
 
 add_executable(${PROJECT_NAME}
-    ${PROJECT_SOURCES}
     "${CMAKE_SOURCE_DIR}/src/main.cpp"
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-   stm32cubemx
-)
-
-target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC
-    ${CUBE_INCLUDE_DIRECTORIES}
-)
-
-target_include_directories(${PROJECT_NAME} PUBLIC
-    include
-    config
+    ${PROJECT_NAME}_lib
 )
 
 stm32_print_size_of_target(${PROJECT_NAME})
@@ -127,21 +138,14 @@ foreach(TEST_FILE ${PROJECT_TESTS})
 
     add_executable(${TEST_NAME} EXCLUDE_FROM_ALL
         ${TEST_FILE}
-        ${PROJECT_SOURCES}
     )
 
     target_link_libraries(${TEST_NAME} PRIVATE
-       stm32cubemx
-    )
-
-    target_include_directories(${TEST_NAME} SYSTEM PUBLIC
-        ${CUBE_INCLUDE_DIRECTORIES}
+        ${PROJECT_NAME}_lib
     )
 
     target_include_directories(${TEST_NAME} PUBLIC
-        include
         tests/include
-        config
     )
 
     stm32_generate_hex_file(${TEST_NAME})
