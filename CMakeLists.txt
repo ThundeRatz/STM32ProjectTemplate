@@ -93,21 +93,26 @@ list(FILTER PROJECT_SOURCES EXCLUDE REGEX "main.cpp")
 ## Project library
 ###############################################################################
 
-add_library(${PROJECT_NAME}_lib STATIC
+add_library(${PROJECT_NAME}_static STATIC
     ${PROJECT_SOURCES}
 )
 
-target_include_directories(${PROJECT_NAME}_lib SYSTEM PUBLIC
+target_include_directories(${PROJECT_NAME}_static SYSTEM PUBLIC
     ${CUBE_INCLUDE_DIRECTORIES}
 )
 
-target_include_directories(${PROJECT_NAME}_lib PUBLIC
+target_include_directories(${PROJECT_NAME}_static PUBLIC
     include
     config
 )
 
-target_link_libraries(${PROJECT_NAME}_lib PRIVATE
+target_link_libraries(${PROJECT_NAME}_static PRIVATE
     stm32cubemx
+)
+
+add_library(${PROJECT_NAME}_lib INTERFACE)
+target_link_libraries(${PROJECT_NAME}_lib INTERFACE
+    "-Wl,--whole-archive" ${PROJECT_NAME}_static "-Wl,--no-whole-archive"
 )
 
 ###############################################################################
