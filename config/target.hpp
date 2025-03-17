@@ -10,5 +10,4 @@ const hal::Gpio::Config led_config = {
     .pin = LED_Pin,
 };
 
-
-#endif // TARGET_HPP
+#endif  // TARGET_HPP
