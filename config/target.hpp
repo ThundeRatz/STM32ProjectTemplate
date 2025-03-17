@@ -5,6 +5,7 @@
 #include "gpio.hpp"
 
 const hal::Gpio::Config led_config = {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast, performance-no-int-to-ptr)
     .port = LED_GPIO_Port,
     .pin = LED_Pin,
 };
