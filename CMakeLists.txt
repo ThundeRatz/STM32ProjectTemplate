@@ -68,7 +68,7 @@ get_target_property(CUBE_COMPILE_DEFINITIONS stm32cubemx INTERFACE_COMPILE_DEFIN
 
 # Remove warnings from Cube sources
 set_source_files_properties(
-    SYSTEM ${CUBE_SOURCES}
+    ${CUBE_SOURCES}
     PROPERTIES
     COMPILE_FLAGS "-w"
 )
