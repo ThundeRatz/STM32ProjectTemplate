@@ -5,8 +5,6 @@
 
 Template para projetos com microcontroladores STM32 usando STM32CubeMX e CMake
 
-_Baseado em projetos da ThundeRatz e no [Micras](https://github.com/Team-Micras/MicrasFirmware)_
-
 </div>
 
 <div align="center">
@@ -29,6 +27,7 @@ _Baseado em projetos da ThundeRatz e no [Micras](https://github.com/Team-Micras/
 - [📦 Submódulos](#-submódulos)
 - [🐋 Docker](#-docker)
 - [👥 Contribuição](#-contribuição)
+- [🙌 Agradecimentos](#-agradecimentos)
 
 ## 📁 Estrutura de Pastas
 
@@ -266,3 +265,14 @@ make -j
 2. Siga o [GitHub Flow](https://guides.github.com/introduction/flow/)
 3. Mantenha a coesão do código e documentação
 4. Teste suas alterações antes de submeter pull requests
+
+
+## 🙌 Agradecimentos
+
+Este projeto não teria sido possível sem o suporte e colaboração da equipe **ThundeRatz** como um todo.  
+As decisões de arquitetura e organização foram fortemente baseadas nas boas práticas adotadas nos projetos da equipe, garantindo um código mais modular, eficiente e escalável.
+
+
+Também gostaríamos de reconhecer o projeto **[Micras](https://github.com/Team-Micras/MicrasFirmware)**, cujo desenvolvimento serviu de base para diversas decisões adotadas aqui.  
+As discussões técnicas e desafios enfrentados no Micras ajudaram a moldar a estrutura e as boas práticas deste template.
+
