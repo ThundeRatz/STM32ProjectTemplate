@@ -1,31 +1,31 @@
 services:
   base:
     build:
-      dockerfile: docker/Dockerfile
+      dockerfile: .docker/Dockerfile
       target: base
 
   build:
-    command: /project/docker/scripts/build.sh
+    command: /project/.docker/scripts/build.sh
     build:
-      dockerfile: docker/Dockerfile
+      dockerfile: .docker/Dockerfile
       target: build
 
   lint:
-    command: /project/docker/scripts/build.sh -DLINTER_MODE=ON
+    command: /project/.docker/scripts/build.sh -DLINTER_MODE=ON
     build:
-      dockerfile: docker/Dockerfile
+      dockerfile: .docker/Dockerfile
       target: build
 
   check-format:
-    command: /project/docker/scripts/check_format.sh
+    command: /project/.docker/scripts/check_format.sh
     build:
-      dockerfile: docker/Dockerfile
+      dockerfile: .docker/Dockerfile
       target: build
 
   dev:
     command: bash
     build:
-      dockerfile: docker/Dockerfile
+      dockerfile: .docker/Dockerfile
       target: base
     privileged: True
     environment:
