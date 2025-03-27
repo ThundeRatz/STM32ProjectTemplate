@@ -103,7 +103,7 @@ make clear_all   # Tudo
 Para obter uma lista completa de comandos, use
 
 ```bash
-make help
+make helpme
 ```
 
 ## 🚀 Execução
