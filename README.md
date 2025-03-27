@@ -124,16 +124,16 @@ make jflash
 
 Cada teste deve ser um arquivo independente na pasta `test/` com sua própria função `main()`
 
-Para compilar um teste específico, use `make meu_teste`. Por exemplo, para compilar o teste `test/test_led.c`:
+Para compilar um teste específico, use `make meu_teste`. Por exemplo, para compilar o teste `test/test_gpio.c`:
 
 ```bash
-make test_led
+make test_gpio
 ```
 
 Para gravar um teste específico, use `make flash_meu_teste`:
 
 ```bash
-make flash_test_led
+make flash_test_gpio
 ```
 
 Para compilar todos os testes, use `make test_all`:
@@ -165,7 +165,7 @@ make debug
 Para debugar um teste, use `make debug_meu_teste`:
 
 ```bash
-make debug_test_led
+make debug_test_gpio
 ```
 
 3. Use a extensão Cortex-Debug no VS Code com uma das configurações:
