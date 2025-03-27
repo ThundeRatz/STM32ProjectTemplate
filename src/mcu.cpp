@@ -7,9 +7,7 @@
  */
 
 #include "mcu.hpp"
-// #include <gpio.h>
-// #include "gpio.h"
-#include "../cube/Inc/gpio.h"
+#include <gpio.h>
 
 /*****************************************
  * Public Function Body Definitions
