@@ -7,18 +7,6 @@
 cmake_minimum_required(VERSION 3.22)
 
 ###############################################################################
-## CMake Configuration
-###############################################################################
-
-set(CMAKE_C_STANDARD 17)
-set(CMAKE_CXX_STANDARD 20)
-
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS ON)
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
-
-###############################################################################
 ## Project Configuration
 ###############################################################################
 
@@ -32,6 +20,18 @@ if(BOARD_VERSION STREQUAL "")
 else()
     set(PROJECT_RELEASE ${CMAKE_PROJECT_NAME}_${BOARD_VERSION})
 endif()
+
+###############################################################################
+## CMake Configuration
+###############################################################################
+
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS ON)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
 ###############################################################################
 ## Global compilation config
