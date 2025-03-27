@@ -1,3 +1,11 @@
+/**
+ * @file test_gpio.cpp
+ *
+ * @brief Test for GPIO HAL implementation
+ *
+ * @author Thunderatz Development Team <comp@thunderatz.org>
+ */
+
 #include "target.hpp"
 #include "mcu.hpp"
 

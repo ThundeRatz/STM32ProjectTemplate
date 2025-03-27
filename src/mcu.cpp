@@ -2,6 +2,8 @@
  * @file mcu.cpp
  *
  * @brief MCU related
+ *
+ * @author Thunderatz Development Team <comp@thunderatz.org>
  */
 
 #include "mcu.hpp"

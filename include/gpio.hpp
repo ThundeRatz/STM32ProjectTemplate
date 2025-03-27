@@ -3,7 +3,7 @@
  *
  * @brief HAL GPIO class header
  *
- * @date 09/2024
+ * @author Thunderatz Development Team <comp@thunderatz.org>
  */
 
 #ifndef HAL_GPIO_HPP

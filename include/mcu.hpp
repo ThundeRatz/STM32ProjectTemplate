@@ -2,6 +2,8 @@
  * @file mcu.hpp
  *
  * @brief MCU related
+ *
+ * @author Thunderatz Development Team <comp@thunderatz.org>
  */
 
 #ifndef MCU_HPP
