@@ -18,10 +18,6 @@ set(CMAKE_C_EXTENSIONS ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
-# Debug, Release, RelWithDebInfo and MinSizeRel
-# @see: https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
-set(CMAKE_BUILD_TYPE Debug)
-
 ###############################################################################
 ## Project Configuration
 ###############################################################################
