@@ -36,5 +36,5 @@ public:
      */
     static void sleep(uint32_t ms);
 };
-};  // namespace hal
+}  // namespace hal
 #endif  // MCU_HPP
