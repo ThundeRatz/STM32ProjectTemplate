@@ -34,15 +34,18 @@ Template para projetos com microcontroladores STM32 usando STM32CubeMX e CMake
 - **.docker/** - Configurações e scripts do Docker
 - **.github/** - Configurações do GitHub Actions
 - **.vscode/** - Configurações do Visual Studio Code
-- **build/** - Arquivos gerados durante a compilação (não versionado)
 - **cmake/** - Funções customizadas para CMake
 - **config/** - Configurações do projeto
 - **cube/** - Projeto do STM32CubeMX (.ioc e arquivos gerados)
 - **include/** - Cabeçalhos
-- **docs/** - Documentação gerada (não versionado)
 - **lib/** - Submódulos e bibliotecas externas
 - **src/** - Código fonte principal da aplicação
 - **test/** - Testes
+
+Além disso, as seguintes pastas contém arquivos gerados e não são versionadas:
+
+- **build/** - Arquivos gerados durante a compilação
+- **docs/** - Documentação gerada
 
 ## 🛠 Configuração
 
