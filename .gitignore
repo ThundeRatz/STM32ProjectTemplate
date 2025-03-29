@@ -6,6 +6,7 @@ build/
 -g
 .jlink-flash
 .cube
+docs
 
 # Created by https://www.gitignore.io/api/visualstudiocode,c
 
