@@ -402,14 +402,8 @@ Se você está desenvolvendo em uma máquina Windows usando o [**Subsistema Wind
     *   [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html)
     *   [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html)
     *   Drivers e Software do seu Debugger (e.g., [J-Link Software and Documentation Pack](https://www.segger.com/downloads/jlink/), Drivers ST-LINK)
-3.  **Adicione as Ferramentas Windows ao PATH do WSL:**
-    Facilita chamar `STM32_Programmer_CLI.exe` ou `JLinkGDBServerCL.exe` diretamente do terminal WSL. Edite seu arquivo de configuração do shell no WSL (e.g., `~/.bashrc`, `~/.zshrc`) e adicione os diretórios de instalação das ferramentas Windows ao `PATH`. Exemplo (ajuste os caminhos):
-    ```bash
-    export PATH=$PATH:"/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin"
-    export PATH=$PATH:"/mnt/c/Program Files/SEGGER/JLink"
-    # Adicione outros caminhos conforme necessário
-    ```
-    Lembre-se de recarregar a configuração do shell (`source ~/.bashrc`) ou abrir um novo terminal.
+3.  **Adicione as Ferramentas Windows ao PATH:**
+    Facilita chamar `STM32_Programmer_CLI.exe` ou `JLinkGDBServerCL.exe` diretamente do terminal WSL. Como o WSL importa o PATH do Windows automaticamente, edite seu PATH para incluir os diretórios de instação das ferramentas.
 4.  **Fluxo de Trabalho Recomendado:**
     *   Use o terminal WSL para clonar, compilar (`cmake`, `make`), formatar (`make format`), etc.
     *   Execute o STM32CubeMX no Windows para configurar o hardware e gerar o código (o CMake pode detectá-lo via PATH).
