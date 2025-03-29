@@ -85,8 +85,8 @@ Você precisará destas ferramentas para simplesmente clonar e compilar o projet
     ```
 *   **`STM32CubeMX`**: Para configurar visualmente os periféricos do seu STM32, sistema de clock e gerar o código de inicialização base (incluindo o arquivo `.ioc`), você precisará desta ferramenta gráfica da ST. Baixe o instalador diretamente do [site da STMicroelectronics](https://www.st.com/en/development-tools/stm32cubemx.html). Para que o CMake possa interagir com ele (útil para regenerar código), certifique-se de que o executável esteja no `PATH` do seu sistema ou que a variável de ambiente `CUBE_CMD` aponte para ele. *(Instalação manual via download)*.
 
-    > [!WARNING]
-    > No momento esse template não suporta versões acima da 6.13 do CubeMX
+> [!WARNING]
+> No momento esse template não suporta versões acima da 6.13 do CubeMX
 
 *   **`STM32CubeProgrammer`**: Essencial para gravar o firmware compilado no seu microcontrolador usando um programador ST-LINK. É necessário para usar o comando `make flash`. Baixe o instalador no [site da STMicroelectronics](https://www.st.com/en/development-tools/stm32cubeprog.html) e garanta que o executável de linha de comando (`STM32_Programmer_CLI`) esteja no seu `PATH`. *(Instalação manual via download)*.
 
