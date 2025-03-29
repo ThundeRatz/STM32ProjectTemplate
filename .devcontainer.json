@@ -1,0 +1,26 @@
+{
+    "name": "STM32 Template Container",
+    "dockerComposeFile": "compose.yaml",
+    "service": "dev",
+    "shutdownAction": "stopCompose",
+    "workspaceFolder": "/project",
+    "overrideCommand": true,
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "cschlosser.doxdocgen",
+                "davidanson.vscode-markdownlint",
+                "marus25.Cortex-Debug",
+                "dan-c-underwood.arm",
+                "streetsidesoftware.code-spell-checker",
+                "streetsidesoftware.code-spell-checker-portuguese-brazilian",
+                "twxs.cmake",
+                "ms-vscode.cmake-tools",
+                "seatonjiang.gitmoji-vscode",
+                "mhutchie.git-graph",
+                "xaver.clang-format",
+            ]
+        }
+    }
+}
