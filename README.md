@@ -51,6 +51,11 @@ Além disso, as seguintes pastas contém arquivos gerados e não são versionada
 
 ### 1. Projeto CubeMX
 
+O início de um projeto STM32 é feito no STM32CubeMX. Para isso, é necessário instalar o [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) e configurar o projeto:
+
+> [!WARNING]
+> No momento esse template não suporta versões acima da 6.13 do CubeMX
+
 1. Crie um novo projeto na pasta `cube/`
 2. Configurações:
     - **Project > Application Structure:** Basic
@@ -238,6 +243,8 @@ git submodule update --init --recursive
 ```
 
 ## 🐋 Docker
+
+É possível usar o Docker para compilar o projeto dentro de um container, o que torna possível implementar pipelines de CI/CD e desenvolver em qualquer ambiente, para isso, é preciso instalar o [Docker](https://docs.docker.com/get-docker/) e o [Docker Compose](https://docs.docker.com/compose/install/).
 
 Para configuração do Docker no seu projeto, veja https://github.com/ThundeRatz/stm32cubemx_docker
 
