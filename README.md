@@ -83,7 +83,7 @@ Você precisará destas ferramentas para simplesmente clonar e compilar o projet
     ```bash
     sudo apt install gcc-arm-none-eabi
     ```
-*   **`STM32CubeMX`**: Para configurar visualmente os periféricos do seu STM32, sistema de clock e gerar o código de inicialização base (incluindo o arquivo `.ioc`), você precisará desta ferramenta gráfica da ST. Baixe o instalador diretamente do [site da STMicroelectronics](https://www.st.com/en/development-tools/stm32cubemx.html). Para que o CMake possa interagir com ele (útil para regenerar código), certifique-se de que o executável esteja no `PATH` do seu sistema ou que a variável de ambiente `CUBE_CMD` aponte para ele. *(Instalação manual via download)*.
+*   **`STM32CubeMX`**: Para configurar visualmente os periféricos do seu STM32, sistema de clock e gerar o código de inicialização base (incluindo o arquivo `.ioc`), você precisará desta ferramenta gráfica da ST. Baixe o instalador diretamente do [site da STMicroelectronics](https://www.st.com/en/development-tools/stm32cubemx.html). Para que o CMake possa interagir com ele (útil para gerar código), certifique-se de que o executável esteja no `PATH` do seu sistema ou que a variável de ambiente `CUBE_CMD` aponte para ele. *(Instalação manual via download)*.
 
 > [!WARNING]
 > No momento esse template não suporta versões acima da 6.13 do CubeMX
