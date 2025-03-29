@@ -16,6 +16,8 @@ RUN apt-get update -y > /dev/null && \
 WORKDIR /project
 COPY ./cube/*.ioc /project/cube/
 
+ENV CUBE_CMD=${CUBE_PATH}/STM32CubeMX
+
 ENV DISPLAY=:10
 ARG PROJECT_NAME=stm32_project_template
 
