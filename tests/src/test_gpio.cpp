@@ -6,8 +6,8 @@
  * @author Thunderatz Development Team <comp@thunderatz.org>
  */
 
-#include "target.hpp"
 #include "mcu.hpp"
+#include "target.hpp"
 
 int main() {
     hal::mcu::init();
