@@ -12,6 +12,9 @@ Template para projetos com microcontroladores STM32 usando STM32CubeMX e CMake
   <a href="https://www.st.com/en/development-tools/stm32cubemx.html"><img alt="Usa STM32CubeMX" src="https://img.shields.io/badge/usa-stm32cubemx-blue?style=for-the-badge&labelColor=38c1d0&color=45a4b8" height="30"></a>
   <a href="https://en.wikipedia.org/wiki/Embedded_system"><img alt="Para Sistemas Embarcados" src="https://img.shields.io/badge/para-sistemas_embarcados-blue?style=for-the-badge&labelColor=adec37&color=27a744" height="30"></a>
   <a href="LICENSE"><img alt="Licença MIT" src="https://img.shields.io/badge/licença-MIT-blue?style=for-the-badge&labelColor=ef4041&color=c1282d" height="30"></a>
+    <br>
+    <a href="README.en.md"><img alt="Read in English" src="https://img.shields.io/badge/Read%20in-English-blue?style=for-the-badge&labelColor=555555&color=007ec6" height="30"></a>
+</div>
 </div>
 <!-- markdownlint-restore -->
 
