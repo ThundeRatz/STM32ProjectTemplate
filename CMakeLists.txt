@@ -50,7 +50,6 @@ project(${CMAKE_PROJECT_NAME} C CXX ASM)
 
 include(cmake/targets.cmake)
 include(cmake/utilities.cmake)
-include(cmake/linter.cmake)
 
 add_subdirectory(cube/cmake/stm32cubemx)
 
@@ -78,7 +77,7 @@ add_compile_definitions(${CUBE_COMPILE_DEFINITIONS})
 file(GLOB_RECURSE FORMAT_SOURCES CONFIGURE_DEPENDS "src/*.cpp" "config/*.cpp" "tests/*.cpp")
 file(GLOB_RECURSE FORMAT_HEADERS CONFIGURE_DEPENDS "include/*.hpp" "config/*.hpp" "tests/*.hpp")
 
-targets_generate_format_target(FORMAT_SOURCES FORMAT_HEADERS)
+generate_format_target(FORMAT_SOURCES FORMAT_HEADERS)
 
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "src/**.cpp")
 file(GLOB_RECURSE PROJECT_TESTS CONFIGURE_DEPENDS "tests/src/**.cpp")
@@ -123,12 +122,13 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${PROJECT_NAME}_lib
 )
 
-stm32_print_size_of_target(${PROJECT_NAME})
-stm32_generate_hex_file(${PROJECT_NAME})
+generate_hex_file(${PROJECT_NAME})
+print_size_of_target(${PROJECT_NAME})
 
-targets_generate_vsfiles_target(${PROJECT_NAME})
-targets_generate_flash_target(${PROJECT_NAME})
-targets_generate_helpme_target()
+generate_helpme_text()
+generate_vscode_tasks_json()
+generate_debug_target(${PROJECT_NAME})
+generate_flash_target(${PROJECT_NAME})
 
 ###############################################################################
 ## Generate test executables
@@ -149,11 +149,11 @@ foreach(TEST_FILE ${PROJECT_TESTS})
         tests/include
     )
 
-    stm32_generate_hex_file(${TEST_NAME})
+    generate_hex_file(${TEST_NAME})
+    print_size_of_target(${TEST_NAME})
 
-    targets_generate_vsfiles_target(${TEST_NAME})
-    targets_generate_flash_target(${TEST_NAME})
-
+    generate_debug_target(${TEST_NAME})
+    generate_flash_target(${TEST_NAME})
 endforeach()
 
-targets_generate_test_all_target(${PROJECT_TESTS})
+generate_test_all_target(${PROJECT_TESTS})
