@@ -39,4 +39,4 @@ jobs:
       - name: ⬆️ Upload binaries
         run: gh release upload ${{ github.event.release.tag_name }} output/*.hex output/*.elf
         env:
-          GITHUB_TOKEN: ${{ github.TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
