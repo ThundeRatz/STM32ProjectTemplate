@@ -1,0 +1,42 @@
+name: Add binaries to release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔀 Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🐋 Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .docker/Dockerfile
+          target: build
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          no-cache-filters: build
+          tags: project:build
+
+      - name: 🔨 Build project
+        run: |
+          docker run --name release project:build /bin/bash /project/.docker/scripts/build.sh
+          docker cp release:/project/build/ output/
+
+      - name: ⬆️ Upload binaries
+        run: gh release upload ${{ github.event.release.tag_name }} output/*.hex output/*.elf
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

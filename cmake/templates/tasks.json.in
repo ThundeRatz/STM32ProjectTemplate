@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+			"label": "Launch OpenOCD",
+			"command": "${OPENOCD_CMD} -f ${OPENOCD_SCRIPTS_PATH}/interface/stlink.cfg -f ${OPENOCD_SCRIPTS_PATH}/target/${TARGET_CFG}x.cfg",
+			"type": "shell",
+            "problemMatcher": {
+				"pattern": [
+					{
+						"regexp": "",
+						"file": 1,
+						"location": 2,
+						"message": 3
+					}
+				],
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "Open On-Chip Debugger",
+					"endsPattern": "Listening on port"
+				}
+			},
+			"isBackground": true
+		}
+    ]
+}
