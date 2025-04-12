@@ -2,6 +2,7 @@ name: Build lint and check formatting
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - develop
       - main
