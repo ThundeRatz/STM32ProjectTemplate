@@ -1,0 +1,26 @@
+PROJECT_NAME           = "STM32 Project Template"
+OUTPUT_DIRECTORY       = docs/
+DISTRIBUTE_GROUP_DOC   = YES
+NUM_PROC_THREADS       = 0
+EXTRACT_PRIVATE        = YES
+EXTRACT_PRIV_VIRTUAL   = YES
+EXTRACT_STATIC         = YES
+CASE_SENSE_NAMES       = YES
+SHOW_INCLUDE_FILES     = NO
+RECURSIVE              = YES
+EXCLUDE                = "tests/" \
+                         "cube/" \
+                         "build/"
+EXCLUDE_PATTERNS       = "*/libs/*"
+INPUT_FILTER           = "sed -e 's/#include <.*>/ /'"
+VERBATIM_HEADERS       = NO
+GENERATE_HTML          = NO
+UML_LOOK               = YES
+UML_LIMIT_NUM_FIELDS   = 50
+DOT_WRAP_THRESHOLD     = 100
+TEMPLATE_RELATIONS     = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DOT_GRAPH_MAX_NODES    = 100
+MAX_DOT_GRAPH_DEPTH    = 1
+DOT_MULTI_TARGETS      = YES

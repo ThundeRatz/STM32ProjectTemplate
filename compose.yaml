@@ -1,0 +1,38 @@
+services:
+  base:
+    build:
+      dockerfile: .docker/Dockerfile
+      target: base
+
+  build:
+    command: /project/.docker/scripts/build.sh
+    build:
+      dockerfile: .docker/Dockerfile
+      target: build
+
+  lint:
+    command: /project/.docker/scripts/build.sh -DLINTER_MODE=ON
+    build:
+      dockerfile: .docker/Dockerfile
+      target: build
+
+  check-format:
+    command: /project/.docker/scripts/check_format.sh
+    build:
+      dockerfile: .docker/Dockerfile
+      target: build
+
+  dev:
+    command: bash
+    build:
+      dockerfile: .docker/Dockerfile
+      target: base
+    privileged: True
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - .:/project:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority

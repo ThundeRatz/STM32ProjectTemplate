@@ -1,21 +1,20 @@
 /**
- * @file mcu.c
+ * @file mcu.cpp
  *
  * @brief MCU related
+ *
+ * @author Thunderatz Development Team <comp@thunderatz.org>
  */
 
-#include <stdint.h>
-
-#include "mcu.h"
-
-#include "gpio.h"
-#include "main.h"
+#include "mcu.hpp"
+#include <gpio.h>
 
 /*****************************************
  * Public Function Body Definitions
  *****************************************/
 
-void mcu_init(void) {
+namespace hal {
+void mcu::init() {
     HAL_Init();
 
     SystemClock_Config();
@@ -23,10 +22,7 @@ void mcu_init(void) {
     MX_GPIO_Init();
 }
 
-void mcu_sleep(uint32_t ms) {
+void mcu::sleep(uint32_t ms) {
     HAL_Delay(ms);
 }
-
-void led_toggle(void) {
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-}
+}  // namespace hal

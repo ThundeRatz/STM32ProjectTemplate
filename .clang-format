@@ -1,0 +1,46 @@
+---
+Language:        Cpp
+AccessModifierOffset: -4
+AlignAfterOpenBracket: BlockIndent
+AlignConsecutiveBitFields:
+  Enabled:         true
+  PadOperators:    true
+AlignConsecutiveDeclarations:
+  Enabled:         true
+  PadOperators:    true
+AlignConsecutiveMacros:
+  PadOperators:    true
+AlignEscapedNewlines: Left
+AllowShortBlocksOnASingleLine: Empty
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AlwaysBreakTemplateDeclarations: Yes
+BreakBeforeTernaryOperators: false
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+ColumnLimit:     120
+EmptyLineBeforeAccessModifier: Always
+IncludeCategories:
+  - Regex:           '^<.*>'
+    Priority:        1
+    SortPriority:    1
+  - Regex:           '^".*"'
+    SortPriority:    2
+IncludeIsMainRegex: '$'
+IndentCaseLabels: true
+IndentExternBlock: NoIndent
+IndentPPDirectives: BeforeHash
+IndentRequiresClause: false
+IndentWidth:     4
+IndentWrappedFunctionNames: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+PackConstructorInitializers: NextLine
+PointerAlignment: Left
+SeparateDefinitionBlocks: Always
+ShortNamespaceLines: 0
+SortIncludes:    Never
+SpaceInEmptyBlock: true
+SpacesBeforeTrailingComments: 2
+TabWidth:        4
+...
+

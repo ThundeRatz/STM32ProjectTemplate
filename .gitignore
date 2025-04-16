@@ -6,6 +6,7 @@ build/
 -g
 .jlink-flash
 .cube
+docs
 
 # Created by https://www.gitignore.io/api/visualstudiocode,c
 
@@ -66,7 +67,6 @@ dkms.conf
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
-!.vscode/tasks.json
 !.vscode/extensions.json
 
 
