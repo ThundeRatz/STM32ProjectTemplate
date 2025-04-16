@@ -109,7 +109,7 @@ message(STATUS "Device is ${DEVICE}")
 
 # Check cube directory for files
 # If it's empty, generate the files
-file(GLOB_RECURSE CUBE_SOURCES_CHECK "${CMAKE_CURRENT_SOURCE_DIR}/cube/Src/*.c")
+file(GLOB_RECURSE CUBE_SOURCES_CHECK "${CMAKE_CURRENT_SOURCE_DIR}/cube/**/*.c")
 list(LENGTH CUBE_SOURCES_CHECK CUBE_LENGTH)
 
 if(CUBE_LENGTH EQUAL 0)
